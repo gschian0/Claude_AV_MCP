@@ -6,6 +6,11 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Fix: granular chopper's gen~ didn't compile
+> "not counting" (the granular step counter was frozen, so the `gen~` code wasn't running)
+- Cause: the granular code assigned its pitch ratio to `ratio`, which is already the compressor's `Param ratio`. `gen~` won't compile code that assigns to a Param, so the whole granular chopper was silent from the start.
+- Renamed it `pratio`. Both choppers' code is now checked for assignments to any Param or Buffer name (none).
+
 ### `26fa260` Granular chopper: CHECK readouts to find why it's silent
 > "just don't hear the grangular yet"
 - Couldn't diagnose from here: the Max MCP agent (port 5002) isn't running, so I can't read Max's console.

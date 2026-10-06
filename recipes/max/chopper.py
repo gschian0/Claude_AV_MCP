@@ -35,8 +35,8 @@ def granularize(code):
      ("rd = clamp(rd + clamp(fixnan(rate), -4, 4)*exp(semi*0.05776226505), -len, len);\n"
       "idx = clamp(fixnan(wrap((slice*len/16 + rd)/len, 0, 1)), 0, 0.999999);\n"
       "dry = ok*sample(loop, idx)*env*(1 - mute)*(1 - clamp(dyn, 0, 1)*(1 - sv));",
-      "// GRANULAR: rd moves through the slice at 'scan' (time), each grain reads at 'ratio' (pitch) — independent\n"
-      "ratio = exp(semi*0.05776226505);\n"
+      "// GRANULAR: rd moves through the slice at 'scan' (time), each grain reads at 'pratio' (pitch) — independent\n"
+      "pratio = exp(semi*0.05776226505);   // NOT 'ratio': that is the compressor Param (gen~ refuses to assign to a Param)\n"
       "fitk = (fit > 0.5 && dim(ref) > 64) ? clamp(len/dim(ref), 0.125, 8) : 1;   // this loop's length / jongly's length\n"
       "rd = clamp(rd + ((freeze > 0.5) ? 0 : clamp(fixnan(rate), -4, 4)*clamp(fixnan(scan), 0, 4)*fitk), -len, len);\n"
       "base = slice*len/16 + rd;\n"
@@ -49,10 +49,10 @@ def granularize(code):
       "if (q2 < gl2) { gst2 = base + noise()*jit; }\n"
       "if (q3 < gl3) { gst3 = base + noise()*jit; }\n"
       "gl0 = q0; gl1 = q1; gl2 = q2; gl3 = q3;\n"
-      "r0 = sample(loop, clamp(fixnan(wrap((gst0 + q0*gsz*ratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q0));\n"
-      "r1 = sample(loop, clamp(fixnan(wrap((gst1 + q1*gsz*ratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q1));\n"
-      "r2 = sample(loop, clamp(fixnan(wrap((gst2 + q2*gsz*ratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q2));\n"
-      "r3 = sample(loop, clamp(fixnan(wrap((gst3 + q3*gsz*ratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q3));\n"
+      "r0 = sample(loop, clamp(fixnan(wrap((gst0 + q0*gsz*pratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q0));\n"
+      "r1 = sample(loop, clamp(fixnan(wrap((gst1 + q1*gsz*pratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q1));\n"
+      "r2 = sample(loop, clamp(fixnan(wrap((gst2 + q2*gsz*pratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q2));\n"
+      "r3 = sample(loop, clamp(fixnan(wrap((gst3 + q3*gsz*pratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q3));\n"
       "dry = ok*fixnan((r0 + r1 + r2 + r3)*0.5)*env*(1 - mute)*(1 - clamp(dyn, 0, 1)*(1 - sv));"),
      ("out3 = (comp > 0) ? gr : 0;", "out3 = (comp > 0) ? gr : 0;\nout4 = dim(loop)*1000/samplerate;   // CHECK: loaded loop length in ms (0 = not loaded)"),
     ]
