@@ -6,6 +6,11 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### `granular_side.maxpat`: the granular chopper in its own window
+> "just make a new patch with the granular to open side by side"
+- New `granular_side.maxpat` (built by `symphony.py`) with the granular chopper embedded, to open next to `digital_symphony.maxpat`. It syncs to the speed chopper there through `jongly_phase`, and the conductor's **gran** fader still works.
+- The granular chopper was taken back out of `symphony.maxpat` and `digital_symphony.maxpat`, so only one copy ever runs.
+
 ### `18448de` Granular chopper visible: own row under the speed chopper
 > "i don't see the granular one"
 - It was placed to the right of the speed chopper at x = 1372, which is off-screen on a 1512-pt-wide laptop display. It now has its own row directly below the speed chopper in `symphony.maxpat` and `digital_symphony.maxpat`, and the window is back to 1500 wide.

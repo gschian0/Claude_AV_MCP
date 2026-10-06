@@ -11,7 +11,6 @@ def panel_size(name):
 
 ROWS = [["conductor.maxpat"],
         ["jongly_chopper.maxpat"],
-        ["jongly_granular.maxpat"],
         ["gen_feedback.maxpat", "vocal_chops.maxpat"],
         ["sine_test.maxpat", "glass_bells.maxpat"],
         ["bassline.maxpat"],
@@ -45,3 +44,15 @@ p.boxes[0]["box"]["text"] = ("DIGITAL SYMPHONY (all-in-one) — every instrument
 p.dump(f"{out}/digital_symphony.maxpat"); check(f"{out}/digital_symphony.maxpat")
 for row in ROWS:
     print("   ", "  |  ".join(f"{n}: {panel_size(n)}" for n in row))
+
+# granular_side.maxpat: the granular chopper in its OWN window, to open next to digital_symphony / symphony.
+# It is not inside those patches, so there is only ever one copy running. It follows the speed chopper's clock
+# (receive~ jongly_phase) and the conductor's "gran" fader across windows.
+w, h = panel_size("jongly_granular.maxpat")
+g = Patch([0.0, 40.0, w + 20, h + 50])
+g.present = False
+g.comment("JONGLY GRANULAR — open next to digital_symphony.maxpat (it syncs to the speed chopper there). Don't also open jongly_granular.maxpat.", 10, 6, w)
+gb = g.box("bpatcher", 10, 28, w, h, 0, 0, offset=[0.0, 0.0], embed=1, bgmode=0, border=1, clickthrough=0,
+           enablehscroll=0, enablevscroll=0, lockeddragscroll=0, viewvisibility=1)
+g.boxes[-1]["box"]["patcher"] = json.load(open(f"{out}/jongly_granular.maxpat"))["patcher"]
+g.dump(f"{out}/granular_side.maxpat"); check(f"{out}/granular_side.maxpat")
