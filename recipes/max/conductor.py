@@ -42,7 +42,7 @@ p.comment("bass pocket (0-1)", 600, 262, 120)
 pk = p.box("flonum", 720, 262, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0, maximum=1.0)
 p.wire(p.obj("loadmess set 0.5", 780, 262, 1, 1), 0, pk, 0); p.wire(pk, 0, p.obj("s av_pocket", 720, 600, 1, 0), 0)
 for k, (label, name, init) in enumerate([("drums", "chopper", 0.5), ("tampura", "tampura", 0.2), ("acid", "bassline", 0.5),
-                                         ("jungle", "jungle", 0.45), ("bells", "bells", 0.25)]):
+                                         ("jungle", "jungle", 0.45), ("bells", "bells", 0.25), ("vox", "vox", 0.4)]):
     x = 600 + k*64
     sl = p.box("slider", x, 74, 26, 140, 1, 1, [""], floatoutput=1, size=1.0, min=0.0)
     p.wire(p.obj(f"loadmess set {init}", x, 330, 1, 1), 0, sl, 0)

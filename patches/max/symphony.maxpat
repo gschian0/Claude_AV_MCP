@@ -57,7 +57,7 @@
      "patching_rect": [
       10,
       62,
-      945.0,
+      976,
       608.0
      ],
      "name": "conductor.maxpat",
@@ -100,7 +100,7 @@
      "patching_rect": [
       10,
       712.0,
-      930,
+      1342,
       934.0
      ],
      "name": "jongly_chopper.maxpat",
@@ -125,8 +125,8 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      960,
-      690.0,
+      10,
+      1666.0,
       300,
       20.0
      ],
@@ -141,8 +141,8 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      960,
-      712.0,
+      10,
+      1688.0,
       810,
       740.0
      ],
@@ -168,12 +168,12 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      10,
+      840,
       1666.0,
       300,
       20.0
      ],
-     "text": "SINE TEST",
+     "text": "VOCAL CHOPS",
      "linecount": 1
     }
    },
@@ -184,12 +184,12 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      10,
+      840,
       1688.0,
-      955,
-      441.0
+      970,
+      388.0
      ],
-     "name": "sine_test.maxpat",
+     "name": "vocal_chops.maxpat",
      "offset": [
       0.0,
       0.0
@@ -211,12 +211,12 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      985,
-      1666.0,
+      10,
+      2448.0,
       300,
       20.0
      ],
-     "text": "GLASS BELLS",
+     "text": "SINE TEST",
      "linecount": 1
     }
    },
@@ -227,12 +227,12 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      985,
-      1688.0,
-      860,
-      388.0
+      10,
+      2470.0,
+      955,
+      441.0
      ],
-     "name": "glass_bells.maxpat",
+     "name": "sine_test.maxpat",
      "offset": [
       0.0,
       0.0
@@ -254,12 +254,12 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      10,
-      2149.0,
+      985,
+      2448.0,
       300,
       20.0
      ],
-     "text": "BASSLINE",
+     "text": "GLASS BELLS",
      "linecount": 1
     }
    },
@@ -270,12 +270,12 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      10,
-      2171.0,
-      1300,
-      610.0
+      985,
+      2470.0,
+      860,
+      388.0
      ],
-     "name": "bassline.maxpat",
+     "name": "glass_bells.maxpat",
      "offset": [
       0.0,
       0.0
@@ -298,11 +298,11 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2801.0,
+      2931.0,
       300,
       20.0
      ],
-     "text": "JUNGLE BASS",
+     "text": "BASSLINE",
      "linecount": 1
     }
    },
@@ -314,7 +314,50 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2823.0,
+      2953.0,
+      1300,
+      610.0
+     ],
+     "name": "bassline.maxpat",
+     "offset": [
+      0.0,
+      0.0
+     ],
+     "embed": 0,
+     "bgmode": 0,
+     "border": 1,
+     "clickthrough": 0,
+     "enablehscroll": 0,
+     "enablevscroll": 0,
+     "lockeddragscroll": 0,
+     "viewvisibility": 1
+    }
+   },
+   {
+    "box": {
+     "id": "obj-16",
+     "maxclass": "comment",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      10,
+      3583.0,
+      300,
+      20.0
+     ],
+     "text": "JUNGLE BASS",
+     "linecount": 1
+    }
+   },
+   {
+    "box": {
+     "id": "obj-17",
+     "maxclass": "bpatcher",
+     "numinlets": 0,
+     "numoutlets": 0,
+     "patching_rect": [
+      10,
+      3605.0,
       1360,
       756.0
      ],

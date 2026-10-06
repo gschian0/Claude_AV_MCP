@@ -223,3 +223,23 @@ feeds new image into the loop. The **render** toggle sends a black seed texture
 - A message box can drive two destinations with commas: `s 1 2 3…, r 1 1 1…` → `[route s r]`.
 - `line~` accepts several target/time pairs in one list: `1 4 0.15 300`.
 - Embedded gen patchers use `"classnamespace": "dsp.gen"` (gen~) or `"jit.gen"` (jit.gl.pix).
+
+
+## Chopper: pitch both ways + dynamics (velocity) in the loop
+
+> "in max we need pitch down in the jongly chopper too so it can really go both ways and play fully expressibly and we can also have some velocities built into the loops so we can really build a dynamic"
+
+- **TRANSPOSE** (−24 to +24 semitones, with buttons for −12, −7, −5, 0, +5, +7, +12) pitches the whole break down or up without changing its timing. Also controllable through `av_chop_transpose`.
+- **STEP PITCH** row (purple): per-step semitones from −12 to +12. Presets: flat, dropend, riseend, dubdrop, seesaw, dive, octaves. It stacks with the pitch rolls and the pitch LFO; total pitch is limited to ±36 semitones.
+- **VELOCITY** row (blue): per-step loudness. Presets: flat, groove (the default), accents, ghosts, swell, build, fade, drop. **dynamics amount** (0–1, also `av_chop_dyn`) scales how much the row affects the sound.
+- Velocity is stored as a cut (1 − velocity) in `chopvelcut`, so an empty buffer means full volume and a failed load can never silence the drums.
+
+## Vocal chops (`vocal_chops.maxpat`, recipe `vocal_chops.py`)
+
+> "lets add one more sampler of a vocal sample that does chopped jungle yells every now and then"
+
+- Six one-shot vocals are read from Ableton Live's Core Library at load: Chop Jungle, Chop Oi, Shout Wha, Crowd Hey, Check It Out, That Bass. The repo only stores their paths.
+- **When:** on even jongly steps, a 30‰ chance per step (about one yell every few bars at 170 BPM), with a 2.5 s cooldown. Controls: **AUTO YELLS**, **YELL NOW**, chance, cooldown; `av_vox_yell` and `av_vox_chance` work from anywhere.
+- **How:** a `gen~` voice plays a random vocal in a random chop style: clean, chopped (3× first 80 ms, "oi-oi-oi"), machine gun (4× 50 ms, +3 st), dropped (−5 st) or reverse. Each buffer's own sample rate keeps the pitch correct, and the read position is guarded the same way as the chopper fix.
+- A dark dub delay (dotted 1/8 at 170 BPM, 265 ms, feedback through a 2.5 kHz low-pass) feeds into the level control. The conductor has a new **vox** fader (`av_level_vox`, 0.4).
+- It is in `symphony.maxpat` and `digital_symphony.maxpat`, next to the visuals.

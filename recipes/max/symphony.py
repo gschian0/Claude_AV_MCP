@@ -10,7 +10,8 @@ def panel_size(name):
     return [max(x + w for x, y, w, h in r) + 10, max(y + h for x, y, w, h in r) + 10]
 
 ROWS = [["conductor.maxpat"],
-        ["jongly_chopper.maxpat", "gen_feedback.maxpat"],
+        ["jongly_chopper.maxpat"],
+        ["gen_feedback.maxpat", "vocal_chops.maxpat"],
         ["sine_test.maxpat", "glass_bells.maxpat"],
         ["bassline.maxpat"],
         ["jungle_bass.maxpat"]]

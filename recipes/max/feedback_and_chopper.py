@@ -211,6 +211,8 @@ CHOP_CODE = r"""// ModSquad-style beat chopper (after Atau Tanaka's ModSquad, 20
 Buffer loop("jongly");
 Buffer steps("chopsteps");
 Buffer rolls("choprolls");
+Buffer vcut("chopvelcut");   // per-step VELOCITY, stored as cut = 1 - velocity (empty buffer = full volume)
+Buffer spit("choppitch");    // per-step PITCH in semitones (-12..+12)
 Param rate(1);      // 1 = original tempo (~170 bpm); tape-style, pitch follows
 Param fade(48);     // samples of fade at slice/roll edges (kills clicks)
 Param chaos(0.15);  // 0 = play the pattern exactly, 1 = every step random
@@ -224,7 +226,9 @@ Param lfodepth(0.5);  // PITCH LFO depth in semitones
 Param lforate(1);  // LFO cycles per loop (mode 0) / per step (mode 1) / per roll hit (mode 2)
 Param lfomode(2);  // 0 = synced to the loop, 1 = retriggers every step, 2 = retriggers every roll hit (multi-trigger)
 Param lfoshape(0); // 0 = sine wobble, 1 = saw dive (starts high, drops)
-History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1);
+Param transpose(0); // global pitch, semitones -24..+24: drops the whole break down or up (rate/timing unchanged)
+Param dyn(1);       // dynamics amount: 0 = flat, 1 = full per-step velocity
+History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1), sv(1), spt(0);
 
 // SAFETY: an empty/reloading buffer (len 0) or a bad value would make the read index NaN/inf and
 // sample() would read outside the buffer and crash Max (it did, 2026-10-06). Keep every value finite.
@@ -237,6 +241,8 @@ if (step != lastStep) {
 	mute = (v >= 17) ? 1 : 0;
 	slice = (v >= 1 && v < 17) ? v - 1 : wrap(slice + 1, 0, 16);
 	roll = max(peek(rolls, step, 0), 1);
+	sv = 1 - clamp(fixnan(peek(vcut, step, 0)), 0, 1);
+	spt = clamp(fixnan(peek(spit, step, 0)), -12, 12);
 	if (mute == 0 && noise()*0.5 + 0.5 < chaos) {
 		slice = clamp(floor((noise()*0.5 + 0.5)*16), 0, 15);
 		roll = (noise() > 0.5) ? 2 : roll;
@@ -257,10 +263,10 @@ rd = fixnan(rd);
 lph = (lfomode < 0.5) ? ph*lforate : ((lfomode < 1.5) ? frac*lforate : subfrac*lforate);
 lw = lph - floor(lph);
 lfo = (lfoshape < 0.5) ? sin(6.283185307*lw) : 1 - 2*lw;
-semi = clamp(fixnan(clamp(prstep, -12, 12)*subn + clamp(lfodepth, 0, 24)*lfo), -36, 36);
+semi = clamp(fixnan(clamp(transpose, -24, 24) + spt + clamp(prstep, -12, 12)*subn + clamp(lfodepth, 0, 24)*lfo), -36, 36);
 rd = clamp(rd + clamp(fixnan(rate), -4, 4)*exp(semi*0.05776226505), -len, len);
 idx = clamp(fixnan(wrap((slice*len/16 + rd)/len, 0, 1)), 0, 0.999999);
-dry = ok*sample(loop, idx)*env*(1 - mute);
+dry = ok*sample(loop, idx)*env*(1 - mute)*(1 - clamp(dyn, 0, 1)*(1 - sv));
 
 // compressor: envelope follower (3 ms attack, 120 ms release) → gain reduction above thresh at 'ratio'
 att = 1 - exp(-1/(0.003*samplerate));
@@ -273,7 +279,7 @@ out1 = (comp > 0) ? dry*dbtoa(makeup - gr) : dry;
 out2 = step;
 out3 = (comp > 0) ? gr : 0;
 """
-c = Patch([40.0, 40.0, 960.0, 1000.0])
+c = Patch([40.0, 40.0, 1420.0, 1000.0])
 c.present = True
 c.comment("JONGLY CHOPPER — after ModSquad. The jongly loop is cut into 16 slices. The green row says which slice each step plays; the orange row says how many times that step re-fires (rolls). Pick a pattern, or let AUTO move through them.", 20, 8, 900)
 c.obj("buffer~ jongly jongly.aif", 20, 70, 1, 2, ["float", "bang"])
@@ -350,6 +356,60 @@ for k, m_ in enumerate(["lfomode 0", "lfomode 1", "lfomode 2", "lfoshape 0", "lf
     m = c.msg(m_, 20 + (k % 3)*72 if k < 3 else 20 + (k - 3)*80, 656 if k < 3 else 682, 68 if k < 3 else 76)
     c.wire(m, 0, gen, 0)
 for m in rolls + [pr, pch]: c.wire(m, 0, gen, 0)
+# --- VELOCITY + STEP PITCH (new column): dynamics built into the loop, and pitch that goes both ways ---
+xv = 980
+c.obj("buffer~ chopvelcut 2", xv, 70, 1, 2, ["float", "bang"]); c.obj("buffer~ choppitch 2", xv + 160, 70, 1, 2, ["float", "bang"])
+c.comment("VELOCITY — loudness of each step (builds dynamics into the loop)", xv, 104, 400)
+mv = c.box("multislider", xv, 126, 400, 100, 1, 2, ["", ""], size=16, setminmax=[0.0, 1.0], settype=1, parameter_enable=0,
+           slidercolor=[0.3, 0.6, 0.95, 1.0])
+c.comment("STEP PITCH — semitones per step, down or up (-12..+12)", xv, 236, 400)
+mpi = c.box("multislider", xv, 258, 400, 100, 1, 2, ["", ""], size=16, setminmax=[-12.0, 12.0], settype=0, parameter_enable=0,
+            slidercolor=[0.75, 0.35, 0.85, 1.0])
+inv = c.obj("vexpr 1. - $f1", 1420, 126, 2, 1)                       # store cut = 1 - velocity
+lfv = c.obj("listfunnel", 1420, 152, 1, 1); pkv = c.obj("peek~ chopvelcut 1 0", 1420, 178, 3, 1, ["float"])
+c.wire(mv, 0, inv, 0); c.wire(inv, 0, lfv, 0); c.wire(lfv, 0, pkv, 0)
+lfp = c.obj("listfunnel", 1420, 258, 1, 1); pkp = c.obj("peek~ choppitch 1 0", 1420, 284, 3, 1, ["float"])
+c.wire(mpi, 0, lfp, 0); c.wire(lfp, 0, pkp, 0)
+vrt = c.obj("route v p", 1420, 380, 3, 3); c.wire(vrt, 0, mv, 0); c.wire(vrt, 1, mpi, 0)
+DYN = [("flat", [1]*16),
+       ("groove", [1, .5, .7, .45, .9, .5, .75, .5, 1, .5, .7, .45, .9, .55, .8, .6]),
+       ("accents", [1, .45, .45, .6] * 4),
+       ("ghosts", [1, .35] * 8),
+       ("swell", [round(.3 + .7 * i / 15, 2) for i in range(16)]),
+       ("build", [round(.15 + .85 * (i / 15) ** 2, 2) for i in range(16)]),
+       ("fade", [round(1 - .7 * i / 15, 2) for i in range(16)]),
+       ("drop", [1, .4, .4, .4, .9, .4, .4, .4, .2, .2, .2, .2, .6, .7, .85, 1])]
+PIT = [("flat", [0]*16),
+       ("dropend", [0]*12 + [-3, -5, -7, -12]),
+       ("riseend", [0]*12 + [2, 3, 5, 7]),
+       ("dubdrop", [-12, 0, 0, 0] * 4),
+       ("seesaw", [0, -5, 0, 5] * 4),
+       ("dive", [-i for i in range(13)] + [-12, -12, -12]),
+       ("octaves", [0, 0, 12, 0, 0, -12, 0, 0] * 2)]
+def named_presets(label, tag, presets, y):
+    """visible name buttons → [route names] → hidden value lists → [route v p] → the multislider"""
+    c.comment(label, xv, y, 80)
+    rn = c.obj("route " + " ".join(n for n, _ in presets), 1620, y, len(presets) + 1, len(presets) + 1)
+    msgs = []
+    for k, (name, vals) in enumerate(presets):
+        m = c.msg(name, xv + 70 + (k % 4) * 82, y + (k // 4) * 24, 78); c.wire(m, 0, rn, 0); msgs.append((name, m))
+        hv = c.msg(f"{tag} " + " ".join(str(v) for v in vals), 1620 + k * 10, y + 60 + k * 22, 200)
+        c.wire(rn, k, hv, 0); c.wire(hv, 0, vrt, 0)
+    return msgs
+vmsgs = named_presets("DYNAMICS", "v", DYN, 368)
+pmsgs2 = named_presets("PITCH", "p", PIT, 424)
+c.comment("TRANSPOSE whole break (st) · dynamics amount", xv, 476, 300)
+tps = c.box("flonum", xv, 496, 50, 22, 1, 2, ["", "bang"], format=6, minimum=-24.0, maximum=24.0)
+dya = c.box("flonum", xv + 300, 496, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0, maximum=1.0)
+for k, st in enumerate([-12, -7, -5, 0, 5, 7, 12]):
+    c.wire(c.msg(f"{st}", xv + 56 + k * 34, 496, 30), 0, tps, 0)
+for ui, name, init in [(tps, "transpose", 0), (dya, "dyn", 1)]:
+    c.wire(c.obj(f"loadmess {init}", 1420, 430 + 26 * [tps, dya].index(ui), 1, 1), 0, ui, 0)
+    pp = c.obj(f"prepend {name}", 1520, 430 + 26 * [tps, dya].index(ui), 1, 1); c.wire(ui, 0, pp, 0); c.wire(pp, 0, gen, 0)
+c.wire(c.obj("r av_chop_transpose", 1520, 380, 0, 1), 0, tps, 0)
+c.wire(c.obj("r av_chop_dyn", 1620, 380, 0, 1), 0, dya, 0)
+lbv = c.obj("loadbang", 1520, 330, 1, 1, ["bang"]); c.wire(lbv, 0, vmsgs[1][1], 0); c.wire(lbv, 0, pmsgs2[0][1], 0)   # groove dynamics, flat pitch
+
 # --- FILTER SWEEPS on the drums: click a sweep, it fires on the next beat (every 4 steps) ---
 yf = 740
 c.comment("FILTER SWEEPS — click one, or let AUTO fire them; each starts on the next beat, stays audible and ends open. Message = mode (1 LP · 2 HP) then cutoff/time pairs (MIDI note, ms).", 20, yf, 900)
