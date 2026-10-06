@@ -1,5 +1,6 @@
 import sys
 from maxgen import Patch, gen_sub, check
+from ensemble import CHOP_PRESETS, CHOP_SWEEPS
 out = sys.argv[1]
 
 # ================= gen video feedback =================
@@ -144,11 +145,14 @@ rt = p.obj("t b b b b", 760, yd + 90, 1, 4, ["bang"] * 4); p.wire(ks, 13, rt, 0)
 for k, (dst, v) in enumerate([(dt, 0.985), (zout, 0.99), (tout_, 0.02), (wout, 0.003)]):
     m = p.msg(str(v), 760 + k*50, yd + 116); p.wire(rt, k, m, 0); p.wire(m, 0, dst, 0)
 p.comment("c / r", 760, yd - 22, 50)
+# the conductor drives these
+for k, (name, dst) in enumerate([("av_render", on), ("av_fullscreen", fs), ("av_cubes", cton), ("av_fb", pix)]):
+    p.wire(p.obj(f"r {name}", 800, 300 + 26*k, 0, 1), 0, dst, 0)
 p.dump(f"{out}/gen_feedback.maxpat"); check(f"{out}/gen_feedback.maxpat")
 
 # ================= ModSquad-style jongly chopper: one part, presets, auto-change, rolls =================
 CHOP_CODE = r"""// ModSquad-style beat chopper (after Atau Tanaka's ModSquad, 2003).
-// 16 steps. Step n plays slice chopsteps[n] (1-16); 0 = keep going into the next slice.
+// 16 steps. Step n plays slice chopsteps[n] (1-16); 0 = keep going into the next slice; 17 = rest.
 // choprolls[n] = how many times step n re-fires (1 = normal, 2/3/4/8 = roll).
 // chaos = chance per step of jumping to a random slice (sometimes rolled) instead.
 Buffer loop("jongly");
@@ -158,16 +162,17 @@ Param rate(1);      // 1 = original tempo (~170 bpm); tape-style, pitch follows
 Param fade(48);     // samples of fade at slice/roll edges (kills clicks)
 Param chaos(0.15);  // 0 = play the pattern exactly, 1 = every step random
 Param rollnow(0);   // live roll: >= 2 re-fires every step this many times
-History ph(0), lastStep(-1), slice(0), roll(1);
+History ph(0), lastStep(-1), slice(0), roll(1), mute(0);
 
 len = dim(loop);
 ph = wrap(ph + rate/len, 0, 1);
 step = floor(ph*16);
 if (step != lastStep) {
 	v = peek(steps, step, 0);
-	slice = (v >= 1) ? v - 1 : wrap(slice + 1, 0, 16);
+	mute = (v >= 17) ? 1 : 0;
+	slice = (v >= 1 && v < 17) ? v - 1 : wrap(slice + 1, 0, 16);
 	roll = max(peek(rolls, step, 0), 1);
-	if (noise()*0.5 + 0.5 < chaos) {
+	if (mute == 0 && noise()*0.5 + 0.5 < chaos) {
 		slice = clamp(floor((noise()*0.5 + 0.5)*16), 0, 15);
 		roll = (noise() > 0.5) ? 2 : roll;
 	}
@@ -178,18 +183,18 @@ frac = ph*16 - step;
 sub = frac*rl;
 subfrac = sub - floor(sub);
 env = clamp(min(subfrac, 1 - subfrac)*(len/16/rl)/fade, 0, 1);
-out1 = sample(loop, (slice + subfrac/rl)/16)*env;
+out1 = sample(loop, (slice + subfrac/rl)/16)*env*(1 - mute);
 out2 = step;
 """
-c = Patch([40.0, 40.0, 960.0, 900.0])
+c = Patch([40.0, 40.0, 960.0, 1000.0])
 c.present = True
 c.comment("JONGLY CHOPPER — after ModSquad. The jongly loop is cut into 16 slices. The green row says which slice each step plays; the orange row says how many times that step re-fires (rolls). Pick a pattern, or let AUTO move through them.", 20, 8, 900)
 c.obj("buffer~ jongly jongly.aif", 20, 70, 1, 2, ["float", "bang"])
 c.obj("buffer~ chopsteps 2", 200, 70, 1, 2, ["float", "bang"])
 c.obj("buffer~ choprolls 2", 350, 70, 1, 2, ["float", "bang"])
 
-c.comment("SLICES — which slice each step plays (1-16) · 0 = keep going", 20, 104, 440)
-ms = c.box("multislider", 20, 126, 480, 130, 1, 2, ["", ""], size=16, setminmax=[0.0, 16.0], settype=0, parameter_enable=0)
+c.comment("SLICES — which slice each step plays (1-16) · 0 = keep going · 17 (top) = rest", 20, 104, 480)
+ms = c.box("multislider", 20, 126, 480, 130, 1, 2, ["", ""], size=16, setminmax=[0.0, 17.0], settype=0, parameter_enable=0)
 c.comment("ROLLS — times each step re-fires (1 = normal)", 20, 264, 440)
 mr = c.box("multislider", 20, 286, 480, 60, 1, 2, ["", ""], size=16, setminmax=[1.0, 8.0], settype=0, parameter_enable=0,
            slidercolor=[0.85, 0.45, 0.1, 1.0])
@@ -198,13 +203,7 @@ lfr = c.obj("listfunnel", 180, 356, 1, 1); pkr = c.obj("peek~ choprolls 1 0", 18
 c.wire(ms, 0, lfs, 0); c.wire(lfs, 0, pks, 0); c.wire(mr, 0, lfr, 0); c.wire(lfr, 0, pkr, 0)
 
 # patterns: each message sets both rows ("s ..." → slices, "r ..." → rolls)
-PRESETS = [("straight", "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16", "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1"),
-           ("stutter", "1 0 1 0 5 0 5 6 9 0 0 0 13 14 13 14", "1 1 1 1 1 1 1 1 1 1 1 1 2 2 4 4"),
-           ("chop", "1 0 0 0 5 0 3 4 1 0 0 0 13 0 3 4", "1 1 2 1 1 1 1 1 1 1 3 1 1 1 4 8"),
-           ("roll", "1 1 1 1 5 5 5 5 9 9 9 9 13 13 13 13", "1 1 2 2 1 1 4 4 1 1 2 2 3 3 8 8"),
-           ("shuffle", "1 2 3 4 5 6 3 4 9 10 11 12 5 6 15 16", "1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2"),
-           ("half", "1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8", "1 1 1 1 1 1 1 2 1 1 1 1 1 1 4 4"),
-           ("backwards", "16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1", "1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 4")]
+PRESETS = CHOP_PRESETS
 xr = 530
 c.comment("PATTERNS (click one)", xr, 104, 200)
 rt = c.obj("route s r", xr, 104 + 26*len(PRESETS) + 30, 3, 3)
@@ -242,23 +241,18 @@ pr = c.obj("prepend rate", xr + 180, ya + 118, 1, 1); c.wire(lm, 0, fl, 0); c.wi
 gen = c.obj("gen~", 20, 534, 1, 2, ["signal", "signal"], w=200.0, patcher=gen_sub("dsp.gen", CHOP_CODE, 0, 2))
 for m in rolls + [pr, pch]: c.wire(m, 0, gen, 0)
 # --- FILTER SWEEPS on the drums: click a sweep, it fires on the next beat (every 4 steps) ---
-yf = 660
-c.comment("FILTER SWEEPS — click one; it starts on the next beat. Each message = mode (1 LP · 2 HP · 3 BP) then cutoff/time pairs (MIDI note, ms). 'open' resets.", 20, yf, 900)
-SWEEPS = [("open", "1 132 0"),
-          ("LP up · 1 loop", "1 40 0 132 2822"),
-          ("LP down · 1 loop", "1 132 0 45 2822"),
-          ("LP dip · 1 beat", "1 132 0 55 150 132 550"),
-          ("HP riser · 2 loops", "2 20 0 105 5644"),
-          ("HP drop-out", "2 105 0 20 1411"),
-          ("BP wah", "3 50 0 115 350 50 350")]
+yf = 740
+c.comment("FILTER SWEEPS — click one, or let AUTO fire them; each starts on the next beat, stays audible and ends open. Message = mode (1 LP · 2 HP) then cutoff/time pairs (MIDI note, ms).", 20, yf, 900)
+SWEEPS = CHOP_SWEEPS
 sreg = c.obj("zl reg", 560, yf + 30, 2, 2, ["", ""])
 arm = c.obj("t b", 640, yf + 30, 1, 1, ["bang"]); one = c.msg("1", 690, yf + 30)
 fg = c.obj("gate 1", 560, yf + 90, 2, 1)
 c.wire(arm, 0, one, 0); c.wire(one, 0, fg, 0)
+smsgs = []
 for k, (name, seq) in enumerate(SWEEPS):
     col, row = k % 4, k // 4
     x, y = 20 + col*135, yf + 30 + row*52
-    c.comment(name, x, y, 130); m = c.msg(seq, x, y + 22, 125)
+    c.comment(name, x, y, 130); m = c.msg(seq, x, y + 22, 125); smsgs.append(m)
     c.wire(m, 0, sreg, 1); c.wire(m, 0, arm, 0)
 b4 = c.obj("% 4", 760, yf + 64, 2, 1, ["int"]); bs = c.obj("sel 0", 760, yf + 90, 2, 2, ["bang", ""])
 c.wire(b4, 0, bs, 0); c.wire(bs, 0, fg, 1)
@@ -281,17 +275,36 @@ dac = c.box("ezdac~", 20, yf + 228, 45, 45, 2, 0); c.wire(g, 0, dac, 0); c.wire(
 c.comment("click to start audio", 70, yf + 240, 140)
 
 # step readout + broadcast (the Buddha bass follows jongly_step) + loop counter for AUTO
-sn = c.obj("snapshot~ 5", 240, 566, 2, 1, ["float"]); c.wire(gen, 1, sn, 0)
-ch = c.obj("change", 240, 592, 1, 3, ["", "int", "int"]); c.wire(sn, 0, ch, 0)
-num = c.box("number", 330, 592, 50, 22, 1, 2, ["", "bang"]); c.wire(ch, 0, num, 0); c.comment("step", 382, 593, 40)
-snd = c.obj("s jongly_step", 240, 618, 1, 0); c.wire(ch, 0, snd, 0)
-s0 = c.obj("sel 0", 440, 566, 2, 2, ["bang", ""]); c.wire(ch, 0, s0, 0)           # one bang per loop
+sn = c.obj("snapshot~ 5", 240, 616, 2, 1, ["float"]); c.wire(gen, 1, sn, 0)
+ch = c.obj("change", 240, 642, 1, 3, ["", "int", "int"]); c.wire(sn, 0, ch, 0)
+num = c.box("number", 330, 642, 50, 22, 1, 2, ["", "bang"]); c.wire(ch, 0, num, 0); c.comment("step", 382, 593, 40)
+snd = c.obj("s jongly_step", 240, 668, 1, 0); c.wire(ch, 0, snd, 0)
+s0 = c.obj("sel 0", 440, 616, 2, 2, ["bang", ""]); c.wire(ch, 0, s0, 0)           # one bang per loop
 c.wire(ch, 0, b4, 0)                                                                # beat clock for sweeps
-gt = c.obj("gate 1", 440, 592, 2, 1); c.wire(at, 0, gt, 0); c.wire(s0, 0, gt, 1)
-cnt = c.obj("counter", 500, 592, 3, 4, ["int", "", "", "int"]); c.wire(gt, 0, cnt, 0)
-md = c.obj("% 2", 570, 592, 2, 1, ["int"]); c.wire(cnt, 0, md, 0); c.wire(nn, 0, md, 1)
-s1 = c.obj("sel 0", 620, 592, 2, 2, ["bang", ""]); c.wire(md, 0, s1, 0)
-rp = c.obj(f"random {len(PRESETS)}", 680, 592, 2, 1, ["int"]); c.wire(s1, 0, rp, 0)
-sp = c.obj("sel " + " ".join(str(k) for k in range(len(PRESETS))), 680, 618, 2, len(PRESETS) + 1); c.wire(rp, 0, sp, 0)
+gt = c.obj("gate 1", 440, 642, 2, 1); c.wire(at, 0, gt, 0); c.wire(s0, 0, gt, 1)
+cnt = c.obj("counter", 500, 642, 3, 4, ["int", "", "", "int"]); c.wire(gt, 0, cnt, 0)
+md = c.obj("% 2", 570, 642, 2, 1, ["int"]); c.wire(cnt, 0, md, 0); c.wire(nn, 0, md, 1)
+s1 = c.obj("sel 0", 620, 642, 2, 2, ["bang", ""]); c.wire(md, 0, s1, 0)
+rp = c.obj(f"random {len(PRESETS)}", 680, 642, 2, 1, ["int"]); c.wire(s1, 0, rp, 0)
+sp = c.obj("sel " + " ".join(str(k) for k in range(len(PRESETS))), 680, 668, 2, len(PRESETS) + 1); c.wire(rp, 0, sp, 0)
 for k, m in enumerate(pmsgs): c.wire(sp, k, m, 0)
+# AUTO SWEEPS: every N loops fire a random sweep (not 'open')
+c.comment("AUTO SWEEP every", 600, yf + 236, 120)
+asw = c.box("toggle", 715, yf + 234, 22, 22, 1, 1, ["int"]); c.wire(c.obj("loadmess 1", 600, yf + 290, 1, 1), 0, asw, 0)
+asn = c.box("number", 742, yf + 234, 40, 22, 1, 2, ["", "bang"], minimum=1); c.comment("loops", 786, yf + 236, 50)
+c.wire(c.obj("loadmess 2", 680, yf + 290, 1, 1), 0, asn, 0)
+sg = c.obj("gate 1", 600, yf + 316, 2, 1); c.wire(asw, 0, sg, 0); c.wire(s0, 0, sg, 1)
+scn = c.obj("counter", 660, yf + 316, 3, 4, ["int", "", "", "int"]); c.wire(sg, 0, scn, 0)
+smd = c.obj("% 2", 730, yf + 316, 2, 1, ["int"]); c.wire(scn, 0, smd, 0); c.wire(asn, 0, smd, 1)
+ss0 = c.obj("sel 0", 780, yf + 316, 2, 2, ["bang", ""]); c.wire(smd, 0, ss0, 0)
+srn = c.obj(f"random {len(SWEEPS) - 1}", 600, yf + 342, 2, 1, ["int"]); c.wire(ss0, 0, srn, 0)
+sp1 = c.obj("+ 1", 690, yf + 342, 2, 1, ["int"]); c.wire(srn, 0, sp1, 0)
+ssel = c.obj("sel " + " ".join(str(k) for k in range(len(SWEEPS))), 740, yf + 342, 2, len(SWEEPS) + 1); c.wire(sp1, 0, ssel, 0)
+for k, m in enumerate(smsgs): c.wire(ssel, k, m, 0)
+c.comment("sweep now", 600, yf + 262, 70); swb = c.box("button", 670, yf + 260, 22, 22, 1, 1, ["bang"]); c.wire(swb, 0, srn, 0)
+
+# the conductor drives these
+for k, (name, dst) in enumerate([("av_drum_pattern", sp), ("av_auto_patterns", at), ("av_auto_sweeps", asw),
+                                 ("av_sweep_now", srn), ("av_chaos", fc)]):
+    c.wire(c.obj(f"r {name}", 820, 380 + 26*k, 0, 1), 0, dst, 0)
 c.dump(f"{out}/jongly_chopper.maxpat"); check(f"{out}/jongly_chopper.maxpat")

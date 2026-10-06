@@ -21,6 +21,10 @@ It sits at the top of the symphony window and runs everything through sends:
 - **NEW LINES:** re-roll the acid or jungle line in the current scale (`av_reroll_bass` / `av_reroll_jungle`).
 - **MIX:** a fader each for drums, tampura, acid, jungle and bells (`av_level_*`). A fader takes over that instrument's level once you move it.
 - **Drone evolve** (`av_evolve`) and **audio on/off**.
+- **DRUMS** ("there should be a patch that controls everything"): every pattern by name (`av_drum_pattern`), auto patterns, auto sweeps, sweep now, and chaos.
+- **VISUALS:** render, fullscreen, cubes, and trail length (`decay 0.9 / 0.985 / 1.`, sent to the feedback through `av_fb`).
+
+The saved chopper chaos was lowered from 1.0 to 0.2, because at 1.0 every step is random and the jump-up patterns can't be heard.
 
 Why the parts sounded out of key: the saved state had the bassline root on 12 (C) and the tampura key on 54 (F#). Both values were removed from `state/`, so the key now comes from one place.
 
@@ -103,11 +107,13 @@ originally"
 
 **What it is:** ModSquad (Atau Tanaka, 2003, in Max's Examples) rebuilt as one
 `gen~` codebox. The jongly loop is cut into 16 slices.
-- **Slices** row: which slice each step plays. 0 = keep going into the next slice (ModSquad's `trapzero`).
+- **Slices** row: which slice each step plays. 0 = keep going into the next slice (ModSquad's `trapzero`). **17 = rest**, which is what makes breakdowns possible.
 - **Rolls** row: how many times each step re-fires (1 = normal, 2–8 = roll).
-- **Patterns** set both rows at once: straight, stutter, chop, roll, shuffle, half, backwards.
+- **Patterns** set both rows at once: straight, stutter, chop, roll, shuffle, half, backwards. The list lives in `recipes/max/ensemble.py` (shared with the conductor).
+- **Jump-up** ("jumpup jungle 2 2 3 style"): `jump 2-2-3` groups the hits 2+2+3+2+2+3+2, `jump 3-3-2` groups them 3+3+2+3+3+2, and `jump roll` ends on a snare roll.
+- **Breakdowns** ("the breaks should change in breakpu sometimes"): `breakdown` is a half-time kick and snare with rests, and `break build` brings the hits back in with a roll. AUTO includes both, so they come up now and then.
 - **Auto** picks a new pattern every N loops. **Chaos** sets the chance of a random jump on each step. **Live roll** rolls every step. **Rate** is tape speed.
-- **Filter sweeps** ("trigger fiter sweeps on the drums"): `svf~` on the output. Click a sweep and it starts on the next beat. Choices: open, LP up, LP down, LP dip, HP riser, HP drop-out, BP wah. Each message is a mode (1 LP · 2 HP · 3 BP) followed by cutoff/time pairs (MIDI note, ms) for `line~` → `mtof~`, so you can write your own. **Resonance** goes from 0 to 0.95.
+- **Filter sweeps** ("trigger fiter sweeps on the drums" … "should auto trigger and never go down to 0 so they are audible"): `svf~` on the output. Click a sweep and it starts on the next beat. Choices: open, LP up, LP down+back, LP dip, LP wah, HP riser, HP swell. Every sweep stays audible (the low-pass never closes below about 260 Hz, the high-pass never rises above about 1.3 kHz) and ends fully open. **AUTO SWEEP** (on by default) fires a random sweep every N loops (2 by default), and **sweep now** fires one immediately. Each message is a mode (1 LP · 2 HP) followed by cutoff/time pairs (MIDI note, ms), so you can write your own. **Resonance** goes from 0 to 0.95.
 
 ### 2. Low tampura: `sine_test.maxpat` (+ `buddha_smear~.maxpat`)
 **Recipe:** `recipes/max/tampura_drone.py`

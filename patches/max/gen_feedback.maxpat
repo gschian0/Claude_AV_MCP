@@ -2221,6 +2221,78 @@
       20.0
      ]
     }
+   },
+   {
+    "box": {
+     "id": "obj-99",
+     "maxclass": "newobj",
+     "numinlets": 0,
+     "numoutlets": 1,
+     "patching_rect": [
+      800,
+      300,
+      91.0,
+      22.0
+     ],
+     "text": "r av_render",
+     "outlettype": [
+      ""
+     ]
+    }
+   },
+   {
+    "box": {
+     "id": "obj-100",
+     "maxclass": "newobj",
+     "numinlets": 0,
+     "numoutlets": 1,
+     "patching_rect": [
+      800,
+      326,
+      119.0,
+      22.0
+     ],
+     "text": "r av_fullscreen",
+     "outlettype": [
+      ""
+     ]
+    }
+   },
+   {
+    "box": {
+     "id": "obj-101",
+     "maxclass": "newobj",
+     "numinlets": 0,
+     "numoutlets": 1,
+     "patching_rect": [
+      800,
+      352,
+      84.0,
+      22.0
+     ],
+     "text": "r av_cubes",
+     "outlettype": [
+      ""
+     ]
+    }
+   },
+   {
+    "box": {
+     "id": "obj-102",
+     "maxclass": "newobj",
+     "numinlets": 0,
+     "numoutlets": 1,
+     "patching_rect": [
+      800,
+      378,
+      63.0,
+      22.0
+     ],
+     "text": "r av_fb",
+     "outlettype": [
+      ""
+     ]
+    }
    }
   ],
   "lines": [
@@ -3528,6 +3600,54 @@
      ],
      "destination": [
       "obj-80",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-99",
+      0
+     ],
+     "destination": [
+      "obj-6",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-100",
+      0
+     ],
+     "destination": [
+      "obj-2",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-101",
+      0
+     ],
+     "destination": [
+      "obj-21",
+      0
+     ]
+    }
+   },
+   {
+    "patchline": {
+     "source": [
+      "obj-102",
+      0
+     ],
+     "destination": [
+      "obj-17",
       0
      ]
     }
