@@ -19,11 +19,11 @@ combination and they play together.
 
 | Send / receive | Sent by | Used by | Meaning |
 |---|---|---|---|
-| `jongly_step` | jongly chopper | bass, bells | current step 0–15 (one step = 176.36 ms, ~170 bpm) |
-| `av_scale` | bass (scale buttons) | bells | scale as semitones over 2 octaves |
-| `av_root` | bass (root number) | bells | key as a MIDI note (33 = A1) |
+| `jongly_step` | jongly chopper | bassline, bells | current step 0–15 (one step = 176.36 ms, ~170 bpm) |
+| `av_scale` | bassline (scale buttons) | bells | scale as semitones over 2 octaves |
+| `av_root` | bassline (root number) | tampura, bells | key as a MIDI note (33 = A1) |
 
-If the chopper isn't running, switch on **free-run** in the bass or bells
+If the chopper isn't running, switch on **free-run** in the bassline or bells
 patch. It clocks them at the same tempo.
 
 ### 1. Jongly chopper: `jongly_chopper.maxpat`
@@ -42,23 +42,38 @@ originally"
 - **Patterns** set both rows at once: straight, stutter, chop, roll, shuffle, half, backwards.
 - **Auto** picks a new pattern every N loops. **Chaos** sets the chance of a random jump on each step. **Live roll** rolls every step. **Rate** is tape speed.
 
-### 2. Buddhabox bass: `sine_test.maxpat` (+ `buddha_smear~.maxpat`)
-**Recipe:** `recipes/max/buddhabox_bass.py`
+### 2. Low tampura: `sine_test.maxpat` (+ `buddha_smear~.maxpat`)
+**Recipe:** `recipes/max/tampura_drone.py`
 
 **Asked for:** "build a new max patch just playing a cycle~ at .5 volume" →
-"make a shifting fm drone out of this patch … for a fft buddhabox" → "adjust the
-pitches … so they generate a bassline kinda thing" → "add a random pattern with
-scales" (a rhythm row with swing was tried, then rolled back: "go back to the
-previous bass")
+"make a shifting fm drone out of this patch … for a fft buddhabox" → (it became
+a bassline for a while: "adjust the pitches … so they generate a bassline kinda
+thing", "add a random pattern with scales") → "keep this sine test as a drone
+and then put some other bass on top of the drone and the sine test will be the
+low tampura"
 
-**What it is:** two 2-operator FM voices (root on the left, a fifth up on the
-right). Their FM ratio and brightness drift slowly, so the tone never settles.
-They play a 16-step bassline, go through a `pfft~` spectral smear
-(`vectral~ slide 4 200`), then `degrade~` for lo-fi, at 0.5 gain.
+**What it is:** two 2-operator FM voices tuned to the shared key: Sa (the root)
+on the left and Pa (the fifth) on the right. Their FM ratio and brightness drift
+slowly, so the tone never settles. They're plucked in the tampura cycle
+**Pa · Sa · Sa · Sa** (each pluck swells in over 80 ms and settles to half
+volume, so the drone never stops), then go through a `pfft~` spectral smear
+(`vectral~ slide 20 400`) and `degrade~` for lo-fi, at 0.5 gain.
+- **Key** follows `av_root` from the bassline and glides over 800 ms when it changes.
+- **Pluck cycle** toggle and **ms per pluck** (800 by default).
+
+### 2b. Bassline: `bassline.maxpat`
+**Recipe:** `recipes/max/bassline.py`
+
+**Asked for:** "put some other bass on top of the drone" (it inherits the
+bassline, scales and root that the tampura used to have)
+
+**What it is:** a 16-step bassline locked to the chopper (or free-run at
+170 bpm). The voice is a saw through a resonant `lores~` lowpass whose cutoff
+snaps open on each note, plus a sine an octave below.
 - **Bass** row: slider 1 = root, 13 = an octave up, 0 = tie. Presets: dub, walk, pedal, octaves.
-- **Scales:** click one to roll a random bassline in that scale. To add a scale, duplicate a message and edit the semitone numbers.
-- **Root:** the key as a MIDI note.
-- **Envelope:** every new note plucks, then settles to 30% so the drone continues under the line.
+- **Scales:** click one to roll a random bassline in that scale. To add a scale, duplicate a message and edit the semitone numbers. Sends `av_scale`.
+- **Root:** the key as a MIDI note. Sends `av_root`, so the tampura and bells retune with it.
+- **Brightness:** how far the filter opens on each note (in Hz).
 
 ### 3. Glass bells: `glass_bells.maxpat`
 **Recipe:** `recipes/max/glass_bells.py`

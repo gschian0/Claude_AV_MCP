@@ -28,7 +28,7 @@
       480,
       40.0
      ],
-     "text": "buddha_smear~ \u2014 vectral~ slides each FFT bin's amplitude (rise 4 frames, fall 200) = notes speak, tails smear",
+     "text": "buddha_smear~ \u2014 vectral~ slides each FFT bin's amplitude (rise 20 frames, fall 400) = tampura wash",
      "linecount": 2
     }
    },
@@ -98,10 +98,10 @@
      "patching_rect": [
       240,
       90,
-      95.0,
+      102.0,
       22.0
      ],
-     "text": "slide 4 200",
+     "text": "slide 20 400",
      "outlettype": [
       ""
      ]
