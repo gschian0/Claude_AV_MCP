@@ -58,7 +58,7 @@
       10,
       62,
       940,
-      526.0
+      608.0
      ],
      "name": "conductor.maxpat",
      "offset": [
@@ -83,7 +83,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      608.0,
+      690.0,
       300,
       20.0
      ],
@@ -99,7 +99,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      630.0,
+      712.0,
       930,
       854.0
      ],
@@ -126,7 +126,7 @@
      "numoutlets": 0,
      "patching_rect": [
       960,
-      608.0,
+      690.0,
       300,
       20.0
      ],
@@ -142,9 +142,9 @@
      "numoutlets": 0,
      "patching_rect": [
       960,
-      630.0,
+      712.0,
       810,
-      644.0
+      740.0
      ],
      "name": "gen_feedback.maxpat",
      "offset": [
@@ -169,7 +169,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1504.0,
+      1586.0,
       300,
       20.0
      ],
@@ -185,7 +185,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1526.0,
+      1608.0,
       955,
       441.0
      ],
@@ -212,7 +212,7 @@
      "numoutlets": 0,
      "patching_rect": [
       985,
-      1504.0,
+      1586.0,
       300,
       20.0
      ],
@@ -228,7 +228,7 @@
      "numoutlets": 0,
      "patching_rect": [
       985,
-      1526.0,
+      1608.0,
       860,
       388.0
      ],
@@ -255,7 +255,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1987.0,
+      2069.0,
       300,
       20.0
      ],
@@ -271,9 +271,9 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2009.0,
+      2091.0,
       1300,
-      527.0
+      573.0
      ],
      "name": "bassline.maxpat",
      "offset": [
@@ -298,7 +298,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2556.0,
+      2684.0,
       300,
       20.0
      ],
@@ -314,7 +314,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2578.0,
+      2706.0,
       1200,
       495
      ],

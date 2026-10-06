@@ -145,11 +145,12 @@ bassline, scales and root that the tampura used to have)
 **What it is:** a 16-step bassline locked to the chopper (or free-run at
 170 bpm). The voice is a saw through a resonant `lores~` lowpass whose cutoff
 snaps open on each note, plus a sine an octave below.
-- **Bass** row: slider 1 = root, 13 = an octave up, 0 = tie. Presets: dub, walk, pedal, octaves.
+- **Bass** row: slider 1 = root, 13 = an octave up, 0 = tie. Presets: dub, walk, pedal, octaves, acid, rolling, squelch.
 - **Scales:** click one to roll a random bassline in that scale. To add a scale, duplicate a message and edit the semitone numbers. Sends `av_scale`.
 - **Root:** the key as a MIDI note. Sends `av_root`, so the tampura and bells retune with it.
 - **Brightness:** how far the filter opens on each note (in Hz).
 - **Evolve** ("the bassline … isn't evolving enough"): every N loops (2 by default), `av_evolve_line.js` rewrites a few steps (3 by default) with notes from the current scale, leaving step 1 on the root. A quarter of the new steps are ties. About 1 in 5 times, two notes also jump up an octave; about 1 in 10 times, the groove shifts by two steps. Brightness drifts between 700 and 4000 Hz and resonance between 0.3 and 0.8, for acid squelch. It stays in key because the quantizer snaps every note. The conductor has a **bass evolve** toggle too (`av_bass_evolve`).
+- **Evolve presets** ("and add presets to it"), as *every N loops · changes*: steady `4 1`, drift `2 3`, restless `1 5`, wild `1 8`. They're also in the conductor (`av_bass_evolve_preset`).
 
 ### 2c. Jungle bass: `jungle_bass.maxpat`
 **Recipe:** `recipes/max/jungle_bass.py`

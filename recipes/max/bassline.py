@@ -24,7 +24,10 @@ p.wire(fe, 0, ms, 0)
 LINES = [("dub", "1 0 13 1 0 4 1 8 1 0 13 11 8 6 4 0"),
          ("walk", "1 4 6 8 11 8 6 4 1 4 6 8 13 11 8 6"),
          ("pedal", "1 0 0 0 1 0 0 0 1 0 0 0 8 0 6 0"),
-         ("octaves", "1 13 1 13 1 13 1 13 6 18 6 18 8 20 8 20")]
+         ("octaves", "1 13 1 13 1 13 1 13 6 18 6 18 8 20 8 20"),
+         ("acid", "1 1 13 1 0 4 1 13 8 0 1 13 6 0 4 1"),
+         ("rolling", "1 0 1 13 1 0 8 0 1 0 1 13 11 0 8 6"),
+         ("squelch", "1 13 0 13 1 13 0 6 1 13 0 13 4 6 8 11")]
 lb = p.obj("loadbang", 720, 52, 1, 1, ["bang"]); dl = p.obj("delay 200", 720, 76, 2, 1, ["bang"]); p.wire(lb, 0, dl, 0)
 for i, (name, seq) in enumerate(LINES):
     y = 104 + i*26
@@ -48,8 +51,8 @@ p.comment("root (MIDI)", 480, 222, 80)
 # the key is shared: editing it here (or in the conductor) broadcasts av_root; incoming av_root only updates the display
 lmr = p.obj("loadmess 33", 560, 196, 1, 1); rn = p.box("number", 560, 222, 50, 22, 1, 2, ["", "bang"], minimum=12, maximum=60)
 sroot = p.obj("s av_root", 620, 248, 1, 0); p.wire(lmr, 0, rn, 0); p.wire(rn, 0, sroot, 0)
-rroot = p.obj("r av_root", 680, 196, 0, 1); rset = p.obj("prepend set", 680, 222, 1, 1); p.wire(rroot, 0, rset, 0); p.wire(rset, 0, rn, 0)
-rm1 = p.obj("- 1", 680, 248, 2, 1, ["int"]); p.wire(rroot, 0, rm1, 0); p.wire(rm1, 0, nt, 1)
+rroot = p.obj("r av_root", 700, 290, 0, 1); rset = p.obj("prepend set", 700, 316, 1, 1); p.wire(rroot, 0, rset, 0); p.wire(rset, 0, rn, 0)
+rm1 = p.obj("- 1", 620, 316, 2, 1, ["int"]); p.wire(rroot, 0, rm1, 0); p.wire(rm1, 0, nt, 1)
 p.comment("33 = A1 · 36 = C2 · 28 = E1", 615, 223, 180)
 
 # --- random bassline in a scale ---
@@ -105,24 +108,29 @@ p.comment("every", xe + 30, ye + 46, 40)
 evn = p.box("number", xe + 72, ye + 44, 40, 22, 1, 2, ["", "bang"], minimum=1); p.comment("loops ·", xe + 116, ye + 46, 50)
 evc = p.box("number", xe + 170, ye + 44, 40, 22, 1, 2, ["", "bang"], minimum=1, maximum=16); p.comment("changes", xe + 214, ye + 46, 60)
 p.wire(p.obj("loadmess 2", xe + 300, ye + 70, 1, 1), 0, evn, 0); p.wire(p.obj("loadmess 3", xe + 380, ye + 70, 1, 1), 0, evc, 0)
-el = p.obj("sel 0", xe, ye + 96, 2, 2, ["bang", ""]); p.wire(rs, 0, el, 0); p.wire(cn, 0, el, 0)      # one bang per loop
-eg = p.obj("gate 1", xe, ye + 122, 2, 1); p.wire(ev, 0, eg, 0); p.wire(el, 0, eg, 1)
-ecn = p.obj("counter", xe + 60, ye + 122, 3, 4, ["int", "", "", "int"]); p.wire(eg, 0, ecn, 0)
-emd = p.obj("% 2", xe + 130, ye + 122, 2, 1, ["int"]); p.wire(ecn, 0, emd, 0); p.wire(evn, 0, emd, 1)
-e0 = p.obj("sel 0", xe + 180, ye + 122, 2, 2, ["bang", ""]); p.wire(emd, 0, e0, 0)
-et = p.obj("t b b b", xe + 180, ye + 148, 1, 3, ["bang"] * 3); p.wire(e0, 0, et, 0)
-ecf = p.obj("f 3", xe, ye + 174, 2, 1, ["float"]); p.wire(evc, 0, ecf, 1); p.wire(et, 2, ecf, 0)
-emsg = p.obj("prepend evolve", xe, ye + 200, 1, 1); p.wire(ecf, 0, emsg, 0)
-ejs = p.obj("js av_evolve_line.js", xe, ye + 226, 1, 1); p.wire(emsg, 0, ejs, 0)
+# evolve presets: "<every N loops> <changes>"
+eup = p.obj("unpack 0 0", xe, ye + 300, 2, 2, ["int", "int"]); p.wire(eup, 0, evn, 0); p.wire(eup, 1, evc, 0)
+p.wire(p.obj("r av_bass_evolve_preset", xe + 100, ye + 300, 0, 1), 0, eup, 0)
+for k, (name, v) in enumerate([("steady", "4 1"), ("drift", "2 3"), ("restless", "1 5"), ("wild", "1 8")]):
+    p.comment(name, xe + k*70, ye + 70, 66); m = p.msg(v, xe + k*70, ye + 90, 40); p.wire(m, 0, eup, 0)
+el = p.obj("sel 0", xe, ye + 120, 2, 2, ["bang", ""]); p.wire(rs, 0, el, 0); p.wire(cn, 0, el, 0)      # one bang per loop
+eg = p.obj("gate 1", xe, ye + 146, 2, 1); p.wire(ev, 0, eg, 0); p.wire(el, 0, eg, 1)
+ecn = p.obj("counter", xe + 60, ye + 146, 3, 4, ["int", "", "", "int"]); p.wire(eg, 0, ecn, 0)
+emd = p.obj("% 2", xe + 130, ye + 146, 2, 1, ["int"]); p.wire(ecn, 0, emd, 0); p.wire(evn, 0, emd, 1)
+e0 = p.obj("sel 0", xe + 180, ye + 146, 2, 2, ["bang", ""]); p.wire(emd, 0, e0, 0)
+et = p.obj("t b b b", xe + 180, ye + 172, 1, 3, ["bang"] * 3); p.wire(e0, 0, et, 0)
+ecf = p.obj("f 3", xe, ye + 198, 2, 1, ["float"]); p.wire(evc, 0, ecf, 1); p.wire(et, 2, ecf, 0)
+emsg = p.obj("prepend evolve", xe, ye + 224, 1, 1); p.wire(ecf, 0, emsg, 0)
+ejs = p.obj("js av_evolve_line.js", xe, ye + 250, 1, 1); p.wire(emsg, 0, ejs, 0)
 p.wire(ms, 0, ejs, 0); p.wire(ejs, 0, ms, 0)                                   # pattern in → evolved pattern out
-esc = p.obj("prepend scale", xe + 160, ye + 200, 1, 1); p.wire(tll, 0, esc, 0); p.wire(esc, 0, ejs, 0)
+esc = p.obj("prepend scale", xe + 160, ye + 224, 1, 1); p.wire(tll, 0, esc, 0); p.wire(esc, 0, ejs, 0)
 # filter drift: new brightness 700-4000 Hz and resonance 0.3-0.8 each evolve
-rb_ = p.obj("random 100", xe + 300, ye + 174, 2, 1, ["int"]); p.wire(et, 1, rb_, 0)
-sb = p.obj("scale 0 99 700 4000", xe + 300, ye + 200, 6, 1, ["float"]); p.wire(rb_, 0, sb, 0); p.wire(sb, 0, br, 0)
-rr2 = p.obj("random 100", xe + 300, ye + 226, 2, 1, ["int"]); p.wire(et, 0, rr2, 0)
-sr = p.obj("scale 0 99 0.3 0.8", xe + 300, ye + 252, 6, 1, ["float"]); p.wire(rr2, 0, sr, 0)
-rsn = p.box("flonum", xe + 420, ye + 252, 50, 22, 1, 2, ["", "bang"], format=6); p.comment("resonance", xe + 474, ye + 253, 70)
-p.wire(sr, 0, rsn, 0); p.wire(rsn, 0, lp, 2); p.wire(p.obj("loadmess 0.55", xe + 420, ye + 226, 1, 1), 0, rsn, 0)
+rb_ = p.obj("random 100", xe + 300, ye + 198, 2, 1, ["int"]); p.wire(et, 1, rb_, 0)
+sb = p.obj("scale 0 99 700 4000", xe + 300, ye + 224, 6, 1, ["float"]); p.wire(rb_, 0, sb, 0); p.wire(sb, 0, br, 0)
+rr2 = p.obj("random 100", xe + 300, ye + 250, 2, 1, ["int"]); p.wire(et, 0, rr2, 0)
+sr = p.obj("scale 0 99 0.3 0.8", xe + 300, ye + 276, 6, 1, ["float"]); p.wire(rr2, 0, sr, 0)
+rsn = p.box("flonum", xe + 420, ye + 276, 50, 22, 1, 2, ["", "bang"], format=6); p.comment("resonance", xe + 474, ye + 277, 70)
+p.wire(sr, 0, rsn, 0); p.wire(rsn, 0, lp, 2); p.wire(p.obj("loadmess 0.55", xe + 420, ye + 250, 1, 1), 0, rsn, 0)
 hp = p.obj("*~ 0.5", 140, yv, 2, 1, SIG); p.wire(pitch, 0, hp, 0)
 sub = p.obj("cycle~", 140, yv + 26, 2, 1, SIG); p.wire(hp, 0, sub, 0)
 sg = p.obj("*~ 0.6", 140, yv + 52, 2, 1, SIG); p.wire(sub, 0, sg, 0)

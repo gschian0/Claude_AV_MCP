@@ -12,14 +12,18 @@ Param twist(0.02);
 Param decay(0.985);
 Param drift(0.003);
 Param cubes(1);    // how much of the wireframe-cube layer (in2) feeds the loop
+Param amp(0);      // drum loudness 0-1 (from the patch's envelope follower)
+Param react(0.15); // how much amp moves zoom / twist / ring size (keep it small)
+Param splash(0);   // 1 on a drum transient, decaying to 0: flashes the cube texture + a burst ring
 
 asp = dim.x/dim.y;
 cx = (norm.x - 0.5)*asp;
 cy = norm.y - 0.5;
 
 // sample the previous frame through a slowly wobbling zoom + rotation
-a = twist*sin(tick*0.11);
-z = zoom + 0.01*sin(tick*0.07);
+mv = amp*react;
+a = twist*sin(tick*0.11) + mv*0.15;
+z = zoom + 0.01*sin(tick*0.07) - mv*0.03;
 rx = (cx*cos(a) - cy*sin(a))*z;
 ry = (cx*sin(a) + cy*cos(a))*z;
 u = rx/asp + 0.5 + drift*sin(tick*0.7);
@@ -35,20 +39,25 @@ hb = mix(p.b, p.r, 0.03);
 sx = cx - 0.45*sin(tick*0.37);
 sy = cy - 0.3*cos(tick*0.29);
 d = sqrt(sx*sx + sy*sy);
-rad = 0.07 + 0.03*sin(tick*1.7);
+rad = 0.07 + 0.03*sin(tick*1.7) + mv*0.06;
 ring = 1 - smoothstep(0, 0.008, abs(d - rad));
 cr = 0.5 + 0.5*sin(tick*0.5);
 cg = 0.5 + 0.5*sin(tick*0.5 + 2.094);
 cb = 0.5 + 0.5*sin(tick*0.5 + 4.188);
 
 // second seed: the wireframe cubes rendered by jit.gl.node 'cubes'
-cu = sample(in2, norm)*cubes;
+cu = sample(in2, norm)*cubes*(0.35 + 1.65*splash);   // cubes glow faintly, flare on each hit
 
-out1 = vec(clamp(hr*decay + cr*ring + cu.r, 0, 1),
-           clamp(hg*decay + cg*ring + cu.g, 0, 1),
-           clamp(hb*decay + cb*ring + cu.b, 0, 1), 1);
+// splash: a ring bursting out from the centre as the hit decays, in the ring's complementary colours
+sd = sqrt(cx*cx + cy*cy);
+br_ = 0.6*(1 - splash);
+burst = splash*(1 - smoothstep(0, 0.015 + 0.03*splash, abs(sd - br_)));
+
+out1 = vec(clamp(hr*decay + cr*ring + cu.r + cg*burst, 0, 1),
+           clamp(hg*decay + cg*ring + cu.g + cb*burst, 0, 1),
+           clamp(hb*decay + cb*ring + cu.b + cr*burst, 0, 1), 1);
 """
-p = Patch([60.0, 60.0, 900.0, 960.0])
+p = Patch([60.0, 60.0, 900.0, 1180.0])
 p.present = True
 p.comment("gen feedback — jit.gl.pix reads its own last frame (copied by jit.gl.slab, held in zl reg) and draws it back zoomed + twisted. Render toggle seeds the loop and enables window 'fbw'.", 20, 8, 660)
 fs = p.box("toggle", 20, 60, 24, 24, 1, 1, ["int"]); p.comment("fullscreen", 48, 62, 80)
@@ -97,13 +106,13 @@ for m in ["decay 1.", "decay 0.985", "decay 0.9", "zoom 0.97", "zoom 1.02", "twi
 p.comment("decay 1. = infinite (never fades) · zoom > 1 pulls inward · 'decay 0.' a moment to clear", 520, 90, 180)
 # --- KEYS: play the feedback from the keyboard (works in fullscreen; [key] hears every Max window) ---
 yk = 540
-p.comment("KEYS (when 'keys on'): f fullscreen · 1-5 decay (0.9 → ∞) · ↑↓ zoom in/out · ←→ twist · w/s drift more/less · c clear · r reset · x cubes on/off", 20, yk, 660)
+p.comment("KEYS (when 'keys on'): f fullscreen · 1-5 decay (0.9 → ∞) · ↑↓ zoom in/out · ←→ twist · w/s drift more/less · c clear · r reset · x cubes on/off · a react on/off", 20, yk, 660)
 kon = p.box("toggle", 20, yk + 44, 22, 22, 1, 1, ["int"]); p.comment("keys on", 46, yk + 46, 60)
 p.wire(p.obj("loadmess 1", 110, yk + 44, 1, 1), 0, kon, 0)
 key = p.obj("key", 20, yk + 76, 0, 4, ["int", "int", "int", "int"])
 kg = p.obj("gate 1", 20, yk + 102, 2, 1); p.wire(kon, 0, kg, 0); p.wire(key, 0, kg, 1)
 # ascii: f=102 1-5=49-53 up=30 down=31 left=28 right=29 w=119 s=115 c=99 r=114
-codes = [102, 49, 50, 51, 52, 53, 30, 31, 28, 29, 119, 115, 99, 114, 120]
+codes = [102, 49, 50, 51, 52, 53, 30, 31, 28, 29, 119, 115, 99, 114, 120, 97]
 ks = p.obj("sel " + " ".join(map(str, codes)), 20, yk + 128, 2, len(codes) + 1)
 p.wire(kg, 0, ks, 0)
 p.wire(ks, 0, fs, 0)                                     # f → flip the fullscreen toggle
@@ -145,6 +154,47 @@ rt = p.obj("t b b b b", 760, yd + 90, 1, 4, ["bang"] * 4); p.wire(ks, 13, rt, 0)
 for k, (dst, v) in enumerate([(dt, 0.985), (zout, 0.99), (tout_, 0.02), (wout, 0.003)]):
     m = p.msg(str(v), 760 + k*50, yd + 116); p.wire(rt, k, m, 0); p.wire(m, 0, dst, 0)
 p.comment("c / r", 760, yd - 22, 50)
+# --- REACT: a little movement from the drums, and a splash on each transient ---
+yr = 960
+p.comment("REACT — listens to the drums (send~ av_drums): loudness gently moves zoom / twist / ring; each hit flares the cubes + bursts a ring. 'a' key toggles.", 20, yr, 660)
+p.comment("react on", 20, yr + 44, 60); ron = p.box("toggle", 80, yr + 42, 22, 22, 1, 1, ["int"])
+p.wire(p.obj("loadmess 1", 520, yr + 150, 1, 1), 0, ron, 0); p.wire(ks, 15, ron, 0)
+p.comment("amount", 120, yr + 44, 50)
+ram = p.box("flonum", 170, yr + 42, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0, maximum=1.0)
+p.wire(p.obj("loadmess 0.15", 600, yr + 150, 1, 1), 0, ram, 0)
+p.comment("splash on", 240, yr + 44, 65); son = p.box("toggle", 305, yr + 42, 22, 22, 1, 1, ["int"])
+p.wire(p.obj("loadmess 1", 680, yr + 150, 1, 1), 0, son, 0)
+p.comment("hit threshold", 345, yr + 44, 90)
+thr = p.box("flonum", 435, yr + 42, 50, 22, 1, 2, ["", "bang"], format=6, minimum=1.0)
+p.wire(p.obj("loadmess 1.6", 760, yr + 150, 1, 1), 0, thr, 0)
+# react amount: off → 0, on → the amount box
+rsel = p.obj("sel 0 1", 20, yr + 76, 2, 3, ["bang", "bang", ""]); p.wire(ron, 0, rsel, 0)
+r0 = p.msg("0", 20, yr + 102); p.wire(rsel, 0, r0, 0); p.wire(rsel, 1, ram, 0)
+rpre = p.obj("prepend react", 170, yr + 102, 1, 1); p.wire(r0, 0, rpre, 0); p.wire(ram, 0, rpre, 0); p.wire(rpre, 0, pix, 0)
+# envelopes: fast follows the hits, slow is the running average
+rcv = p.obj("receive~ av_drums", 20, yr + 140, 1, 1, ["signal"])
+ab = p.obj("abs~", 20, yr + 166, 1, 1, ["signal"]); p.wire(rcv, 0, ab, 0)
+fast = p.obj("slide~ 10 2000", 20, yr + 192, 3, 1, ["signal"]); p.wire(ab, 0, fast, 0)
+slow = p.obj("slide~ 4000 8000", 160, yr + 192, 3, 1, ["signal"]); p.wire(ab, 0, slow, 0)
+# loudness → amp (about 30 updates a second)
+snp = p.obj("snapshot~ 33", 300, yr + 192, 2, 1, ["float"]); p.wire(fast, 0, snp, 0)
+asc = p.obj("* 3.", 300, yr + 218, 2, 1, ["float"]); p.wire(snp, 0, asc, 0)
+acl = p.obj("clip 0. 1.", 300, yr + 244, 3, 1, ["float"]); p.wire(asc, 0, acl, 0)
+apre = p.obj("prepend amp", 300, yr + 270, 1, 1); p.wire(acl, 0, apre, 0); p.wire(apre, 0, pix, 0)
+p.wire(acl, 0, p.obj("s av_amp", 400, yr + 270, 1, 0), 0)
+# transient: fast > slow × threshold, and above a noise floor
+sth = p.obj("*~ 1.6", 160, yr + 218, 2, 1, ["signal"]); p.wire(slow, 0, sth, 0); p.wire(thr, 0, sth, 1)
+gt1 = p.obj(">~", 20, yr + 244, 2, 1, ["signal"]); p.wire(fast, 0, gt1, 0); p.wire(sth, 0, gt1, 1)
+gt2 = p.obj(">~ 0.02", 90, yr + 244, 2, 1, ["signal"]); p.wire(fast, 0, gt2, 0)
+both = p.obj("*~", 20, yr + 270, 2, 1, ["signal"]); p.wire(gt1, 0, both, 0); p.wire(gt2, 0, both, 1)
+edg = p.obj("edge~", 20, yr + 296, 1, 2, ["bang", "bang"]); p.wire(both, 0, edg, 0)
+lim = p.obj("speedlim 90", 20, yr + 322, 2, 1, ["bang"]); p.wire(edg, 0, lim, 0)      # one splash per hit
+sg = p.obj("gate 1", 20, yr + 348, 2, 1); p.wire(son, 0, sg, 0); p.wire(lim, 0, sg, 1)
+p.wire(lim, 0, p.obj("s av_hit", 120, yr + 348, 1, 0), 0)
+smsg = p.msg("1, 0 350", 20, yr + 374); p.wire(sg, 0, smsg, 0)
+sln = p.obj("line 0. 20", 20, yr + 400, 3, 2, ["float", "bang"]); p.wire(smsg, 0, sln, 0)
+spre = p.obj("prepend splash", 20, yr + 426, 1, 1); p.wire(sln, 0, spre, 0); p.wire(spre, 0, pix, 0)
+
 # the conductor drives these
 for k, (name, dst) in enumerate([("av_render", on), ("av_fullscreen", fs), ("av_cubes", cton), ("av_fb", pix)]):
     p.wire(p.obj(f"r {name}", 800, 300 + 26*k, 0, 1), 0, dst, 0)
@@ -271,6 +321,7 @@ for k in range(3): c.wire(svf, k, sel3, k + 1)
 lvr = c.obj("r av_level_chopper", 140, yf + 200, 0, 1); lvk = c.obj("pack 0. 40", 140, yf + 226, 2, 1)
 lvs = c.obj("line~ 0.5", 140, yf + 252, 2, 2, ["signal", "bang"]); c.wire(lvr, 0, lvk, 0); c.wire(lvk, 0, lvs, 0)
 g = c.obj("*~ 0.5", 20, yf + 200, 2, 1, ["signal"]); c.wire(sel3, 0, g, 0); c.wire(lvs, 0, g, 1)
+c.wire(g, 0, c.obj("send~ av_drums", 260, yf + 200, 1, 0), 0)           # the visuals listen to the drums
 dac = c.box("ezdac~", 20, yf + 228, 45, 45, 2, 0); c.wire(g, 0, dac, 0); c.wire(g, 0, dac, 1)
 c.comment("click to start audio", 70, yf + 240, 140)
 
