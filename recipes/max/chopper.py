@@ -21,12 +21,14 @@ def granularize(code):
       "Param jitter(0.15); // random grain start spread (0-1 of a grain)\n"
       "Param scan(1);      // TIME speed through each slice, independent of pitch (0.5 = half speed, 0 = still)\n"
       "Param freeze(0);    // 1 = time stops: the grains hold the current spot (pitch still moves)\n"
-      "Param sync(1);      // 1 = follow the speed chopper's clock (in1 = its loop phase) whenever it is running\n"),
+      "Param sync(1);      // 1 = follow the speed chopper's clock (in1 = its loop phase) whenever it is running\n"
+      "Param fit(1);       // 1 = stretch this loop's slices to jongly's step length (time only), so a different loop stays in sync\n"
+      "Buffer ref(\"jongly\");  // the speed chopper's loop: only its length is read, to fit this loop to it\n"),
      ("History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1), sv(1), spt(0);",
       "History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1), sv(1), spt(0);\n"
       "History lastIn(-1), gp(0), gst0(0), gst1(0), gst2(0), gst3(0), gl0(1), gl1(1), gl2(1), gl3(1);"),
      ("ph = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/len), 0, 1);",
-      "own = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/len), 0, 1);\n"
+      "own = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/((fit > 0.5 && dim(ref) > 64) ? dim(ref) : len)), 0, 1);\n"
       "ext = clamp(fixnan(in1), 0, 0.999999);\n"
       "ph = (sync > 0.5 && ext != lastIn) ? ext : own;   // the speed chopper's phase moves -> follow it; else free-run\n"
       "lastIn = ext;"),
@@ -35,7 +37,8 @@ def granularize(code):
       "dry = ok*sample(loop, idx)*env*(1 - mute)*(1 - clamp(dyn, 0, 1)*(1 - sv));",
       "// GRANULAR: rd moves through the slice at 'scan' (time), each grain reads at 'ratio' (pitch) — independent\n"
       "ratio = exp(semi*0.05776226505);\n"
-      "rd = clamp(rd + ((freeze > 0.5) ? 0 : clamp(fixnan(rate), -4, 4)*clamp(fixnan(scan), 0, 4)), -len, len);\n"
+      "fitk = (fit > 0.5 && dim(ref) > 64) ? clamp(len/dim(ref), 0.125, 8) : 1;   // this loop's length / jongly's length\n"
+      "rd = clamp(rd + ((freeze > 0.5) ? 0 : clamp(fixnan(rate), -4, 4)*clamp(fixnan(scan), 0, 4)*fitk), -len, len);\n"
       "base = slice*len/16 + rd;\n"
       "gsz = clamp(fixnan(gsize), 10, 500)*samplerate*0.001;\n"
       "jit = clamp(fixnan(jitter), 0, 1)*gsz;\n"
@@ -142,7 +145,7 @@ else:
 c = Patch([40.0, 40.0, 1420.0, 1000.0])
 c.present = True
 c.comment(("JONGLY GRANULAR — the chopper as a grain cloud: same rows and presets, but pitch and time are independent (drop the break an octave without slowing it; slow or freeze time without changing pitch). Follows the speed chopper's clock when it is playing." if G else "JONGLY CHOPPER — after ModSquad. The jongly loop is cut into 16 slices. The green row says which slice each step plays; the orange row says how many times that step re-fires (rolls). Pick a pattern, or let AUTO move through them."), 20, 8, 900)
-c.obj(f"buffer~ {P}jongly jongly.aif", 20, 70, 1, 2, ["float", "bang"])
+gbuf = c.obj(f"buffer~ {P}jongly" if G else "buffer~ jongly jongly.aif", 20, 70, 1, 2, ["float", "bang"])
 c.obj(f"buffer~ {P}chopsteps 2", 200, 70, 1, 2, ["float", "bang"])
 c.obj(f"buffer~ {P}choprolls 2", 350, 70, 1, 2, ["float", "bang"])
 
@@ -295,6 +298,22 @@ if G:
     c.comment("time:", xv, 752, 40)
     for k, v in enumerate([0, 0.25, 0.5, 1, 2]):
         c.wire(c.msg(f"{v}", xv + 40 + k * 40, 752, 36), 0, gsc, 0)
+
+    # LOOP: the granular chopper plays a different break, fitted to jongly's bar (fit) so the two stay in sync
+    LIB = "/Applications/Ableton Live 12 Suite.app/Contents/App-Resources/Core Library/Samples/Loops/Drums/Full/"
+    LOOPS = [("dnblive", "Drum and Bass Live 170 bpm.aif"), ("rolling", "Drum and Bass Rolling 170 bpm.wav"),
+             ("scatty", "Break Scatty 174 bpm.wav"), ("funkchop", "Break Funk Chop 115 bpm.wav"), ("jongly", None)]
+    c.comment("LOOP (fitted to jongly's bar) · fit", xv, 784, 300)
+    lrt = c.obj("route " + " ".join(n for n, _ in LOOPS), 1620, 784, len(LOOPS) + 1, len(LOOPS) + 1)
+    lmsgs = []
+    for k, (name, f) in enumerate(LOOPS):
+        m = c.msg(name, xv + k * 70, 806, 66); c.wire(m, 0, lrt, 0); lmsgs.append(m)
+        rd_ = c.msg(f'read "{LIB}{f}"' if f else "read jongly.aif", 1620 + k * 10, 840 + k * 22, 300)
+        c.wire(lrt, k, rd_, 0); c.wire(rd_, 0, gbuf, 0)
+    fitt = c.box("toggle", xv + 360, 806, 22, 22, 1, 1, ["int"])
+    c.wire(c.obj("loadmess 1", 1420, 840, 1, 1), 0, fitt, 0)
+    pf = c.obj("prepend fit", 1520, 840, 1, 1); c.wire(fitt, 0, pf, 0); c.wire(pf, 0, gen, 0)
+    lbl = c.obj("loadbang", 1420, 870, 1, 1, ["bang"]); c.wire(lbl, 0, lmsgs[0], 0)   # default: D&B Live 170 (same length as jongly)
 
 # --- FILTER SWEEPS on the drums: click a sweep, it fires on the next beat (every 4 steps) ---
 yf = 740

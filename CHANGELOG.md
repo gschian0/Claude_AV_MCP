@@ -6,6 +6,12 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Granular chopper plays its own break, fitted to jongly
+> "i just can't hear the granular chopper can you have it play a different loop synced up to jongly ?"
+- Likely reason it was inaudible: it played the same jongly loop, slices and steps as the speed chopper, so it only doubled it.
+- `buffer~ gjongly` now loads its own break from Live's Core Library. **LOOP** buttons: dnblive (D&B Live 170, the default, same 2.82 s length as jongly), rolling (D&B Rolling 170), scatty (Break Scatty 174), funkchop (Break Funk Chop 115), or jongly.
+- **fit** (on by default): the granular `gen~` reads jongly's length (`Buffer ref("jongly")`) and scales grain time speed by loop length ÷ jongly length, so any loop's 16 slices land on jongly's 16 steps without changing pitch. The free-running clock also uses jongly's length.
+
 ### `6fedae1` `granular_side.maxpat`: the granular chopper in its own window
 > "just make a new patch with the granular to open side by side"
 - New `granular_side.maxpat` (built by `symphony.py`) with the granular chopper embedded, to open next to `digital_symphony.maxpat`. It syncs to the speed chopper there through `jongly_phase`, and the conductor's **gran** fader still works.
