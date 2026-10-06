@@ -7,8 +7,6 @@ __pycache__/
 dist/
 build/
 
-# Upstream MCP servers are cloned here by scripts/fetch_upstream.sh, not committed
-vendor/
 
 # Local config (copy from config/*.example.*)
 config/av.toml

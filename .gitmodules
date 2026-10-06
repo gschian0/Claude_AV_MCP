@@ -1,0 +1,8 @@
+[submodule "vendor/ableton-mcp"]
+	path = vendor/ableton-mcp
+	url = https://github.com/ahujasid/ableton-mcp
+	ignore = untracked
+[submodule "vendor/MaxMSP-MCP-Server"]
+	path = vendor/MaxMSP-MCP-Server
+	url = https://github.com/tiianhk/MaxMSP-MCP-Server
+	ignore = untracked

@@ -25,7 +25,7 @@ programs) where Claude never blocks them. Details:
 uv sync --extra dev
 uv run pytest
 
-# 2. Upstream servers → vendor/ (or symlink your existing clones there)
+# 2. Upstream servers → vendor/ (git submodules; or clone with --recurse-submodules)
 scripts/fetch_upstream.sh
 
 # 3. Watch the conductor's output with no apps running
@@ -52,7 +52,7 @@ visuals/             visual engine candidates + receiver sketches (TBD)
 prompts/             prompt library
 docs/                PLAN.md · ARCHITECTURE.md · LINUX_PORT.md
 scripts/             fetch_upstream.sh
-vendor/              upstream MCP servers (gitignored)
+vendor/              upstream MCP servers (git submodules, pinned)
 ```
 
 ## Roadmap

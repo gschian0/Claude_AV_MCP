@@ -14,8 +14,8 @@ previous demo works end-to-end.
 - [x] Repo layout, `av-conductor` MCP server, OSC scene model, tests
 - [x] Receiver patches for Max and Pd
 - [x] `.mcp.json` wiring all three servers for Claude Code
-- [ ] **On the Mac:** run `scripts/fetch_upstream.sh` (or symlink your
-      existing clones into `vendor/`), install the Ableton Remote Script,
+- [ ] **On the Mac:** run `scripts/fetch_upstream.sh` (inits the `vendor/`
+      submodules), install the Ableton Remote Script,
       `npm install` in the Max agent patch
 - [ ] Verify each server alone: ask Claude "what tracks are in my set?"
       (Ableton) and "explain the selected objects" (Max)
@@ -96,5 +96,5 @@ conductor and the receivers.
 |---|---|---|
 | Visual engine | Phase 2 | Something that runs on both macOS and Linux |
 | Linux DAW vs DAW-less | Phase 4 | Depends on how much Live's session view matters to the shows |
-| Vendor upstream as submodules vs script | Now | Script (`vendor/` gitignored) — keeps upstream changes yours to pull |
+| Vendor upstream as submodules vs script | Decided | Submodules — pinned commits are backed up with the repo; bump with `git submodule update --remote` |
 | Conductor state persistence | Phase 3 | TOML files in repo |
