@@ -13,8 +13,8 @@
       }
     },
     "maxmsp": {
-      "command": "uv",
-      "args": ["run", "--directory", "vendor/MaxMSP-MCP-Server", "--with-requirements", "requirements.txt", "python", "server.py"]
+      "command": "vendor/MaxMSP-MCP-Server/.venv/bin/python",
+      "args": ["vendor/MaxMSP-MCP-Server/server.py"]
     }
   }
 }

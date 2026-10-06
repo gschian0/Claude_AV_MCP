@@ -14,8 +14,8 @@
       }
     },
     "maxmsp": {
-      "command": "uv",
-      "args": ["run", "--directory", "/ABS/PATH/Claude_AV_MCP/vendor/MaxMSP-MCP-Server", "--with-requirements", "requirements.txt", "python", "server.py"]
+      "command": "/ABS/PATH/Claude_AV_MCP/vendor/MaxMSP-MCP-Server/.venv/bin/python",
+      "args": ["/ABS/PATH/Claude_AV_MCP/vendor/MaxMSP-MCP-Server/server.py"]
     }
   }
 }
