@@ -54,6 +54,12 @@ With **keys on** (the toggle in the feedback panel, on by default), `[key]` hear
 | `c` | clear the screen, then restore the decay |
 | `r` | reset decay, zoom, twist and drift to the defaults |
 | `x` | wireframe cubes on/off |
+| `a` | audio reactivity on/off |
+
+**Audio reactivity** ("a little movement based on the music … use some transients to turn on the texture splash"): the chopper sends its output as `send~ av_drums`. The feedback patch follows it with two envelopes (`abs~` → `slide~ 10 2000` for fast and `slide~ 4000 8000` for slow):
+- **Movement:** the fast envelope (about 30 updates a second, ×3, clipped to 0–1) becomes `amp`. The shader multiplies it by **amount** (0.15 by default) and uses it to nudge the zoom inward, add twist and swell the ring. It's deliberately subtle.
+- **Splash:** a hit is when the fast envelope goes above the slow one × **hit threshold** (1.6 by default) and is above a small noise floor. Each hit (limited by `speedlim 90`) ramps `splash` from 1 to 0 over 350 ms. That makes the cube texture flare from 35% to full brightness and fires a ring bursting out from the center in the complementary colors.
+- `av_amp` and `av_hit` are also broadcast for other patches to use. Controls: **react on** (or the `a` key), amount, **splash on**, hit threshold.
 
 **Wireframe cubes** ("move 3D cubes in wireframe with multi colors like the circle around in the feedback loop"): `av_cubes.js` creates N `jit.gl.gridshape` cubes (5 by default, up to 24) drawing into `jit.gl.node cubes`. That node's captured texture is the pix's second input, so the cubes feed the loop like the ring does. Each cube orbits on its own path, tumbles and cycles through the rainbow.
 
