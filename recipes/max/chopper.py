@@ -54,6 +54,7 @@ def granularize(code):
       "r2 = sample(loop, clamp(fixnan(wrap((gst2 + q2*gsz*ratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q2));\n"
       "r3 = sample(loop, clamp(fixnan(wrap((gst3 + q3*gsz*ratio)/len, 0, 1)), 0, 0.999999))*(0.5 - 0.5*cos(6.283185307*q3));\n"
       "dry = ok*fixnan((r0 + r1 + r2 + r3)*0.5)*env*(1 - mute)*(1 - clamp(dyn, 0, 1)*(1 - sv));"),
+     ("out3 = (comp > 0) ? gr : 0;", "out3 = (comp > 0) ? gr : 0;\nout4 = dim(loop)*1000/samplerate;   // CHECK: loaded loop length in ms (0 = not loaded)"),
     ]
     for a, b in reps:
         assert code.count(a) == 1, a
@@ -194,7 +195,7 @@ c.comment("RATE (tape speed)", xr, ya + 96, 130)
 lm = c.obj("loadmess set 1.", xr, ya + 118, 1, 1); fl = c.box("flonum", xr + 110, ya + 118, 60, 22, 1, 2, ["", "bang"], format=6)
 pr = c.obj("prepend rate", xr + 180, ya + 118, 1, 1); c.wire(lm, 0, fl, 0); c.wire(fl, 0, pr, 0)
 
-NOUT = 3 if G else 4
+NOUT = 4
 gen = c.obj("gen~", 20, 534, 1, NOUT, ["signal"] * NOUT, w=200.0, patcher=gen_sub("dsp.gen", CHOP_CODE, 1 if G else 0, NOUT))
 if G:
     c.wire(c.obj("receive~ jongly_phase", 20, 508, 0, 1, ["signal"]), 0, gen, 0)   # clock from the speed version
@@ -314,6 +315,12 @@ if G:
     c.wire(c.obj("loadmess 1", 1420, 840, 1, 1), 0, fitt, 0)
     pf = c.obj("prepend fit", 1520, 840, 1, 1); c.wire(fitt, 0, pf, 0); c.wire(pf, 0, gen, 0)
     lbl = c.obj("loadbang", 1420, 870, 1, 1, ["bang"]); c.wire(lbl, 0, lmsgs[0], 0)   # default: D&B Live 170 (same length as jongly)
+    # DIAGNOSTICS: loop ms (0 = loop not loaded) · out level (0 = silent) — the panel's "step" number shows gen~ is running
+    c.comment("CHECK: loop ms (0 = not loaded) · out level", xv, 838, 300)
+    lms = c.box("flonum", xv, 860, 70, 22, 1, 2, ["", "bang"], format=6)
+    lsn = c.obj("snapshot~ 500", 1620, 960, 2, 1, ["float"]); c.wire(gen, 3, lsn, 0); c.wire(lsn, 0, lms, 0)
+    olv = c.box("flonum", xv + 80, 860, 70, 22, 1, 2, ["", "bang"], format=6)
+    pka = c.obj("peakamp~ 200", 1620, 1000, 2, 1, ["float"]); c.wire(gen, 0, pka, 0); c.wire(pka, 0, olv, 0)
 
 # --- FILTER SWEEPS on the drums: click a sweep, it fires on the next beat (every 4 steps) ---
 yf = 740
