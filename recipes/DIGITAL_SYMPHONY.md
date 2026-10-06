@@ -48,7 +48,8 @@ originally"
 **Asked for:** "build a new max patch just playing a cycle~ at .5 volume" →
 "make a shifting fm drone out of this patch … for a fft buddhabox" → "adjust the
 pitches … so they generate a bassline kinda thing" → "add a random pattern with
-scales" → "we need the timings to change up on the bass"
+scales" (a rhythm row with swing was tried, then rolled back: "go back to the
+previous bass")
 
 **What it is:** two 2-operator FM voices (root on the left, a fifth up on the
 right). Their FM ratio and brightness drift slowly, so the tone never settles.
@@ -57,7 +58,7 @@ They play a 16-step bassline, go through a `pfft~` spectral smear
 - **Bass** row: slider 1 = root, 13 = an octave up, 0 = tie. Presets: dub, walk, pedal, octaves.
 - **Scales:** click one to roll a random bassline in that scale. To add a scale, duplicate a message and edit the semitone numbers.
 - **Root:** the key as a MIDI note.
-- **Rhythm** row: 0 = rest, 1 = short, 2 = normal, 3 = long. Presets: dub, drive, offbeat, gallop, sparse, stabs, plus random. **Auto rhythm** changes the rhythm every N loops, and **swing** delays the odd-numbered steps.
+- **Envelope:** every new note plucks, then settles to 30% so the drone continues under the line.
 
 ### 3. Glass bells: `glass_bells.maxpat`
 **Recipe:** `recipes/max/glass_bells.py`
