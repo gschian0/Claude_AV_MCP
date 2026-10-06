@@ -20,7 +20,7 @@ It sits at the top of the symphony window and runs everything through sends:
 - **SCALE** → `av_scale`. Both basslines pass every note through `av_quantize.js`, which snaps it to the nearest note in the scale. So presets, hand-drawn sliders and old patterns all stay in key without re-rolling.
 - **NEW LINES:** re-roll the acid or jungle line in the current scale (`av_reroll_bass` / `av_reroll_jungle`).
 - **MIX:** a fader each for drums, tampura, acid, jungle and bells (`av_level_*`). A fader takes over that instrument's level once you move it.
-- **Drone evolve** (`av_evolve`) and **audio on/off**.
+- **Drone evolve** (`av_evolve`) and **audio on/off**. Audio switches on by itself 1.5 s after the conductor loads ("this should just play").
 - **DRUMS** ("there should be a patch that controls everything"): every pattern by name (`av_drum_pattern`), auto patterns, auto sweeps, sweep now, and chaos.
 - **VISUALS:** render, fullscreen, cubes, and trail length (`decay 0.9 / 0.985 / 1.`, sent to the feedback through `av_fb`).
 
@@ -171,6 +171,7 @@ settles. An optional wobble LFO on the index is synced to 170 bpm (1/2, 1/4,
 1/8, 1/16). It's mixed with a pure sine sub, then goes through `tanh~` drive and
 a gentle `lores~`. Key and scale follow the bassline patch.
 - **Pattern** row: 1 = root, 13 = an octave up, 0 = tie (most steps are ties, so notes are long). Presets: roller, drop, steppy, dread, walk-down. **Random** stays in the shared scale, with 2 in 3 steps tied.
+- **Evolve** ("jungle bass ins't evolving enouth"): every N loops (2 by default) it rewrites some steps (3 by default) with `av_evolve_line.js`, where 60% of the new steps are ties so notes stay long. It also re-rolls the sound: growl 1–6, ratio 0.5/1/1/2, wobble rate 1/2 · 1/4 · 1/8, and wobble depth 0–1. Presets: steady, drift, restless, wild. The conductor has **jungle evolve**, and its evolve presets drive both basses (`av_jungle_evolve`, `av_jungle_evolve_preset`).
 - **Octave** shifts it against the key. **Glide** in ms (90). **Growl**, **ratio** (1 = warm, 0.5 = growly, 2 = hollow), **wobble** rate and depth, **drive**.
 
 ### 3. Glass bells: `glass_bells.maxpat`
@@ -196,7 +197,7 @@ window" … "make it so the texture gets sent right when the jit world is enable
 `jit.gl.pix` codebox draws the previous frame back slightly zoomed and twisted,
 with the color channels bleeding into each other, plus a wandering ring that
 feeds new image into the loop. The **render** toggle sends a black seed texture
-*and then* enables the world. Messages: `decay 1.` (infinite), `zoom`,
+*and then* enables the world. When render turns on (including at load), the window is shown and brought to the front ("make the jit window load on load"). Messages: `decay 1.` (infinite), `zoom`,
 `twist`, `drift`.
 
 ## Lessons learned (Max 9)

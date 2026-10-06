@@ -53,12 +53,18 @@ p.wire(ev, 0, p.obj("s av_evolve", 420, 360, 1, 0), 0)
 p.comment("bass evolve", 520, 150, 100)
 bev = p.box("toggle", 520, 172, 24, 24, 1, 1, ["int"]); p.wire(p.obj("loadmess set 1", 560, 172, 1, 1), 0, bev, 0)
 p.wire(bev, 0, p.obj("s av_bass_evolve", 520, 360, 1, 0), 0)
-p.comment("bass evolve presets", 420, 290, 140)
-sep = p.obj("s av_bass_evolve_preset", 420, 380, 1, 0)
+p.comment("evolve presets (acid + jungle)", 420, 290, 170)
+sep = p.obj("s av_bass_evolve_preset", 420, 380, 1, 0); sej = p.obj("s av_jungle_evolve_preset", 560, 380, 1, 0)
 for k, (name, v) in enumerate([("steady", "4 1"), ("drift", "2 3"), ("restless", "1 5"), ("wild", "1 8")]):
-    p.comment(name, 420 + (k % 2)*85, 312 + (k // 2)*44, 80); m = p.msg(v, 420 + (k % 2)*85, 332 + (k // 2)*44, 40); p.wire(m, 0, sep, 0)
+    p.comment(name, 420 + (k % 2)*85, 312 + (k // 2)*44, 80); m = p.msg(v, 420 + (k % 2)*85, 332 + (k // 2)*44, 40); p.wire(m, 0, sep, 0); p.wire(m, 0, sej, 0)
+p.comment("jungle evolve", 520, 214, 100)
+jev = p.box("toggle", 520, 236, 24, 24, 1, 1, ["int"]); p.wire(p.obj("loadmess set 1", 560, 236, 1, 1), 0, jev, 0)
+p.wire(jev, 0, p.obj("s av_jungle_evolve", 660, 360, 1, 0), 0)
 p.comment("audio on/off", 420, 214, 100)
-p.box("ezdac~", 420, 236, 45, 45, 2, 0)
+dac = p.box("ezdac~", 420, 236, 45, 45, 2, 0)
+# "this should just play": switch audio on shortly after the set loads
+p.wire(p.obj("loadbang", 760, 380, 1, 1, ["bang"]), 0, adl := p.obj("delay 1500", 840, 380, 2, 1, ["bang"]), 0)
+aon = p.msg("1", 920, 380); p.wire(adl, 0, aon, 0); p.wire(aon, 0, dac, 0)
 # DRUMS: pattern buttons (index → the chopper's pattern picker), auto switches, chaos, sweep now
 yd = 400
 p.comment("DRUMS — pattern", 20, yd, 140)

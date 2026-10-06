@@ -57,7 +57,7 @@
      "patching_rect": [
       10,
       62,
-      940,
+      945.0,
       608.0
      ],
      "name": "conductor.maxpat",
@@ -316,7 +316,7 @@
       10,
       2736.0,
       1200,
-      495
+      613.0
      ],
      "name": "jungle_bass.maxpat",
      "offset": [

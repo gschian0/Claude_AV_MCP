@@ -70,6 +70,9 @@ lm = p.obj("loadmess 1", 300, 60, 1, 1); p.wire(lm, 0, on, 0)
 tii = p.obj("t i i", 140, 92, 1, 2, ["int", "int"]); p.wire(on, 0, tii, 0)
 en = p.msg("enable $1", 200, 92); p.wire(tii, 0, en, 0); p.wire(en, 0, world, 0)
 sel = p.obj("sel 1", 290, 92, 2, 2, ["bang", ""]); p.wire(tii, 1, sel, 0)
+# when render turns on (at load too), show the window and bring it in front of the patchers
+wd_ = p.obj("delay 800", 360, 36, 2, 1, ["bang"]); p.wire(sel, 0, wd_, 0)
+wfront = p.msg("visible 1, sendwindow front", 440, 36); p.wire(wd_, 0, wfront, 0); p.wire(wfront, 0, world, 0)
 tbb = p.obj("t b b", 20, 170, 1, 2, ["bang", "bang"])
 p.wire(world, 1, tbb, 0)  # middle outlet = per-frame draw bang
 cnt = p.obj("counter", 170, 200, 3, 4, ["int", "", "", "int"])

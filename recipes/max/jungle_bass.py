@@ -3,7 +3,7 @@ from maxgen import Patch, check
 out = sys.argv[1]
 SIG = ["signal"]
 
-p = Patch([60.0, 60.0, 1240.0, 880.0])
+p = Patch([60.0, 60.0, 1240.0, 900.0])
 p.present = True
 p.comment("JUNGLE BASS — deep FM sub for the tampura: long gliding notes with an FM growl that blooms on each note, optional tempo-synced wobble, driven through tanh~. Clocked by the jongly chopper; key + scale follow the bassline patch (av_root / av_scale).", 20, 8, 1180)
 
@@ -116,4 +116,42 @@ lvs = p.obj("line~ 0.45", 140, 742 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 
 g = p.obj("*~ 0.45", 20, 768, 2, 1, SIG); p.wire(lp, 0, g, 0); p.wire(lvs, 0, g, 1)
 dac = p.box("ezdac~", 20, 798, 45, 45, 2, 0); p.wire(g, 0, dac, 0); p.wire(g, 0, dac, 1)
 p.comment("click to start audio", 70, 810, 160)
+# --- EVOLVE: every N loops rewrite some steps (mostly ties, so notes stay long) and re-roll the sound ---
+xe, ye = 560, 480
+p.comment("EVOLVE — every N loops: rewrite some steps from the scale (60% ties) and re-roll growl, ratio, wobble rate + depth", xe, ye, 420)
+ev = p.box("toggle", xe, ye + 44, 22, 22, 1, 1, ["int"]); p.wire(p.obj("loadmess 1", xe + 300, ye + 44, 1, 1), 0, ev, 0)
+p.wire(p.obj("r av_jungle_evolve", xe + 380, ye + 44, 0, 1), 0, ev, 0)
+p.comment("every", xe + 30, ye + 46, 40)
+evn = p.box("number", xe + 72, ye + 44, 40, 22, 1, 2, ["", "bang"], minimum=1); p.comment("loops ·", xe + 116, ye + 46, 50)
+evc = p.box("number", xe + 170, ye + 44, 40, 22, 1, 2, ["", "bang"], minimum=1, maximum=16); p.comment("changes", xe + 214, ye + 46, 60)
+p.wire(p.obj("loadmess 2", xe + 300, ye + 70, 1, 1), 0, evn, 0); p.wire(p.obj("loadmess 3", xe + 380, ye + 70, 1, 1), 0, evc, 0)
+eup = p.obj("unpack 0 0", xe, ye + 300, 2, 2, ["int", "int"]); p.wire(eup, 0, evn, 0); p.wire(eup, 1, evc, 0)
+p.wire(p.obj("r av_jungle_evolve_preset", xe + 100, ye + 300, 0, 1), 0, eup, 0)
+for k, (name, v) in enumerate([("steady", "4 1"), ("drift", "2 3"), ("restless", "1 5"), ("wild", "1 8")]):
+    p.comment(name, xe + k*70, ye + 70, 66); m = p.msg(v, xe + k*70, ye + 90, 40); p.wire(m, 0, eup, 0)
+el = p.obj("sel 0", xe, ye + 120, 2, 2, ["bang", ""]); p.wire(rs, 0, el, 0); p.wire(cn, 0, el, 0)       # one bang per loop
+eg = p.obj("gate 1", xe, ye + 146, 2, 1); p.wire(ev, 0, eg, 0); p.wire(el, 0, eg, 1)
+ecn = p.obj("counter", xe + 60, ye + 146, 3, 4, ["int", "", "", "int"]); p.wire(eg, 0, ecn, 0)
+emd = p.obj("% 2", xe + 130, ye + 146, 2, 1, ["int"]); p.wire(ecn, 0, emd, 0); p.wire(evn, 0, emd, 1)
+e0 = p.obj("sel 0", xe + 180, ye + 146, 2, 2, ["bang", ""]); p.wire(emd, 0, e0, 0)
+et = p.obj("t b b b b b", xe + 180, ye + 172, 1, 5, ["bang"] * 5); p.wire(e0, 0, et, 0)
+# notes: av_evolve_line.js with a high tie chance
+ecf = p.obj("f 3", xe, ye + 198, 2, 1, ["float"]); p.wire(evc, 0, ecf, 1); p.wire(et, 4, ecf, 0)
+emsg = p.obj("pack 0. 0.6", xe, ye + 224, 2, 1); p.wire(ecf, 0, emsg, 0)
+epre = p.obj("prepend evolve", xe, ye + 250, 1, 1); p.wire(emsg, 0, epre, 0)
+ejs = p.obj("js av_evolve_line.js", xe, ye + 276, 1, 1); p.wire(epre, 0, ejs, 0)
+p.wire(ms, 0, ejs, 0); p.wire(ejs, 0, ms, 0)
+esc = p.obj("prepend scale", xe + 160, ye + 250, 1, 1); p.wire(tll, 0, esc, 0); p.wire(esc, 0, ejs, 0)
+# sound: growl 1-6, ratio from 0.5 / 1 / 1 / 2, wobble rate 1/2 · 1/4 · 1/8, wobble depth 0-1
+r1 = p.obj("random 100", xe + 280, ye + 198, 2, 1, ["int"]); p.wire(et, 3, r1, 0)
+p.wire(r1, 0, s1 := p.obj("scale 0 99 1. 6.", xe + 280, ye + 224, 6, 1, ["float"]), 0); p.wire(s1, 0, gw, 0)
+r2 = p.obj("random 4", xe + 400, ye + 198, 2, 1, ["int"]); p.wire(et, 2, r2, 0)
+l2 = p.obj("zl lookup", xe + 400, ye + 224, 2, 2, ["", ""]); p.wire(r2, 0, l2, 0); p.wire(l2, 0, rt, 0)
+p.wire(p.obj("loadmess 0.5 1. 1. 2.", xe + 400, ye + 250, 1, 1), 0, l2, 1)
+r3 = p.obj("random 3", xe + 280, ye + 276, 2, 1, ["int"]); p.wire(et, 1, r3, 0)
+l3 = p.obj("zl lookup", xe + 280, ye + 302, 2, 2, ["", ""]); p.wire(r3, 0, l3, 0); p.wire(l3, 0, wl, 0)
+p.wire(p.obj("loadmess 1.42 2.83 5.67", xe + 280, ye + 328, 1, 1), 0, l3, 1)
+r4 = p.obj("random 100", xe + 400, ye + 276, 2, 1, ["int"]); p.wire(et, 0, r4, 0)
+p.wire(r4, 0, s4 := p.obj("scale 0 99 0. 1.", xe + 400, ye + 302, 6, 1, ["float"]), 0); p.wire(s4, 0, wd, 0)
+
 p.dump(f"{out}/jungle_bass.maxpat"); check(f"{out}/jungle_bass.maxpat")
