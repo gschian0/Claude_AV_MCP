@@ -1,0 +1,48 @@
+# Copy to config/av.toml and edit. config/av.toml is gitignored.
+# The conductor reads AV_MCP_CONFIG if set, else config/av.toml, else this file.
+
+[conductor]
+# Address prefix for every message the conductor sends.
+osc_prefix = "/av"
+# Updates per second while a ramp is running. 30 is plenty for visuals;
+# anything sample-accurate belongs in the audio engine, not here.
+ramp_rate_hz = 30
+
+# Every target receives the same scene messages over OSC/UDP.
+# Add, remove, or disable targets freely — the conductor never needs
+# to know which program is on the other end.
+
+[targets.max]
+host = "127.0.0.1"
+port = 7400
+enabled = true
+notes = "Max/MSP: patches/max/av_receiver.maxpat ([udpreceive 7400])"
+
+[targets.visuals]
+host = "127.0.0.1"
+port = 7401
+enabled = true
+notes = "Visual engine TBD (see visuals/README.md)"
+
+[targets.pd]
+host = "127.0.0.1"
+port = 7402
+enabled = false
+notes = "Pure Data: patches/pd/av_receiver.pd — the Linux replacement for Max"
+
+[targets.monitor]
+host = "127.0.0.1"
+port = 7499
+enabled = false
+notes = "`av-osc-monitor --port 7499` to watch traffic without any app open"
+
+# Cues are named snapshots of the scene. Recall them with the `recall_cue` tool.
+[cues.intro]
+energy = 0.15
+palette = ["#0b132b", "#1c2541", "#5bc0be"]
+section = "intro"
+
+[cues.drop]
+energy = 0.95
+palette = ["#ff006e", "#fb5607", "#ffbe0b"]
+section = "drop"
