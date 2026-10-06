@@ -6,6 +6,10 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Ableton: full-quality layers
+> "lets layer some full quality sounds for a fatter mix so it's really robust"
+- `build_layers.py`: six layer tracks (Grand Piano, Ensemble Pad, Analog Bass, Saturated Bass +1 octave, Sub Boom, 909 Core Kit). Each copies every clip of its source track and has a Utility trim, with Bass Mono on the low-end layers. The 909 notes are mapped by drum role from the DS kit.
+
 ### `b0716b6` Ableton parts 4 and 5: B section and dub jungle breakdown
 > "need a nother version of the first part thats a b secton and we need a breakdown with longer phrases on the jungle line and heavy dub bass"
 - Slot 4: Warp Garden B section on the B♭/F side, with new mallet, bass, kick, hat, clang and pad parts.

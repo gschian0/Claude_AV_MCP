@@ -11,6 +11,7 @@ These scripts send commands straight to the AbletonMCP Remote Script in Live (TC
     python3 tune_dreamkeys.py  # Dream Keys effect settings
     python3 build_parts45.py   # part 4: Warp Garden B section (slot 4); part 5: jungle breakdown 2 + Dub Bass track (slot 5)
     python3 tune_dubbass.py    # Dub Bass sound
+    python3 build_layers.py    # full-quality layer tracks; re-run after changing any source clips to re-copy them
     python3 play_part.py 1-5   # 1 Warp Garden 118 · 2 jungle breakdown 170 · 3 trip-hop 85 · 4 B section 118 · 5 breakdown 2 170
     python3 live.py get_session_info
 
@@ -63,3 +64,20 @@ These scripts send commands straight to the AbletonMCP Remote Script in Live (TC
   - Bars 5–8 bring the break in and mutate it: amen, an edited amen, a tom-ending variation, then a drop bar with a 3-beat 32nd-note snare roll.
 - **Dub Bass** (new track): Operator sine sub (some oscillator feedback grit) → Saturator (drive 0.68) → Auto Filter (dark low-pass, slow LFO) → Glue Compressor. Long held D1, B♭0 and C1 notes, with octave jumps and slides into the turnarounds.
 - **Dream Keys:** offbeat dub-skank chord stabs (Dm9, then B♭maj7). **Meld Pad:** low drones. **Mallets:** three sparse notes.
+
+## Full-quality layers (fatter mix)
+
+> "lets layer some full quality sounds for a fatter mix so it's really robust"
+
+Each layer is its own track. It copies **every clip of its source track** (all slots, so it follows every part) and ends in a Utility gain trim (about −6 to −9 dB). Bass, kick and drum layers also have Bass Mono on.
+
+| Layer | Source | Sound | Notes |
+|---|---|---|---|
+| Keys Layer · Grand Piano | Dream Keys | Grand Piano (sampled) | under the Electric harmony |
+| Pad Layer · Ensemble | Meld Pad | Classic Ensemble Pad | body under the spectral pad |
+| Bass Layer · Analog | Tension Bass | Analog Bass | weight under the plucked string |
+| Dub Mid · Saturated | Dub Bass | Basic Saturated Bass, **+1 octave** | makes the sub line audible on small speakers |
+| Kick Sub · Boom | Kick | Basic Sub Boom, tuned to D2 | sub tail on the Warp Garden kick |
+| Drum Layer · 909 | Jungle Kit | 909 Core Kit (sampled) | mapped by role: kick→bass drum, snares→snare, clap→clap, toms→mid tom, hats→closed/open, cymbals→crash; FM zaps and clang aren't layered |
+
+Re-run `build_layers.py` whenever the source clips change; it replaces the layer clips instead of stacking them.
