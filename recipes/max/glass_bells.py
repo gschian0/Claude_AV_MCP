@@ -41,7 +41,7 @@ lk = p.obj("zl lookup", 20, 390, 2, 2, ["", ""]); p.wire(rd, 0, lk, 0); p.wire(a
 # key: root from the bass patch + octave offset
 p.comment("octave above bass root", 450, 176, 170)
 rr = p.obj("r av_root", 450, 200, 0, 1); lr = p.obj("loadmess 33", 540, 200, 1, 1)
-oc = p.box("number", 640, 200, 40, 22, 1, 2, ["", "bang"]); p.wire(p.obj("loadmess 24", 690, 200, 1, 1), 0, oc, 0)
+oc = p.box("number", 640, 200, 40, 22, 1, 2, ["", "bang"], minimum=0, maximum=36);   # semitones above the bass root (>36 = inaudible) p.wire(p.obj("loadmess 24", 690, 200, 1, 1), 0, oc, 0)
 pak = p.obj("pak 33 24", 450, 230, 2, 1); p.wire(rr, 0, pak, 0); p.wire(lr, 0, pak, 0); p.wire(oc, 0, pak, 1)
 zs = p.obj("zl sum", 450, 256, 2, 2, ["", ""]); p.wire(pak, 0, zs, 0)
 nt = p.obj("+ 57", 20, 416, 2, 1, ["int"]); p.wire(lk, 0, nt, 0); p.wire(zs, 0, nt, 1)
@@ -58,7 +58,7 @@ dv = p.obj("*~ 0", 120, 572, 2, 1, SIG); p.wire(mi, 0, dv, 0); p.wire(r35, 0, dv
 cf = p.obj("+~ 0", 20, 598, 2, 1, SIG); p.wire(dv, 0, cf, 0); p.wire(tbf, 2, cf, 1)
 car = p.obj("cycle~", 20, 624, 2, 1, SIG); p.wire(cf, 0, car, 0)
 p.comment("decay ms", 380, 470, 70)
-dec = p.box("number", 380, 494, 50, 22, 1, 2, ["", "bang"], minimum=50); p.wire(p.obj("loadmess 1600", 440, 494, 1, 1), 0, dec, 0)
+dec = p.box("number", 380, 494, 50, 22, 1, 2, ["", "bang"], minimum=200, maximum=6000); p.wire(p.obj("loadmess 1600", 440, 494, 1, 1), 0, dec, 0)
 fd = p.obj("f 1600", 380, 520, 2, 1, ["float"]); p.wire(tbf, 0, fd, 0); p.wire(dec, 0, fd, 1)
 amsg = p.msg("1 2, 0 $1", 380, 546); p.wire(fd, 0, amsg, 0)
 al = p.obj("line~", 380, 572, 2, 2, ["signal", "bang"]); p.wire(amsg, 0, al, 0)
@@ -70,7 +70,7 @@ tout = p.obj("tapout~ 353 529", 560, 590, 2, 2, SIG * 2); p.wire(tin, 0, tout, 0
 fb = p.obj("*~ 0.4", 680, 590, 2, 1, SIG); p.wire(tout, 1, fb, 0); p.wire(fb, 0, tin, 0)
 p.comment("feedback", 740, 591, 70)
 lvr = p.obj("r av_level_bells", 800, 620, 0, 1); lvk = p.obj("pack 0. 40", 800, 620 + 26, 2, 1)
-lvs = p.obj("line~ 0.25", 800, 620 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 0, lvk, 0); p.wire(lvk, 0, lvs, 0)
+lvs = p.obj("line~ 0.35", 800, 620 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 0, lvk, 0); p.wire(lvk, 0, lvs, 0)
 outs = []
 for k, x in enumerate((560, 680)):
     w = p.obj("*~ 0.6", x, 620, 2, 1, SIG); p.wire(tout, k, w, 0)

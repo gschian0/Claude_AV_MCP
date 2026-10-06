@@ -1541,7 +1541,7 @@
       133.0,
       22.0
      ],
-     "text": "loadmess set 0.25",
+     "text": "loadmess set 0.35",
      "outlettype": [
       ""
      ]

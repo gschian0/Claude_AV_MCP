@@ -6,6 +6,11 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Glass bells audible again
+> "fix the glass bells i can't really even hear them"
+- Cause: the baked 15:59 state had the bells' octave at **263** semitones above the bass root, which puts every note above hearing, and decay at **79 ms** (tiny clicks). Both were kept as captured at the time and flagged as odd.
+- The saved state now restores octave 24 and decay 1600 ms. The octave box is limited to 0–36 and decay to 200–6000 ms, so a stray drag can't silence them again. Starting level raised from 0.25 to 0.35 (bells patch and conductor fader).
+
 ### `44912b3` Max: chopper pitch both ways + per-step velocity; new vocal chops sampler
 > "in max we need pitch down in the jongly chopper too so it can really go both ways ... some velocities built into the loops ... add one more sampler of a vocal sample that does chopped jungle yells every now and then"
 - Jongly chopper `gen~`: `transpose` (±24 st), per-step pitch (`choppitch`, ±12 st), per-step velocity (`chopvelcut`) with a `dyn` amount. A new panel column has VELOCITY and STEP PITCH rows, 8 dynamics and 7 pitch presets, transpose buttons, and `av_chop_transpose` / `av_chop_dyn` receives. Existing controls haven't moved, so the baked saved state still applies.
