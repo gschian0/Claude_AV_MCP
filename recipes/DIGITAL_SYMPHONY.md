@@ -12,6 +12,34 @@ Close the patches in Max before rebuilding, then reopen them. If you edit a
 patch by hand in Max, the next rebuild overwrites it, so copy the change back
 into the recipe.
 
+## The symphony window: `symphony.maxpat`
+**Recipe:** `recipes/max/symphony.py` · **Asked for:** "make a gui patch that puts all the gui's together"
+
+Every instrument's control panel in one window, using `bpatcher`s of each
+patch's presentation view. `maxgen.py` builds each panel automatically: the
+controls, their labels and the preset/action messages, with the internal
+objects hidden and the empty gaps closed up. **Open this instead of the single
+patches**, because it runs one copy of each, and two copies fight over buffers
+and sends. The single patches now open in presentation mode too. To see their
+internals, press ⌥⌘E (or click the presentation button in the toolbar).
+
+## Feedback keys (fullscreen performance)
+**Asked for:** "give me some keys to hit when im in fullscreen so control the feedback settings for the screen"
+
+With **keys on** (the toggle in the feedback panel, on by default), `[key]` hears every Max window, including the fullscreen one:
+
+| Key | Does |
+|---|---|
+| `f` | fullscreen on/off (Esc also leaves fullscreen) |
+| `1` `2` `3` `4` `5` | decay 0.9 · 0.95 · 0.985 · 0.995 · 1.0 (infinite) |
+| `↑` / `↓` | zoom in / out (by 0.004, range 0.9–1.1) |
+| `←` / `→` | twist less / more (by 0.02, range -0.5 to 0.5) |
+| `w` / `s` | drift more / less (by 0.002, range 0–0.05) |
+| `c` | clear the screen, then restore the decay |
+| `r` | reset decay, zoom, twist and drift to the defaults |
+
+Turn **keys on** off while typing into number boxes elsewhere, because the keys go to every window.
+
 ## Saved state ("create a loadbang state of the current settings")
 
 Max doesn't save most control values (number boxes, sliders, multisliders) in

@@ -4,6 +4,7 @@ out = sys.argv[1]
 SIG = ["signal"]
 
 p = Patch([60.0, 60.0, 1320.0, 700.0])
+p.present = True
 p.comment("BASSLINE — a 16-step bassline over the tampura (locked to the jongly chopper, or free-running at 170 bpm). Sets the key (av_root) and scale (av_scale) for the tampura and bells. Voice: filtered saw + sub sine.", 20, 8, 840)
 
 # --- clock: jongly_step from the chopper, or a free metro at one step = 2821.7 ms / 16 ---

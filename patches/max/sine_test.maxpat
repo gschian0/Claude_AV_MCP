@@ -29,7 +29,14 @@
       40.0
      ],
      "text": "SINE TEST = LOW TAMPURA \u2014 two drifting FM voices tuned to the shared key (av_root): Sa (root) on the left, Pa (fifth) on the right, plucked in the tampura cycle Pa \u00b7 Sa \u00b7 Sa \u00b7 Sa, through the FFT smear. Play the bassline / bells on top.",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      10,
+      880,
+      40.0
+     ]
     }
    },
    {
@@ -45,7 +52,14 @@
       40.0
      ],
      "text": "key (MIDI, from the bassline patch)",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      62,
+      240,
+      40.0
+     ]
     }
    },
    {
@@ -99,6 +113,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      112,
+      50,
+      22
      ]
     }
    },
@@ -170,7 +191,14 @@
       40.0
      ],
      "text": "pluck cycle Pa \u00b7 Sa \u00b7 Sa \u00b7 Sa",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      290,
+      62,
+      200,
+      40.0
+     ]
     }
    },
    {
@@ -187,6 +215,13 @@
      ],
      "outlettype": [
       "int"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      290,
+      86,
+      22,
+      22
      ]
     }
    },
@@ -221,7 +256,14 @@
       20.0
      ],
      "text": "ms per pluck",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      410,
+      88,
+      90,
+      20.0
+     ]
     }
    },
    {
@@ -240,6 +282,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      500,
+      86,
+      50,
+      22
      ]
     }
    },
@@ -409,7 +458,14 @@
       20.0
      ],
      "text": "Sa",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      410,
+      146,
+      30,
+      20.0
+     ]
     }
    },
    {
@@ -425,7 +481,14 @@
       20.0
      ],
      "text": "Pa",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      570,
+      146,
+      30,
+      20.0
+     ]
     }
    },
    {
@@ -1053,7 +1116,14 @@
       20.0
      ],
      "text": "LEVEL",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      290,
+      178.0,
+      60,
+      20.0
+     ]
     }
    },
    {
@@ -1073,6 +1143,13 @@
      "min": 0.0,
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      290,
+      200.0,
+      24,
+      140
      ]
     }
    },
@@ -1092,6 +1169,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      320,
+      318.0,
+      50,
+      22
      ]
     }
    },
@@ -1377,6 +1461,13 @@
       700,
       45,
       45
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      290,
+      352.0,
+      45,
+      45
      ]
     }
    },
@@ -1393,7 +1484,14 @@
       20.0
      ],
      "text": "click to start audio",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      340,
+      364.0,
+      160,
+      20.0
+     ]
     }
    },
    {
@@ -2608,6 +2706,7 @@
      ]
     }
    }
-  ]
+  ],
+  "openinpresentation": 1
  }
 }

@@ -29,7 +29,14 @@
       40.0
      ],
      "text": "JONGLY CHOPPER \u2014 after ModSquad. The jongly loop is cut into 16 slices. The green row says which slice each step plays; the orange row says how many times that step re-fires (rolls). Pick a pattern, or let AUTO move through them.",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      10,
+      900,
+      40.0
+     ]
     }
    },
    {
@@ -102,7 +109,14 @@
       20.0
      ],
      "text": "SLICES \u2014 which slice each step plays (1-16) \u00b7 0 = keep going",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      62.0,
+      440,
+      20.0
+     ]
     }
    },
    {
@@ -127,6 +141,13 @@
      "outlettype": [
       "",
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      84.0,
+      480,
+      130
      ]
     }
    },
@@ -143,7 +164,14 @@
       20.0
      ],
      "text": "ROLLS \u2014 times each step re-fires (1 = normal)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      222.0,
+      440,
+      20.0
+     ]
     }
    },
    {
@@ -174,6 +202,13 @@
      "outlettype": [
       "",
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      244.0,
+      480,
+      60
      ]
     }
    },
@@ -262,7 +297,14 @@
       20.0
      ],
      "text": "PATTERNS (click one)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      62.0,
+      200,
+      20.0
+     ]
     }
    },
    {
@@ -300,6 +342,13 @@
      "text": "s 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16, r 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      84.0,
+      400,
+      22.0
      ]
     }
    },
@@ -318,6 +367,13 @@
      "text": "s 1 0 1 0 5 0 5 6 9 0 0 0 13 14 13 14, r 1 1 1 1 1 1 1 1 1 1 1 1 2 2 4 4",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      110.0,
+      400,
+      22.0
      ]
     }
    },
@@ -336,6 +392,13 @@
      "text": "s 1 0 0 0 5 0 3 4 1 0 0 0 13 0 3 4, r 1 1 2 1 1 1 1 1 1 1 3 1 1 1 4 8",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      136.0,
+      400,
+      22.0
      ]
     }
    },
@@ -354,6 +417,13 @@
      "text": "s 1 1 1 1 5 5 5 5 9 9 9 9 13 13 13 13, r 1 1 2 2 1 1 4 4 1 1 2 2 3 3 8 8",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      162.0,
+      400,
+      22.0
      ]
     }
    },
@@ -372,6 +442,13 @@
      "text": "s 1 2 3 4 5 6 3 4 9 10 11 12 5 6 15 16, r 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      188.0,
+      400,
+      22.0
      ]
     }
    },
@@ -390,6 +467,13 @@
      "text": "s 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8, r 1 1 1 1 1 1 1 2 1 1 1 1 1 1 4 4",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      214.0,
+      400,
+      22.0
      ]
     }
    },
@@ -408,6 +492,13 @@
      "text": "s 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1, r 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 4",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      240.0,
+      400,
+      22.0
      ]
     }
    },
@@ -442,7 +533,14 @@
       20.0
      ],
      "text": "random slices",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      308.0,
+      100,
+      20.0
+     ]
     }
    },
    {
@@ -459,6 +557,13 @@
      ],
      "outlettype": [
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      620,
+      306.0,
+      24,
+      24
      ]
     }
    },
@@ -532,7 +637,14 @@
       20.0
      ],
      "text": "AUTO \u2014 new pattern every",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      342.0,
+      170,
+      20.0
+     ]
     }
    },
    {
@@ -549,6 +661,13 @@
      ],
      "outlettype": [
       "int"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      695,
+      340.0,
+      22,
+      22
      ]
     }
    },
@@ -586,6 +705,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      725,
+      340.0,
+      40,
+      22
      ]
     }
    },
@@ -602,7 +728,14 @@
       20.0
      ],
      "text": "loops",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      770,
+      342.0,
+      50,
+      20.0
+     ]
     }
    },
    {
@@ -636,7 +769,14 @@
       20.0
      ],
      "text": "CHAOS \u2014 random jumps per step (0-1)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      374.0,
+      260,
+      20.0
+     ]
     }
    },
    {
@@ -675,6 +815,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      140,
+      396.0,
+      60,
+      22
      ]
     }
    },
@@ -709,7 +856,14 @@
       20.0
      ],
      "text": "LIVE ROLL \u2014 every step (0 = off)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      428.0,
+      260,
+      20.0
+     ]
     }
    },
    {
@@ -727,6 +881,13 @@
      "text": "rollnow 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      450.0,
+      81.0,
+      22.0
      ]
     }
    },
@@ -745,6 +906,13 @@
      "text": "rollnow 2",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      92,
+      450.0,
+      81.0,
+      22.0
      ]
     }
    },
@@ -763,6 +931,13 @@
      "text": "rollnow 3",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      174,
+      450.0,
+      81.0,
+      22.0
      ]
     }
    },
@@ -781,6 +956,13 @@
      "text": "rollnow 4",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      256,
+      450.0,
+      81.0,
+      22.0
      ]
     }
    },
@@ -799,6 +981,13 @@
      "text": "rollnow 8",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      338,
+      450.0,
+      81.0,
+      22.0
      ]
     }
    },
@@ -815,7 +1004,14 @@
       20.0
      ],
      "text": "RATE (tape speed)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      520,
+      400.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -852,6 +1048,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      630,
+      422.0,
+      60,
+      22
      ]
     }
    },
@@ -1002,7 +1205,14 @@
       40.0
      ],
      "text": "FILTER SWEEPS \u2014 click one; it starts on the next beat. Each message = mode (1 LP \u00b7 2 HP \u00b7 3 BP) then cutoff/time pairs (MIDI note, ms). 'open' resets.",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      518.0,
+      900,
+      40.0
+     ]
     }
    },
    {
@@ -1091,7 +1301,14 @@
       20.0
      ],
      "text": "open",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      548.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -1109,6 +1326,13 @@
      "text": "1 132 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      570.0,
+      125,
+      22.0
      ]
     }
    },
@@ -1125,7 +1349,14 @@
       20.0
      ],
      "text": "LP up \u00b7 1 loop",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      145,
+      548.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -1143,6 +1374,13 @@
      "text": "1 40 0 132 2822",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      145,
+      570.0,
+      125,
+      22.0
      ]
     }
    },
@@ -1159,7 +1397,14 @@
       20.0
      ],
      "text": "LP down \u00b7 1 loop",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      280,
+      548.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -1177,6 +1422,13 @@
      "text": "1 132 0 45 2822",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      280,
+      570.0,
+      125,
+      22.0
      ]
     }
    },
@@ -1193,7 +1445,14 @@
       20.0
      ],
      "text": "LP dip \u00b7 1 beat",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      415,
+      548.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -1211,6 +1470,13 @@
      "text": "1 132 0 55 150 132 550",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      415,
+      570.0,
+      125,
+      22.0
      ]
     }
    },
@@ -1227,7 +1493,14 @@
       20.0
      ],
      "text": "HP riser \u00b7 2 loops",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      600.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -1245,6 +1518,13 @@
      "text": "2 20 0 105 5644",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      622.0,
+      125,
+      22.0
      ]
     }
    },
@@ -1261,7 +1541,14 @@
       20.0
      ],
      "text": "HP drop-out",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      145,
+      600.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -1279,6 +1566,13 @@
      "text": "2 105 0 20 1411",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      145,
+      622.0,
+      125,
+      22.0
      ]
     }
    },
@@ -1295,7 +1589,14 @@
       20.0
      ],
      "text": "BP wah",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      280,
+      600.0,
+      130,
+      20.0
+     ]
     }
    },
    {
@@ -1313,6 +1614,13 @@
      "text": "3 50 0 115 350 50 350",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      280,
+      622.0,
+      125,
+      22.0
      ]
     }
    },
@@ -1459,7 +1767,14 @@
       20.0
      ],
      "text": "resonance (0-1)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      750,
+      656.0,
+      110,
+      20.0
+     ]
     }
    },
    {
@@ -1480,6 +1795,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      750,
+      680.0,
+      50,
+      22
      ]
     }
    },
@@ -1569,6 +1891,13 @@
       888,
       45,
       45
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      714.0,
+      45,
+      45
      ]
     }
    },
@@ -1585,7 +1914,14 @@
       40.0
      ],
      "text": "click to start audio",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      60,
+      726.0,
+      140,
+      40.0
+     ]
     }
    },
    {
@@ -1641,6 +1977,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      320,
+      484.0,
+      50,
+      22
      ]
     }
    },
@@ -1657,7 +2000,14 @@
       20.0
      ],
      "text": "step",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      372,
+      485.0,
+      40,
+      20.0
+     ]
     }
    },
    {
@@ -3259,6 +3609,7 @@
      ]
     }
    }
-  ]
+  ],
+  "openinpresentation": 1
  }
 }

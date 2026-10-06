@@ -4,6 +4,7 @@ out = sys.argv[1]
 SIG = ["signal"]
 
 p = Patch([80.0, 80.0, 900.0, 700.0])
+p.present = True
 p.comment("GLASS BELLS — FM bells that play notes from the bass patch's scale (av_scale) and key (av_root), clocked by the jongly chopper (jongly_step), through a ping-pong delay synced to 170 bpm.", 20, 8, 840)
 
 # clock (same as the bass: follow the chopper, or free-run)

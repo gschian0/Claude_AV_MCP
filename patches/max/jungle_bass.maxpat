@@ -29,7 +29,14 @@
       40.0
      ],
      "text": "JUNGLE BASS \u2014 deep FM sub for the tampura: long gliding notes with an FM growl that blooms on each note, optional tempo-synced wobble, driven through tanh~. Clocked by the jongly chopper; key + scale follow the bassline patch (av_root / av_scale).",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      10,
+      1180,
+      40.0
+     ]
     }
    },
    {
@@ -45,7 +52,14 @@
       40.0
      ],
      "text": "clock: follows the jongly chopper; or free-run",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      62,
+      320,
+      40.0
+     ]
     }
    },
    {
@@ -80,6 +94,13 @@
      ],
      "outlettype": [
       "int"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      150,
+      86,
+      22,
+      22
      ]
     }
    },
@@ -96,7 +117,14 @@
       20.0
      ],
      "text": "free-run",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      176,
+      88,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -187,7 +215,14 @@
       40.0
      ],
      "text": "pattern: 1 = root, 13 = octave up \u00b7 0 = tie (hold + let the glide sing)",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      330,
+      62,
+      460,
+      40.0
+     ]
     }
    },
    {
@@ -218,6 +253,13 @@
      "outlettype": [
       "",
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      330,
+      86,
+      400,
+      110
      ]
     }
    },
@@ -270,7 +312,14 @@
       20.0
      ],
      "text": "roller",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      750,
+      87,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -288,6 +337,13 @@
      "text": "1 0 0 0 0 0 1 0 0 0 4 0 0 0 0 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      820,
+      86,
+      120,
+      22.0
      ]
     }
    },
@@ -304,7 +360,14 @@
       20.0
      ],
      "text": "drop",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      750,
+      113,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -322,6 +385,13 @@
      "text": "1 0 0 0 0 0 0 0 8 0 0 0 6 0 4 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      820,
+      112,
+      120,
+      22.0
      ]
     }
    },
@@ -338,7 +408,14 @@
       20.0
      ],
      "text": "steppy",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      750,
+      139,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -356,6 +433,13 @@
      "text": "1 0 0 1 0 0 1 0 1 0 0 1 0 0 11 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      820,
+      138,
+      120,
+      22.0
      ]
     }
    },
@@ -372,7 +456,14 @@
       20.0
      ],
      "text": "dread",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      750,
+      165,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -390,6 +481,13 @@
      "text": "1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      820,
+      164,
+      120,
+      22.0
      ]
     }
    },
@@ -406,7 +504,14 @@
       20.0
      ],
      "text": "walk-down",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      750,
+      191,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -424,6 +529,13 @@
      "text": "13 0 0 0 11 0 0 0 8 0 0 0 6 0 4 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      820,
+      190,
+      120,
+      22.0
      ]
     }
    },
@@ -440,7 +552,14 @@
       20.0
      ],
      "text": "random in scale (from bassline)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      970,
+      62,
+      220,
+      20.0
+     ]
     }
    },
    {
@@ -531,6 +650,13 @@
      ],
      "outlettype": [
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      970,
+      192,
+      24,
+      24
      ]
     }
    },
@@ -547,7 +673,14 @@
       20.0
      ],
      "text": "random",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      998,
+      194,
+      60,
+      20.0
+     ]
     }
    },
    {
@@ -768,7 +901,14 @@
       20.0
      ],
      "text": "key from bassline \u00b7 octave \u00b7 glide ms",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      510,
+      206,
+      260,
+      20.0
+     ]
     }
    },
    {
@@ -824,6 +964,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      680,
+      232,
+      40,
+      22
      ]
     }
    },
@@ -952,6 +1099,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      790,
+      232,
+      50,
+      22
      ]
     }
    },
@@ -1060,7 +1214,14 @@
       20.0
      ],
      "text": "growl (FM index peak)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      550,
+      310,
+      150,
+      20.0
+     ]
     }
    },
    {
@@ -1080,6 +1241,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      550,
+      334,
+      50,
+      22
      ]
     }
    },
@@ -1169,7 +1337,14 @@
       20.0
      ],
      "text": "wobble rate (170 bpm)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      730,
+      266,
+      150,
+      20.0
+     ]
     }
    },
    {
@@ -1205,6 +1380,13 @@
      "text": "0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      730,
+      290,
+      25.0,
+      22.0
      ]
     }
    },
@@ -1221,7 +1403,14 @@
       20.0
      ],
      "text": "off",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      730,
+      314,
+      46,
+      20.0
+     ]
     }
    },
    {
@@ -1257,6 +1446,13 @@
      "text": "1.42",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      782,
+      290,
+      46.0,
+      22.0
      ]
     }
    },
@@ -1273,7 +1469,14 @@
       20.0
      ],
      "text": "1/2",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      782,
+      314,
+      46,
+      20.0
+     ]
     }
    },
    {
@@ -1291,6 +1494,13 @@
      "text": "2.83",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      834,
+      290,
+      46.0,
+      22.0
      ]
     }
    },
@@ -1307,7 +1517,14 @@
       20.0
      ],
      "text": "1/4",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      834,
+      314,
+      46,
+      20.0
+     ]
     }
    },
    {
@@ -1325,6 +1542,13 @@
      "text": "5.67",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      886,
+      290,
+      46.0,
+      22.0
      ]
     }
    },
@@ -1341,7 +1565,14 @@
       20.0
      ],
      "text": "1/8",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      886,
+      314,
+      46,
+      20.0
+     ]
     }
    },
    {
@@ -1359,6 +1590,13 @@
      "text": "11.33",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      938,
+      290,
+      53.0,
+      22.0
      ]
     }
    },
@@ -1375,7 +1613,14 @@
       20.0
      ],
      "text": "1/16",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      938,
+      314,
+      46,
+      20.0
+     ]
     }
    },
    {
@@ -1391,7 +1636,14 @@
       20.0
      ],
      "text": "depth",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      890,
+      338,
+      50,
+      20.0
+     ]
     }
    },
    {
@@ -1411,6 +1663,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      940,
+      338,
+      50,
+      22
      ]
     }
    },
@@ -1481,7 +1740,14 @@
       20.0
      ],
      "text": "ratio",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      372,
+      50,
+      20.0
+     ]
     }
    },
    {
@@ -1500,6 +1766,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      60,
+      372,
+      50,
+      22
      ]
     }
    },
@@ -1732,7 +2005,14 @@
       20.0
      ],
      "text": "drive",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      310,
+      406,
+      50,
+      20.0
+     ]
     }
    },
    {
@@ -1752,6 +2032,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      360,
+      406,
+      50,
+      22
      ]
     }
    },
@@ -1856,6 +2143,13 @@
       798,
       45,
       45
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      440,
+      45,
+      45
      ]
     }
    },
@@ -1872,7 +2166,14 @@
       20.0
      ],
      "text": "click to start audio",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      60,
+      452,
+      160,
+      20.0
+     ]
     }
    },
    {
@@ -3375,6 +3676,7 @@
      ]
     }
    }
-  ]
+  ],
+  "openinpresentation": 1
  }
 }

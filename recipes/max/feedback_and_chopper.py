@@ -43,7 +43,8 @@ out1 = vec(clamp(hr*decay + cr*ring, 0, 1),
            clamp(hg*decay + cg*ring, 0, 1),
            clamp(hb*decay + cb*ring, 0, 1), 1);
 """
-p = Patch([60.0, 60.0, 720.0, 520.0])
+p = Patch([60.0, 60.0, 900.0, 960.0])
+p.present = True
 p.comment("gen feedback — jit.gl.pix reads its own last frame (copied by jit.gl.slab, held in zl reg) and draws it back zoomed + twisted. Render toggle seeds the loop and enables window 'fbw'.", 20, 8, 660)
 fs = p.box("toggle", 20, 60, 24, 24, 1, 1, ["int"]); p.comment("fullscreen", 48, 62, 80)
 fsm = p.msg("fullscreen $1", 20, 92); p.wire(fs, 0, fsm, 0)
@@ -79,6 +80,55 @@ p.comment("try these:", 420, y, 120)
 for m in ["decay 1.", "decay 0.985", "decay 0.9", "zoom 0.97", "zoom 1.02", "twist 0.2", "twist 0.02", "drift 0.02"]:
     y += 26; mm = p.msg(m, 420, y); p.wire(mm, 0, pix, 0)
 p.comment("decay 1. = infinite (never fades) · zoom > 1 pulls inward · 'decay 0.' a moment to clear", 520, 90, 180)
+# --- KEYS: play the feedback from the keyboard (works in fullscreen; [key] hears every Max window) ---
+yk = 540
+p.comment("KEYS (when 'keys on'): f fullscreen · 1-5 decay (0.9 → ∞) · ↑↓ zoom in/out · ←→ twist · w/s drift more/less · c clear · r reset", 20, yk, 660)
+kon = p.box("toggle", 20, yk + 44, 22, 22, 1, 1, ["int"]); p.comment("keys on", 46, yk + 46, 60)
+p.wire(p.obj("loadmess 1", 110, yk + 44, 1, 1), 0, kon, 0)
+key = p.obj("key", 20, yk + 76, 0, 4, ["int", "int", "int", "int"])
+kg = p.obj("gate 1", 20, yk + 102, 2, 1); p.wire(kon, 0, kg, 0); p.wire(key, 0, kg, 1)
+# ascii: f=102 1-5=49-53 up=30 down=31 left=28 right=29 w=119 s=115 c=99 r=114
+codes = [102, 49, 50, 51, 52, 53, 30, 31, 28, 29, 119, 115, 99, 114]
+ks = p.obj("sel " + " ".join(map(str, codes)), 20, yk + 128, 2, len(codes) + 1)
+p.wire(kg, 0, ks, 0)
+p.wire(ks, 0, fs, 0)                                     # f → flip the fullscreen toggle
+
+def readout(label, x, y):
+    p.comment(label, x, y, 50); return p.box("flonum", x + 50, y, 60, 22, 1, 2, ["", "bang"], format=6)
+
+def accumulator(name, init, lo, hi, x, y):
+    """[f] holds the value; a delta message adds to it, clips, stores and sends '<name> <value>' to the pix."""
+    st = p.obj(f"f {init}", x, y, 2, 1, ["float"])
+    tbf = p.obj("t b f", x, y - 26, 1, 2, ["bang", "float"])
+    add = p.obj("+ 0.", x, y + 26, 2, 1, ["float"]); p.wire(tbf, 1, add, 1); p.wire(tbf, 0, st, 0); p.wire(st, 0, add, 0)
+    cl = p.obj(f"clip {lo} {hi}", x, y + 52, 3, 1, ["float"]); p.wire(add, 0, cl, 0)
+    out = p.obj("t f f", x, y + 78, 1, 2, ["float", "float"]); p.wire(cl, 0, out, 0); p.wire(out, 1, st, 1)
+    pre = p.obj(f"prepend {name}", x, y + 104, 1, 1); p.wire(out, 0, pre, 0); p.wire(pre, 0, pix, 0)
+    rd = readout(name, x, y + 130); p.wire(out, 0, rd, 0)
+    return tbf, out
+
+yd = yk + 190
+# decay: keys 1-5 pick a value; it's remembered so 'c' (clear) can restore it
+dt = p.obj("t f f", 20, yd + 26, 1, 2, ["float", "float"])
+dmem = p.obj("f 0.985", 90, yd + 52, 2, 1, ["float"]); p.wire(dt, 1, dmem, 1)
+dpre = p.obj("prepend decay", 20, yd + 52, 1, 1); p.wire(dt, 0, dpre, 0); p.wire(dpre, 0, pix, 0)
+dro = readout("decay", 20, yd + 156); p.wire(dt, 0, dro, 0)
+for k, v in enumerate([0.9, 0.95, 0.985, 0.995, 1.0]):
+    m = p.msg(str(v), 20 + k*46, yd); p.wire(ks, 1 + k, m, 0); p.wire(m, 0, dt, 0)
+zin, zout = accumulator("zoom", 0.99, 0.9, 1.1, 260, yd + 26)
+tin_, tout_ = accumulator("twist", 0.02, -0.5, 0.5, 380, yd + 26)
+win, wout = accumulator("drift", 0.003, 0.0, 0.05, 500, yd + 26)
+for k, (dst, delta) in enumerate([(zin, -0.004), (zin, 0.004), (tin_, -0.02), (tin_, 0.02), (win, 0.002), (win, -0.002)]):
+    m = p.msg(str(delta), 640, yd + k*26); p.wire(ks, 6 + k, m, 0); p.wire(m, 0, dst, 0)
+# c = clear: decay 0 for a moment, then back to the remembered decay
+ct = p.obj("t b b", 760, yd, 1, 2, ["bang", "bang"]); p.wire(ks, 12, ct, 0)
+c0 = p.msg("decay 0", 760, yd + 26); p.wire(ct, 1, c0, 0); p.wire(c0, 0, pix, 0)
+cd = p.obj("delay 120", 760, yd + 52, 2, 1, ["bang"]); p.wire(ct, 0, cd, 0); p.wire(cd, 0, dmem, 0); p.wire(dmem, 0, dpre, 0)
+# r = reset everything to the recipe defaults
+rt = p.obj("t b b b b", 760, yd + 90, 1, 4, ["bang"] * 4); p.wire(ks, 13, rt, 0)
+for k, (dst, v) in enumerate([(dt, 0.985), (zout, 0.99), (tout_, 0.02), (wout, 0.003)]):
+    m = p.msg(str(v), 760 + k*50, yd + 116); p.wire(rt, k, m, 0); p.wire(m, 0, dst, 0)
+p.comment("c / r", 760, yd - 22, 50)
 p.dump(f"{out}/gen_feedback.maxpat"); check(f"{out}/gen_feedback.maxpat")
 
 # ================= ModSquad-style jongly chopper: one part, presets, auto-change, rolls =================
@@ -117,6 +167,7 @@ out1 = sample(loop, (slice + subfrac/rl)/16)*env;
 out2 = step;
 """
 c = Patch([40.0, 40.0, 960.0, 900.0])
+c.present = True
 c.comment("JONGLY CHOPPER — after ModSquad. The jongly loop is cut into 16 slices. The green row says which slice each step plays; the orange row says how many times that step re-fires (rolls). Pick a pattern, or let AUTO move through them.", 20, 8, 900)
 c.obj("buffer~ jongly jongly.aif", 20, 70, 1, 2, ["float", "bang"])
 c.obj("buffer~ chopsteps 2", 200, 70, 1, 2, ["float", "bang"])

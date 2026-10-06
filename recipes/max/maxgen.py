@@ -2,11 +2,13 @@
 import json, pathlib
 STATE_DIR = pathlib.Path(__file__).resolve().parent / "state"
 SAME_KIND = {"number": {"number", "flonum"}, "flonum": {"number", "flonum"}}
+PANEL_UI = {"multislider", "number", "flonum", "toggle", "slider", "button", "ezdac~"}
 APPV = {"major": 9, "minor": 0, "revision": 0, "architecture": "x64", "modernui": 1}
 
 class Patch:
     def __init__(self, rect, ns="box"):
         self.rect, self.ns, self.boxes, self.lines, self.n = rect, ns, [], [], 0
+        self.present = False   # True: open in presentation mode showing only the controls (used by symphony.maxpat)
     def _id(self):
         self.n += 1; return f"obj-{self.n}"
     def box(self, maxclass, x, y, w, h, nin, nout, otypes=None, **kw):
@@ -24,12 +26,51 @@ class Patch:
     def wire(self, a, ao, b, bi):
         self.lines.append({"patchline": {"source": [a, ao], "destination": [b, bi]}})
     def to_dict(self):
-        return {"fileversion": 1, "appversion": APPV, "classnamespace": self.ns, "rect": self.rect,
-                "boxes": self.boxes, "lines": self.lines}
+        d = {"fileversion": 1, "appversion": APPV, "classnamespace": self.ns, "rect": self.rect,
+             "boxes": self.boxes, "lines": self.lines}
+        if self.present:
+            d["openinpresentation"] = 1
+        return d
+
+    def make_panel(self):
+        """Presentation view = the controls, their labels and the preset/action messages, at their
+        patching positions shifted to the top-left. Plumbing (objects, internal messages) stays hidden."""
+        boxes = {b["box"]["id"]: b["box"] for b in self.boxes}
+        srcs = {}
+        for l in self.lines:
+            srcs.setdefault(l["patchline"]["destination"][0], []).append(boxes[l["patchline"]["source"][0]])
+        def trigger_ok(src):   # messages fired by load or by an auto-picker [sel 0 1 2 3 4 ...] are still user presets
+            t = src.get("text", "")
+            return t == "loadbang" or (t.startswith("delay") and t not in ("delay 600", "delay 900")) \
+                or (t.startswith("sel ") and len(t.split()) >= 6)
+        show = []
+        for b in boxes.values():
+            c = b["maxclass"]
+            if c in PANEL_UI or (c == "comment" and not b.get("text", "").startswith("SAVED STATE")) \
+                    or (c == "message" and all(trigger_ok(s) for s in srcs.get(b["id"], []))):
+                show.append(b)
+        def squeeze(spans, gap=12):
+            """Map a coordinate so that empty stretches (where hidden plumbing sat) shrink to `gap` px."""
+            spans = sorted(spans); cuts = []; end = spans[0][0]; removed = spans[0][0] - 10
+            for a, b in spans:
+                if a - end > gap: removed += (a - end) - gap
+                if a > end: cuts.append((a, removed))
+                end = max(end, b)
+            cuts.insert(0, (spans[0][0], spans[0][0] - 10))
+            return lambda v: v - max(r for a, r in cuts if a <= v)
+        fx = squeeze([(b["patching_rect"][0], b["patching_rect"][0] + b["patching_rect"][2]) for b in show])
+        fy = squeeze([(b["patching_rect"][1], b["patching_rect"][1] + b["patching_rect"][3]) for b in show])
+        for b in show:
+            x, y, w, h = b["patching_rect"]
+            b["presentation"] = 1; b["presentation_rect"] = [fx(x), fy(y), w, h]
+        self.panel_size = [max(b["presentation_rect"][0] + b["presentation_rect"][2] for b in show) + 10,
+                           max(b["presentation_rect"][1] + b["presentation_rect"][3] for b in show) + 10]
     def dump(self, path):
         state = STATE_DIR / (pathlib.Path(path).name + ".json")
         if state.exists():
             self.apply_state(json.load(open(state)), state.name)
+        if self.present:
+            self.make_panel()
         open(path, "w").write(json.dumps({"patcher": self.to_dict()}, indent=1) + "\n")
 
     def apply_state(self, items, label):

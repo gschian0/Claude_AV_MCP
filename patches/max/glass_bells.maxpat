@@ -29,7 +29,14 @@
       40.0
      ],
      "text": "GLASS BELLS \u2014 FM bells that play notes from the bass patch's scale (av_scale) and key (av_root), clocked by the jongly chopper (jongly_step), through a ping-pong delay synced to 170 bpm.",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      10,
+      840,
+      40.0
+     ]
     }
    },
    {
@@ -45,7 +52,14 @@
       20.0
      ],
      "text": "clock",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      62,
+      50,
+      20.0
+     ]
     }
    },
    {
@@ -80,6 +94,13 @@
      ],
      "outlettype": [
       "int"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      130,
+      86,
+      22,
+      22
      ]
     }
    },
@@ -96,7 +117,14 @@
       20.0
      ],
      "text": "free-run",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      156,
+      88,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -205,7 +233,14 @@
       20.0
      ],
      "text": "density %",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      240,
+      120,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -225,6 +260,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      240,
+      144,
+      50,
+      22
      ]
     }
    },
@@ -278,7 +320,14 @@
       20.0
      ],
      "text": "arp (off = random notes)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      240,
+      180,
+      170,
+      20.0
+     ]
     }
    },
    {
@@ -295,6 +344,13 @@
      ],
      "outlettype": [
       "int"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      240,
+      202,
+      22,
+      22
      ]
     }
    },
@@ -516,7 +572,14 @@
       20.0
      ],
      "text": "octave above bass root",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      440,
+      126,
+      170,
+      20.0
+     ]
     }
    },
    {
@@ -570,6 +633,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      630,
+      150,
+      40,
+      22
      ]
     }
    },
@@ -842,7 +912,14 @@
       20.0
      ],
      "text": "decay ms",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      370,
+      236,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -861,6 +938,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      370,
+      260,
+      50,
+      22
      ]
     }
    },
@@ -1023,7 +1107,14 @@
       20.0
      ],
      "text": "feedback",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      730,
+      294,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -1145,6 +1236,13 @@
       700,
       45,
       45
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      610,
+      326.0,
+      45,
+      45
      ]
     }
    },
@@ -1161,7 +1259,14 @@
       40.0
      ],
      "text": "click to start audio",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      660,
+      338.0,
+      140,
+      40.0
+     ]
     }
    }
   ],
@@ -1946,6 +2051,7 @@
      ]
     }
    }
-  ]
+  ],
+  "openinpresentation": 1
  }
 }

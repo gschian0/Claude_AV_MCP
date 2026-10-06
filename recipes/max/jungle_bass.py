@@ -4,6 +4,7 @@ out = sys.argv[1]
 SIG = ["signal"]
 
 p = Patch([60.0, 60.0, 1240.0, 880.0])
+p.present = True
 p.comment("JUNGLE BASS — deep FM sub for the tampura: long gliding notes with an FM growl that blooms on each note, optional tempo-synced wobble, driven through tanh~. Clocked by the jongly chopper; key + scale follow the bassline patch (av_root / av_scale).", 20, 8, 1180)
 
 # --- clock (same as the other instruments) ---

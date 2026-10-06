@@ -23,6 +23,7 @@ def fm_voice(p, x, y, base, mult, drift_rate, r_rate, i_rate):
     return car
 
 p = Patch([60.0, 60.0, 940.0, 840.0])
+p.present = True
 p.comment("SINE TEST = LOW TAMPURA — two drifting FM voices tuned to the shared key (av_root): Sa (root) on the left, Pa (fifth) on the right, plucked in the tampura cycle Pa · Sa · Sa · Sa, through the FFT smear. Play the bassline / bells on top.", 20, 8, 880)
 
 # --- key: follows av_root from the bassline patch (A1 until it's opened) ---

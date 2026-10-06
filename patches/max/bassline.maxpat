@@ -29,7 +29,14 @@
       40.0
      ],
      "text": "BASSLINE \u2014 a 16-step bassline over the tampura (locked to the jongly chopper, or free-running at 170 bpm). Sets the key (av_root) and scale (av_scale) for the tampura and bells. Voice: filtered saw + sub sine.",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      10,
+      840,
+      40.0
+     ]
     }
    },
    {
@@ -45,7 +52,14 @@
       40.0
      ],
      "text": "clock: follows the jongly chopper's steps; or switch on free-run",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      54,
+      420,
+      40.0
+     ]
     }
    },
    {
@@ -80,6 +94,13 @@
      ],
      "outlettype": [
       "int"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      150,
+      78,
+      22,
+      22
      ]
     }
    },
@@ -96,7 +117,14 @@
       20.0
      ],
      "text": "free-run",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      176,
+      80,
+      70,
+      20.0
+     ]
     }
    },
    {
@@ -187,7 +215,14 @@
       40.0
      ],
      "text": "bassline: 1 = A1, 13 = A2, 25 = A3 (semitones +1) \u00b7 0 = tie/hold",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      290,
+      54,
+      420,
+      40.0
+     ]
     }
    },
    {
@@ -218,6 +253,13 @@
      "outlettype": [
       "",
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      290,
+      78,
+      400,
+      110
      ]
     }
    },
@@ -270,7 +312,14 @@
       20.0
      ],
      "text": "dub",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      710,
+      107,
+      60,
+      20.0
+     ]
     }
    },
    {
@@ -288,6 +337,13 @@
      "text": "1 0 13 1 0 4 1 8 1 0 13 11 8 6 4 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      770,
+      106,
+      110,
+      22.0
      ]
     }
    },
@@ -304,7 +360,14 @@
       20.0
      ],
      "text": "walk",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      710,
+      133,
+      60,
+      20.0
+     ]
     }
    },
    {
@@ -322,6 +385,13 @@
      "text": "1 4 6 8 11 8 6 4 1 4 6 8 13 11 8 6",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      770,
+      132,
+      110,
+      22.0
      ]
     }
    },
@@ -338,7 +408,14 @@
       20.0
      ],
      "text": "pedal",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      710,
+      159,
+      60,
+      20.0
+     ]
     }
    },
    {
@@ -356,6 +433,13 @@
      "text": "1 0 0 0 1 0 0 0 1 0 0 0 8 0 6 0",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      770,
+      158,
+      110,
+      22.0
      ]
     }
    },
@@ -372,7 +456,14 @@
       20.0
      ],
      "text": "octaves",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      710,
+      185,
+      60,
+      20.0
+     ]
     }
    },
    {
@@ -390,6 +481,13 @@
      "text": "1 13 1 13 1 13 1 13 6 18 6 18 8 20 8 20",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      770,
+      184,
+      110,
+      22.0
      ]
     }
    },
@@ -554,7 +652,14 @@
       20.0
      ],
      "text": "glide",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      410,
+      302,
+      50,
+      20.0
+     ]
     }
    },
    {
@@ -570,7 +675,14 @@
       20.0
      ],
      "text": "pluck env",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      390,
+      254,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -586,7 +698,14 @@
       20.0
      ],
      "text": "root (MIDI)",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      470,
+      224,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -624,6 +743,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      550,
+      224,
+      50,
+      22
      ]
     }
    },
@@ -673,7 +799,14 @@
       40.0
      ],
      "text": "33 = A1 \u00b7 36 = C2 \u00b7 28 = E1",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      605,
+      225,
+      180,
+      40.0
+     ]
     }
    },
    {
@@ -689,7 +822,14 @@
       100.0
      ],
      "text": "RANDOM BASSLINE IN A SCALE \u2014 click a scale to roll a new bassline in it; 'random' re-rolls in the current scale. Numbers = semitones over 2 octaves (root and fifth repeated so they come up more). Add your own scale: duplicate a message and edit the numbers.",
-     "linecount": 5
+     "linecount": 5,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      54,
+      380,
+      100.0
+     ]
     }
    },
    {
@@ -724,7 +864,14 @@
       20.0
      ],
      "text": "minor",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      143,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -742,6 +889,13 @@
      "text": "0 0 7 12 0 2 3 5 7 8 10 12 14 15 17 19 20 22 24",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      972,
+      142,
+      300,
+      22.0
      ]
     }
    },
@@ -758,7 +912,14 @@
       20.0
      ],
      "text": "dorian",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      169,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -776,6 +937,13 @@
      "text": "0 0 7 12 0 2 3 5 7 9 10 12 14 15 17 19 21 22 24",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      972,
+      168,
+      300,
+      22.0
      ]
     }
    },
@@ -792,7 +960,14 @@
       20.0
      ],
      "text": "phrygian",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      195,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -810,6 +985,13 @@
      "text": "0 0 7 12 0 1 3 5 7 8 10 12 13 15 17 19 20 22 24",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      972,
+      194,
+      300,
+      22.0
      ]
     }
    },
@@ -826,7 +1008,14 @@
       20.0
      ],
      "text": "harm. minor",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      221,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -844,6 +1033,13 @@
      "text": "0 0 7 12 0 2 3 5 7 8 11 12 14 15 17 19 20 23 24",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      972,
+      220,
+      300,
+      22.0
      ]
     }
    },
@@ -860,7 +1056,14 @@
       20.0
      ],
      "text": "major",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      247,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -878,6 +1081,13 @@
      "text": "0 0 7 12 0 2 4 5 7 9 11 12 14 16 17 19 21 23 24",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      972,
+      246,
+      300,
+      22.0
      ]
     }
    },
@@ -894,7 +1104,14 @@
       20.0
      ],
      "text": "minor pent.",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      273,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -912,6 +1129,13 @@
      "text": "0 0 7 12 0 3 5 7 10 12 15 17 19 22 24",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      972,
+      272,
+      300,
+      22.0
      ]
     }
    },
@@ -928,7 +1152,14 @@
       20.0
      ],
      "text": "blues",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      299,
+      80,
+      20.0
+     ]
     }
    },
    {
@@ -946,6 +1177,13 @@
      "text": "0 0 7 12 0 3 5 6 7 10 12 15 17 18 19 22 24",
      "outlettype": [
       ""
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      972,
+      298,
+      300,
+      22.0
      ]
     }
    },
@@ -1033,7 +1271,14 @@
       20.0
      ],
      "text": "random",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      892,
+      352.0,
+      60,
+      20.0
+     ]
     }
    },
    {
@@ -1050,6 +1295,13 @@
      ],
      "outlettype": [
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      948,
+      350.0,
+      24,
+      24
      ]
     }
    },
@@ -1233,7 +1485,14 @@
       40.0
      ],
      "text": "brightness (filter peak Hz)",
-     "linecount": 2
+     "linecount": 2,
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      336.0,
+      180,
+      40.0
+     ]
     }
    },
    {
@@ -1252,6 +1511,13 @@
      "outlettype": [
       "",
       "bang"
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      190,
+      334.0,
+      60,
+      22
      ]
     }
    },
@@ -1483,6 +1749,13 @@
       610,
       45,
       45
+     ],
+     "presentation": 1,
+     "presentation_rect": [
+      10,
+      388.0,
+      45,
+      45
      ]
     }
    },
@@ -1499,7 +1772,14 @@
       20.0
      ],
      "text": "click to start audio",
-     "linecount": 1
+     "linecount": 1,
+     "presentation": 1,
+     "presentation_rect": [
+      60,
+      400.0,
+      160,
+      20.0
+     ]
     }
    },
    {
@@ -2570,6 +2850,7 @@
      ]
     }
    }
-  ]
+  ],
+  "openinpresentation": 1
  }
 }
