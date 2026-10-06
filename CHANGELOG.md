@@ -6,6 +6,10 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Granular chopper visible: own row under the speed chopper
+> "i don't see the granular one"
+- It was placed to the right of the speed chopper at x = 1372, which is off-screen on a 1512-pt-wide laptop display. It now has its own row directly below the speed chopper in `symphony.maxpat` and `digital_symphony.maxpat`, and the window is back to 1500 wide.
+
 ### `1972cdb` Jongly Granular: a granular chopper to play side by side with the speed chopper
 > "can we make jongly granular too as an upgrade in a patch with the same patch copied and ment to played side by side with the granular version and the speed version"
 - The chopper moved into `recipes/max/chopper.py`, which builds both `jongly_chopper.maxpat` (speed, unchanged apart from a new `send~ jongly_phase`) and the new `jongly_granular.maxpat`.

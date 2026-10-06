@@ -260,4 +260,4 @@ feeds new image into the loop. The **render** toggle sends a black seed texture
 - **GRAIN controls:** size (ms, 90), jitter (0.15), time speed (0, 0.25, 0.5, 1, 2), **freeze**, **sync**.
 - **Sync:** with sync on, it follows the speed chopper's clock while that one is running, so both hit the same step. It free-runs at its own `rate` if the speed chopper isn't open or is stopped.
 - **Independent:** own buffers (`g…`), own step send (`gjongly_step`), own receives (`av_gchop_*`, `av_gdrum_pattern`, …). So the conductor's drum buttons only drive the speed chopper, and the two can run different patterns. Mix with the conductor's new **gran** fader (`av_level_granular`, 0.35). Only the speed chopper feeds the visuals.
-- In `symphony.maxpat` and `digital_symphony.maxpat` the two choppers sit side by side.
+- In `symphony.maxpat` and `digital_symphony.maxpat` the granular chopper has its own row directly under the speed chopper (side by side was off-screen on a laptop).
