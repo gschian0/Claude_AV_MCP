@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "av-conductor": {
+      "command": "uv",
+      "args": ["run", "--directory", ".", "av-conductor"]
+    },
+    "ableton": {
+      "command": "uvx",
+      "args": ["ableton-mcp"],
+      "env": {
+        "ABLETON_MCP_DISABLE_TELEMETRY": "true",
+        "ABLETON_MCP_DISABLE_DATASET": "true"
+      }
+    },
+    "maxmsp": {
+      "command": "uv",
+      "args": ["run", "--directory", "vendor/MaxMSP-MCP-Server", "--with-requirements", "requirements.txt", "python", "server.py"]
+    }
+  }
+}

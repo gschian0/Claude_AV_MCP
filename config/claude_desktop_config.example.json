@@ -1,0 +1,21 @@
+{
+  "_comment": "Merge into ~/Library/Application Support/Claude/claude_desktop_config.json. Claude Desktop needs ABSOLUTE paths: replace /ABS/PATH/Claude_AV_MCP. Claude Code uses the repo's .mcp.json instead.",
+  "mcpServers": {
+    "av-conductor": {
+      "command": "uv",
+      "args": ["run", "--directory", "/ABS/PATH/Claude_AV_MCP", "av-conductor"]
+    },
+    "ableton": {
+      "command": "uvx",
+      "args": ["ableton-mcp"],
+      "env": {
+        "ABLETON_MCP_DISABLE_TELEMETRY": "true",
+        "ABLETON_MCP_DISABLE_DATASET": "true"
+      }
+    },
+    "maxmsp": {
+      "command": "uv",
+      "args": ["run", "--directory", "/ABS/PATH/Claude_AV_MCP/vendor/MaxMSP-MCP-Server", "--with-requirements", "requirements.txt", "python", "server.py"]
+    }
+  }
+}
