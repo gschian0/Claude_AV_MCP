@@ -6,6 +6,12 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Ableton part 2: jungle breakdown
+> "make a next part of the clip to go into a jungle breakdown with a synthesixed jungle kit in a drum rack with cool multi effects and a muti knob effects"
+- New **Jungle Kit** track: DS Drum Rack (all synthesized) → Drum Transistor → Multiband Beat Repeat Echo → Knob 1 Super Looper (macro racks).
+- Breakdown clips in slot 2 on Jungle Kit, Tension Bass, Meld Pad, Warp Mallets and Corpus Clang. `play_part.py` switches parts and tempo (1 = 118 BPM, 2 = 170 BPM).
+- `tune.py` now finds tracks by name, because the default tracks were removed from the set and its indices no longer matched.
+
 ### `ae15430` Ableton "Warp Garden" session
 > "lets now try to create a session in ableton with ableton mcp and create some cool frequency warping physical model sounds with cool time fased effects and evolving grooves"
 - `recipes/ableton/`: `live.py` (a minimal client for the AbletonMCP Remote Script), `build_session.py` (six tracks with physical models: Collision, Tension, Corpus, plus Meld and DS drums), and `tune.py` (frequency-shift, spectral, grain and stutter settings). The clips are 3, 4, 5, 7, 16 and 32 beats long, so the grooves drift against each other. No changes to Max.
