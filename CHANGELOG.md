@@ -6,6 +6,11 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Ableton part 3: half-time trip-hop
+> "make a half time triphop section with cool 4 part harmony and a new sound thats very realaximg physicl modeling"
+- New **Dream Keys** track: Electric (physical-model electric piano) → Chorus-Ensemble → Tape Flutter → Echo → Hybrid Reverb.
+- Slot 3 clips: a 4-part voice-led Dm9–B♭maj7–Gm9–A7sus–A7 progression, half-time drums on the Jungle Kit, a sub bass line, and sparse mallets. `play_part.py 3` plays it at 85 BPM.
+
 ### `8a3460a` Ableton part 2: jungle breakdown
 > "make a next part of the clip to go into a jungle breakdown with a synthesixed jungle kit in a drum rack with cool multi effects and a muti knob effects"
 - New **Jungle Kit** track: DS Drum Rack (all synthesized) → Drum Transistor → Multiband Beat Repeat Echo → Knob 1 Super Looper (macro racks).

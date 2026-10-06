@@ -7,7 +7,9 @@ These scripts send commands straight to the AbletonMCP Remote Script in Live (TC
     python3 build_session.py   # adds 6 MIDI tracks, devices and clips (118 BPM, D dorian)
     python3 tune.py            # sets the effect parameters (finds tracks by name)
     python3 build_breakdown.py # part 2: Jungle Kit track + breakdown clips in slot 2
-    python3 play_part.py 1|2   # switch parts: 1 = Warp Garden at 118 BPM, 2 = jungle breakdown at 170 BPM
+    python3 build_triphop.py   # part 3: Dream Keys track + trip-hop clips in slot 3
+    python3 tune_dreamkeys.py  # Dream Keys effect settings
+    python3 play_part.py 1|2|3 # 1 = Warp Garden 118 BPM, 2 = jungle breakdown 170, 3 = trip-hop 85
     python3 live.py get_session_info
 
 | Track | Sound | Effects | Clip length |
@@ -31,3 +33,12 @@ These scripts send commands straight to the AbletonMCP Remote Script in Live (TC
   - **Knob 1 Super Looper**: one **Repeat** knob; turn it up to loop or stutter the kit live.
 - The 4-bar breakdown: bars 1–2 are a sub kick, a half-time snare, rolling ghost hats and tom answers; bar 3 is a full amen-style chop; bar 4 is half an amen, then a 32nd-note snare roll and an FM-zap pickup back to the top.
 - The other tracks get breakdown clips too: long sub bass slides, held D minor → Bb pad chords, sparse mallets and clang. Kick and Hats stop.
+
+## Part 3: half-time trip-hop (slot 3, 85 BPM)
+
+> "make a half time triphop section with cool 4 part harmony and a new sound thats very realaximg physicl modeling"
+
+- **Dream Keys** (new track): **Electric**, Live's physical-model electric piano (tines and pickups), going into Chorus-Ensemble, the Tape Flutter rack, Echo (25% wet, gentle tape wobble) and Hybrid Reverb (38% wet).
+- **4-part harmony** (bass, tenor, alto, soprano), voice-led by step over 32 beats: Dm9 (D A C E) → B♭maj7 (B♭ A D F) → Gm9 (G B♭ D A) → A7sus4 (A G D G) → A7 (A G C♯ E), then back to Dm9. The upper three voices re-voice lazily on the "and" of beat 3, and soprano pickups lead into each chord.
+- **Drums** on the synthesized Jungle Kit: kick on 1, a late kick, snare on 2 and 4, swung ghost 8th-note hats, an open hat and tom drag at the end of the phrase. 85 BPM is exactly half of 170.
+- **Bass:** dub sub following the roots. **Mallets:** four high glassy notes over 16 beats.
