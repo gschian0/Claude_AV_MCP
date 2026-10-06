@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Ableton part 2: jungle breakdown
+### `8a3460a` Ableton part 2: jungle breakdown
 > "make a next part of the clip to go into a jungle breakdown with a synthesixed jungle kit in a drum rack with cool multi effects and a muti knob effects"
 - New **Jungle Kit** track: DS Drum Rack (all synthesized) → Drum Transistor → Multiband Beat Repeat Echo → Knob 1 Super Looper (macro racks).
 - Breakdown clips in slot 2 on Jungle Kit, Tension Bass, Meld Pad, Warp Mallets and Corpus Clang. `play_part.py` switches parts and tempo (1 = 118 BPM, 2 = 170 BPM).
