@@ -67,6 +67,10 @@ p.wire(fsm, 0, world, 0)
 # render toggle: seeds the feedback loop *then* enables the world, so it always starts cleanly
 on = p.box("toggle", 140, 60, 24, 24, 1, 1, ["int"]); p.comment("render (auto-on)", 168, 62, 120)
 lm = p.obj("loadmess 1", 300, 60, 1, 1); p.wire(lm, 0, on, 0)
+# render kick: enable at load can fire before the GL window/context exists (embedded in the symphony) and never
+# retry, leaving no frames — so switch it off and on again once the patch has finished loading
+rk = p.obj("delay 2000", 300, 36, 2, 1, ["bang"]); p.wire(p.obj("loadbang", 300, 10, 1, 1, ["bang"]), 0, rk, 0)
+rkm = p.msg("0, 1", 380, 10); p.wire(rk, 0, rkm, 0); p.wire(rkm, 0, on, 0)
 tii = p.obj("t i i", 140, 92, 1, 2, ["int", "int"]); p.wire(on, 0, tii, 0)
 en = p.msg("enable $1", 200, 92); p.wire(tii, 0, en, 0); p.wire(en, 0, world, 0)
 sel = p.obj("sel 1", 290, 92, 2, 2, ["bang", ""]); p.wire(tii, 1, sel, 0)
@@ -132,7 +136,9 @@ def accumulator(name, init, lo, hi, x, y):
     cl = p.obj(f"clip {lo} {hi}", x, y + 52, 3, 1, ["float"]); p.wire(add, 0, cl, 0)
     out = p.obj("t f f", x, y + 78, 1, 2, ["float", "float"]); p.wire(cl, 0, out, 0); p.wire(out, 1, st, 1)
     pre = p.obj(f"prepend {name}", x, y + 104, 1, 1); p.wire(out, 0, pre, 0); p.wire(pre, 0, pix, 0)
-    rd = readout(name, x, y + 130); p.wire(out, 0, rd, 0)
+    # the readout is a real control: shows the value (via set, no echo) and typing / snapshot recall drives it
+    rd = readout(name, x, y + 130); ps_ = p.obj("prepend set", x, y + 182, 1, 1); p.wire(out, 0, ps_, 0); p.wire(ps_, 0, rd, 0)
+    tset = p.obj("t f f", x, y + 208, 1, 2, ["float", "float"]); rcl = p.obj(f"clip {lo} {hi}", x + 70, y + 182, 3, 1, ["float"]); p.wire(rd, 0, rcl, 0); p.wire(rcl, 0, tset, 0); p.wire(tset, 1, st, 1); p.wire(tset, 0, pre, 0)
     return tbf, out
 
 yd = yk + 190
@@ -140,7 +146,8 @@ yd = yk + 190
 dt = p.obj("t f f", 20, yd + 26, 1, 2, ["float", "float"])
 dmem = p.obj("f 0.985", 90, yd + 52, 2, 1, ["float"]); p.wire(dt, 1, dmem, 1)
 dpre = p.obj("prepend decay", 20, yd + 52, 1, 1); p.wire(dt, 0, dpre, 0); p.wire(dpre, 0, pix, 0)
-dro = readout("decay", 20, yd + 156); p.wire(dt, 0, dro, 0)
+dro = readout("decay", 20, yd + 156)
+dps = p.obj("prepend set", 140, yd + 130, 1, 1); p.wire(dt, 0, dps, 0); p.wire(dps, 0, dro, 0); dcl = p.obj("clip 0.5 1.", 140, yd + 182, 3, 1, ["float"]); p.wire(dro, 0, dcl, 0); p.wire(dcl, 0, dt, 0)   # settable (snapshots)
 for k, v in enumerate([0.9, 0.95, 0.985, 0.995, 1.0]):
     m = p.msg(str(v), 20 + k*46, yd); p.wire(ks, 1 + k, m, 0); p.wire(m, 0, dt, 0)
 zin, zout = accumulator("zoom", 0.99, 0.9, 1.1, 260, yd + 26)
@@ -197,6 +204,23 @@ p.wire(lim, 0, p.obj("s av_hit", 120, yr + 348, 1, 0), 0)
 smsg = p.msg("1, 0 350", 20, yr + 374); p.wire(sg, 0, smsg, 0)
 sln = p.obj("line 0. 20", 20, yr + 400, 3, 2, ["float", "bang"]); p.wire(smsg, 0, sln, 0)
 spre = p.obj("prepend splash", 20, yr + 426, 1, 1); p.wire(sln, 0, spre, 0); p.wire(spre, 0, pix, 0)
+
+# FRAME GRAB for the launch tiles: 'av_grab <path.png>' reads back ONE rendered frame (asyncread switches on only
+# for that frame), shrinks it to 192x108 and writes the png. Nothing happens if render is off.
+gpath = p.obj("r av_grab", 900, 700, 0, 1)
+gex = p.obj("prepend exportimage", 900, 726, 1, 1); p.wire(gpath, 0, gex, 0)
+gapp = p.obj("append png", 900, 752, 2, 1); p.wire(gex, 0, gapp, 0)
+greg = p.obj("zl reg", 900, 778, 2, 2, ["", ""]); p.wire(gapp, 0, greg, 1)
+gtb = p.obj("t b b", 1060, 700, 1, 2, ["bang", "bang"]); p.wire(gpath, 0, gtb, 0)
+gon = p.msg("1", 1060, 726); p.wire(gtb, 0, gon, 0)
+aen = p.msg("enable 1", 1100, 726); p.wire(gtb, 1, aen, 0)
+arb = p.obj("jit.gl.asyncread fbw @enable 0", 1100, 752, 1, 2, ["jit_matrix", ""]); p.wire(aen, 0, arb, 0)
+ggt = p.obj("gate 1", 1060, 778, 2, 1); p.wire(gon, 0, ggt, 0); p.wire(arb, 0, ggt, 1)
+gt3 = p.obj("t b b l", 1060, 804, 1, 3, ["bang", "bang", ""]); p.wire(ggt, 0, gt3, 0)
+gmx = p.obj("jit.matrix avgrab 4 char 192 108", 900, 830, 1, 2, ["jit_matrix", ""]); p.wire(gt3, 2, gmx, 0)
+p.wire(gt3, 1, greg, 0); p.wire(greg, 0, gmx, 0)                               # exportimage <path> png
+goff = p.msg("0", 1060, 856); p.wire(gt3, 0, goff, 0); p.wire(goff, 0, ggt, 0)  # close the gate…
+aoff = p.msg("enable 0", 1100, 856); p.wire(gt3, 0, aoff, 0); p.wire(aoff, 0, arb, 0)   # …and stop reading back
 
 # the conductor drives these
 for k, (name, dst) in enumerate([("av_render", on), ("av_fullscreen", fs), ("av_cubes", cton), ("av_fb", pix)]):

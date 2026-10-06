@@ -101,8 +101,8 @@
      "patching_rect": [
       1070,
       62,
-      444,
-      270.0
+      450,
+      354.0
      ],
      "name": "snapshots.maxpat",
      "varname": "snapshots",

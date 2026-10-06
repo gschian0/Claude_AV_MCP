@@ -14,7 +14,7 @@ into the recipe.
 
 **Contents**
 - **Part 1 — The set:** conductor, all-in-one and symphony windows, feedback keys, saved state, the ensemble, Max 9 lessons.
-- **Part 2 — Advanced cooking:** granular chopping side by side, expressive chopping, vocal chops, snapshots, gen~ kitchen safety, cooking in Ableton Live.
+- **Part 2 — Advanced cooking:** granular chopping side by side, expressive chopping, vocal chops, snapshots, gen~ kitchen safety, cooking in Ableton Live, launch tiles and one-click start.
 
 Every change, with the request that prompted it, is in `CHANGELOG.md` at the repo root.
 
@@ -304,3 +304,18 @@ Techniques built on top of the set. Each chapter covers the dish, how it's cooke
 - **Layers** (`build_layers.py`): sampled library sounds that mirror every clip of their source track, for a fatter mix.
 - `play_part.py 1–6` switches parts and tempo.
 - *Not yet:* Max following Live over **Link**. Live broadcasts Link, but the choppers run on their own clock. The plan is to drive the speed chopper's phase from a transport-locked `phasor~` with Link on in Max's transport; everything else already follows the chopper.
+
+## G. Presets, launch tiles and one-click start
+**Patches:** `snapshots.maxpat` (LAUNCH panel), `start_symphony.maxpat` (recipe `launcher.py`), `DigitalSymphony.maxproj` · **Asked for:** "a few presets that can be launched all together and with one button to launch the preset with the preset graphic along with it", saved "so they all open up together and just start like this"
+- **8 launch tiles** (2 rows of 4). Each tile is a picture (`fpic`) under a transparent `ubutton`. Click it to recall that preset across every open instrument, including the visuals. With **on the bar** on, it lands on jongly step 0.
+  - **store n:** saves `snapshots/slot<n>.json` and asks the visuals to grab a frame (`s av_grab <path>` → one frame read back by `jit.gl.asyncread` → `jit.matrix` 192×108 → `exportimage`). About 0.7 s later the tile loads `slot<n>.png`.
+  - **star n:** makes tile n the startup preset (copies it to `startup.json` / `startup.png`).
+  - Remote control: `s av_launch n`, `s av_store n`, `s av_snapshot_cmd <command>`.
+- **The visuals' look is part of the preset.** Zoom, twist, drift and decay used to be display-only readouts; now they are settable flonums (`prepend set` in, `clip` on the way out), so recall restores them, and the arrow and number keys still drive them.
+  - A readout that captured 0 would black out the picture, so those four are left out of baked state, `SKIP_ZERO` and `bake_snapshot.py` EXCLUDE.
+- **Render kick.** Turning render on at load can fire before the GL window exists inside the embedded panel, and it never retries, so no frames appear (and there's nothing to grab). The visuals patch now switches render off and on 2 s after loading, and the launcher does it again at 2.5 s (`s av_render 0`, then `1`). The launcher also has a **kick visuals** button.
+- **One click to start:** open `patches/max/start_symphony.maxpat` (or `DigitalSymphony.maxproj`, whose toplevel patcher it is). It:
+  1. opens `digital_symphony.maxpat` and `granular_side.maxpat` (`pcontrol load`)
+  2. kicks the renderer
+  3. after 3.5 s sends `boot`, which recalls `startup` if a tile has been starred
+- **Presets travel with the project:** `patches/max/snapshots/` (json + png) is tracked in git.

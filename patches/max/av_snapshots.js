@@ -4,14 +4,18 @@
 // instrument name (jongly_chopper, conductor, ...). A snapshot is patches/max/snapshots/<name>.json:
 //   { "saved": "...", "instruments": { "<instrument>": [ {cls, rect:[x,y,w,h], value}, ... ] } }
 // Messages: store <n> · recall <n> · save <name> · load <name> · scope <all|instrument> · list
+//           startup <n> (that tile opens the set) · boot (recall startup, sent by start_symphony.maxpat)
+// LAUNCH TILES: store <n> also grabs a frame of the visuals (gen_feedback: r av_grab) as snapshots/slot<n>.png,
+// and the panel's tile n shows it.
 autowatch = 1;
 inlets = 1;
-outlets = 2;   // 0: status text (set ...) · 1: names for the saved-snapshots menu
+outlets = 3;   // 0: status text (set ...) · 1: names for the saved-snapshots menu · 2: tile pictures (<n> read <png>)
 
 var UI = { multislider: 1, number: 1, flonum: 1, toggle: 1, slider: 1, dial: 1, umenu: 1 };
 var SKIP_KEYS = { snapshots: 1, state_capture: 1, demo: 1, av_receiver: 1, digital_symphony: 1, symphony: 1, granular_side: 1 };
 // controls whose 0 is only a display value (the chopper's rate box): restoring 0 would stop the drums
-var SKIP_ZERO = { jongly_chopper: [[640, 598]], jongly_granular: [[640, 598]] };
+var SKIP_ZERO = { jongly_chopper: [[640, 598]], jongly_granular: [[640, 598]],
+                  gen_feedback: [[70, 886], [310, 886], [430, 886], [550, 886]] };   // decay/zoom/twist/drift readouts
 var scopeKey = "all";
 
 function stem(n) { return String(n).replace(/\.maxpat$/, ""); }
@@ -123,7 +127,33 @@ function apply(p, items, skip0) {
 	return n;
 }
 
-function store(n) { save("slot" + n); }
+function exists(path) { var f = new File(path, "read"); var ok = f.isopen; if (ok) f.close(); return ok; }
+function showTile(n) {
+	var png = snapdir() + "slot" + n + ".png";
+	if (exists(png)) outlet(2, n, "read", png);
+}
+function store(n) {
+	save("slot" + n);
+	messnamed("av_grab", snapdir() + "slot" + n + ".png");     // gen_feedback writes one frame (if rendering)
+	var t = new Task(function () { showTile(n); }, this); t.schedule(700);
+}
+function copyFile(src, dst) {
+	var a = new File(src, "read");
+	if (!a.isopen) return false;
+	var b = new File(dst, "write"); b.eof = 0;
+	while (a.position < a.eof) b.writebytes(a.readbytes(Math.min(4096, a.eof - a.position)));
+	a.close(); b.close(); return true;
+}
+function startup(n) {
+	if (!copyFile(snapdir() + "slot" + n + ".json", snapdir() + "startup.json")) { status("tile " + n + " is empty: store it first"); return; }
+	copyFile(snapdir() + "slot" + n + ".png", snapdir() + "startup.png");
+	status("tile " + n + " is now the startup preset (start_symphony.maxpat opens with it)");
+}
+function star(n) { startup(n); }   // the tile's "star" button
+function boot() {
+	if (exists(snapdir() + "startup.json")) load("startup");
+	else status("no startup preset yet: press a tile's ★ to choose one");
+}
 function recall(n) { load("slot" + n); }
 function scope(k) { scopeKey = String(k); status("recall scope: " + scopeKey); }
 function list() {
@@ -134,5 +164,6 @@ function list() {
 	names.sort();
 	outlet(1, "clear");
 	for (var i = 0; i < names.length; i++) outlet(1, "append", names[i]);
+	for (var t = 1; t <= 8; t++) showTile(t);
 }
 function bang() {}   // an empty "on the bar" release sends a bang: ignore it

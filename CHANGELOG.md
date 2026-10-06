@@ -6,6 +6,18 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### `PENDING` 8-tile preset launcher with pictures, one-click start, render kick
+> "a preset system for this patches and how to save them in a project so they all open up together and just start like this" / "i want a few presets that can be launced all together and with one button to launche th preset with the preset graphic along with it" / "it doesn't start the frames cause it doesn't start the renderer"
+- **LAUNCH panel** (`snapshots.py`): 8 picture tiles; click to recall (on the bar if chosen), **store n** saves the preset and grabs a frame of the visuals as the tile picture, **star n** sets the startup preset. Adds `r av_launch`, `r av_store`, `r av_snapshot_cmd`. `maxgen` panels now show `fpic` and `ubutton`.
+- **av_snapshots.js:** tile pictures (`slot<n>.png`), `startup`/`star`, `boot`, frame-grab request.
+- **gen_feedback:**
+  - zoom, twist, drift and decay readouts are now settable and clamped, so presets restore the visuals' look
+  - those readouts are no longer baked as 0, which would black out the picture
+  - `r av_grab` frame grab
+  - render kick: off/on 2 s after load, because render enabled at load can start before the window exists and never retry
+- **One-click start:** new `launcher.py` → `start_symphony.maxpat` opens both symphony windows, kicks the renderer and recalls the starred preset. New `DigitalSymphony.maxproj` with it as the toplevel patcher.
+- Cookbook: Part 2 chapter G.
+
 ### `3c71d39` Cookbook: Part 2 "Advanced cooking" + gen~ lint in every build
 > "ok lets ake sure this is in the recipe cookbook now as more advanced cooking"
 - `recipes/DIGITAL_SYMPHONY.md` now has contents and two parts:
