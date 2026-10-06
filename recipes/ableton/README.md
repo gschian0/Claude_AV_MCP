@@ -9,7 +9,9 @@ These scripts send commands straight to the AbletonMCP Remote Script in Live (TC
     python3 build_breakdown.py # part 2: Jungle Kit track + breakdown clips in slot 2
     python3 build_triphop.py   # part 3: Dream Keys track + trip-hop clips in slot 3
     python3 tune_dreamkeys.py  # Dream Keys effect settings
-    python3 play_part.py 1|2|3 # 1 = Warp Garden 118 BPM, 2 = jungle breakdown 170, 3 = trip-hop 85
+    python3 build_parts45.py   # part 4: Warp Garden B section (slot 4); part 5: jungle breakdown 2 + Dub Bass track (slot 5)
+    python3 tune_dubbass.py    # Dub Bass sound
+    python3 play_part.py 1-5   # 1 Warp Garden 118 · 2 jungle breakdown 170 · 3 trip-hop 85 · 4 B section 118 · 5 breakdown 2 170
     python3 live.py get_session_info
 
 | Track | Sound | Effects | Clip length |
@@ -42,3 +44,22 @@ These scripts send commands straight to the AbletonMCP Remote Script in Live (TC
 - **4-part harmony** (bass, tenor, alto, soprano), voice-led by step over 32 beats: Dm9 (D A C E) → B♭maj7 (B♭ A D F) → Gm9 (G B♭ D A) → A7sus4 (A G D G) → A7 (A G C♯ E), then back to Dm9. The upper three voices re-voice lazily on the "and" of beat 3, and soprano pickups lead into each chord.
 - **Drums** on the synthesized Jungle Kit: kick on 1, a late kick, snare on 2 and 4, swung ghost 8th-note hats, an open hat and tom drag at the end of the phrase. 85 BPM is exactly half of 170.
 - **Bass:** dub sub following the roots. **Mallets:** four high glassy notes over 16 beats.
+
+## Part 4: Warp Garden B section (slot 4, 118 BPM)
+
+> "need a nother version of the first part thats a b secton"
+
+- The same tracks and sounds as part 1, moved to the B♭/F side of D dorian.
+- Meld Pad chords: B♭maj9 → C6/9 → F/A → Gm11.
+- New 9-beat mallet arpeggio, new bass line, a syncopated kick, and a 5-beat hat pattern.
+- Loop lengths are 3, 4, 5, 9, 16 and 32 beats, so it still drifts.
+
+## Part 5: jungle breakdown 2 + heavy dub bass (slot 5, 170 BPM)
+
+> "we need a breakdown with longer phrases on the jungle line and heavy dub bass"
+
+- **Jungle Kit, one 8-bar (32-beat) phrase:**
+  - Bars 1–4 are space: sub kick, half-time snare, and hats that get a little louder each bar.
+  - Bars 5–8 bring the break in and mutate it: amen, an edited amen, a tom-ending variation, then a drop bar with a 3-beat 32nd-note snare roll.
+- **Dub Bass** (new track): Operator sine sub (some oscillator feedback grit) → Saturator (drive 0.68) → Auto Filter (dark low-pass, slow LFO) → Glue Compressor. Long held D1, B♭0 and C1 notes, with octave jumps and slides into the turnarounds.
+- **Dream Keys:** offbeat dub-skank chord stabs (Dm9, then B♭maj7). **Meld Pad:** low drones. **Mallets:** three sparse notes.

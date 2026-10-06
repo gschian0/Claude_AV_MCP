@@ -6,6 +6,12 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Ableton parts 4 and 5: B section and dub jungle breakdown
+> "need a nother version of the first part thats a b secton and we need a breakdown with longer phrases on the jungle line and heavy dub bass"
+- Slot 4: Warp Garden B section on the B♭/F side, with new mallet, bass, kick, hat, clang and pad parts.
+- Slot 5: 8-bar evolving jungle phrase, new **Dub Bass** track (Operator → Saturator → Auto Filter → Glue Compressor), Dream Keys dub skank, drone pad.
+- `play_part.py` handles parts 1–5; `tune_dreamkeys.py` can now be imported (its `by_name` helper is shared).
+
 ### `d2e978f` Ableton part 3: half-time trip-hop
 > "make a half time triphop section with cool 4 part harmony and a new sound thats very realaximg physicl modeling"
 - New **Dream Keys** track: Electric (physical-model electric piano) → Chorus-Ensemble → Tape Flutter → Echo → Hybrid Reverb.
