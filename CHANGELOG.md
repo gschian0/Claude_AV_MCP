@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Granular chopper: CHECK readouts to find why it's silent
+### `26fa260` Granular chopper: CHECK readouts to find why it's silent
 > "just don't hear the grangular yet"
 - Couldn't diagnose from here: the Max MCP agent (port 5002) isn't running, so I can't read Max's console.
 - The granular panel now shows **loop ms** (the granular `gen~` reports its loaded loop's length on a new 4th outlet; 0 = the loop didn't load, nothing = `gen~` didn't compile) and **out level** (`peakamp~` on the chopper's output). With the existing **step** counter, these show which stage is failing.
