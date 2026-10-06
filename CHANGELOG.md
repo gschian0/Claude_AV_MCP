@@ -6,6 +6,10 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Ableton part 6: classic jump-up DnB outro
+> "make a simple clean jump up drum and bass outro not the crazy glitch psydub like we are doing and make it classic"
+- New **DnB Kit** (Crisp Kit) and **Jump Up Bass** (Reese Classic) tracks; slot 6 clips: two-step drums with 4-bar fills, call-and-response Reese riff, sub roots, Dm–B♭–F–C pad. `play_part.py 6` plays it at 174 BPM. Layers re-copied.
+
 ### `4481ffe` Ableton: full-quality layers
 > "lets layer some full quality sounds for a fatter mix so it's really robust"
 - `build_layers.py`: six layer tracks (Grand Piano, Ensemble Pad, Analog Bass, Saturated Bass +1 octave, Sub Boom, 909 Core Kit). Each copies every clip of its source track and has a Utility trim, with Bass Mono on the low-end layers. The 909 notes are mapped by drum role from the DS kit.

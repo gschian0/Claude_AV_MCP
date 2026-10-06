@@ -12,7 +12,8 @@ These scripts send commands straight to the AbletonMCP Remote Script in Live (TC
     python3 build_parts45.py   # part 4: Warp Garden B section (slot 4); part 5: jungle breakdown 2 + Dub Bass track (slot 5)
     python3 tune_dubbass.py    # Dub Bass sound
     python3 build_layers.py    # full-quality layer tracks; re-run after changing any source clips to re-copy them
-    python3 play_part.py 1-5   # 1 Warp Garden 118 · 2 jungle breakdown 170 · 3 trip-hop 85 · 4 B section 118 · 5 breakdown 2 170
+    python3 build_outro.py     # part 6: classic jump-up DnB outro (DnB Kit + Jump Up Bass tracks, slot 6)
+    python3 play_part.py 1-6   # 1 Warp Garden 118 · 2 jungle breakdown 170 · 3 trip-hop 85 · 4 B section 118 · 5 breakdown 2 170 · 6 DnB outro 174
     python3 live.py get_session_info
 
 | Track | Sound | Effects | Clip length |
@@ -81,3 +82,14 @@ Each layer is its own track. It copies **every clip of its source track** (all s
 | Drum Layer · 909 | Jungle Kit | 909 Core Kit (sampled) | mapped by role: kick→bass drum, snares→snare, clap→clap, toms→mid tom, hats→closed/open, cymbals→crash; FM zaps and clang aren't layered |
 
 Re-run `build_layers.py` whenever the source clips change; it replaces the layer clips instead of stacking them.
+
+## Part 6: classic jump-up DnB outro (slot 6, 174 BPM)
+
+> "make a simple clean jump up drum and bass outro not the crazy glitch psydub like we are doing and make it classic"
+
+- **DnB Kit** (new track): Crisp Kit, with clean EQ, Overdrive and Glue on each pad and no stutter or spectral effects. The pads are assumed to map in chain order to notes 36–51 (Kick 1 = 36, Snare 1 = 38, Clap = 40, Hihat Closed = 41, Shaker = 47).
+  - Kick on 1 and the "and" of 3; snare (plus a quiet clap) on 2 and 4; ghost snares.
+  - Off-beat-accented 8th-note hats and rolling 16th shaker.
+  - Open-hat lift at the top of the phrase, and a snare/tom fill every 4 bars.
+- **Jump Up Bass** (new track): Reese Classic playing a bouncy 2-bar call and response with octave jumps. Bars 5–8 lift a minor third to the F centre.
+- **Dub Bass:** clean sub roots. **Meld Pad:** Dm → B♭ → F → C (the Pad and Dub Mid layers follow automatically).
