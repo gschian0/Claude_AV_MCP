@@ -50,6 +50,9 @@ for k, (label, name, init) in enumerate([("drums", "chopper", 0.5), ("tampura", 
 p.comment("drone evolve", 420, 150, 100)
 ev = p.box("toggle", 420, 172, 24, 24, 1, 1, ["int"]); p.wire(p.obj("loadmess set 1", 480, 172, 1, 1), 0, ev, 0)
 p.wire(ev, 0, p.obj("s av_evolve", 420, 360, 1, 0), 0)
+p.comment("bass evolve", 520, 150, 100)
+bev = p.box("toggle", 520, 172, 24, 24, 1, 1, ["int"]); p.wire(p.obj("loadmess set 1", 560, 172, 1, 1), 0, bev, 0)
+p.wire(bev, 0, p.obj("s av_bass_evolve", 520, 360, 1, 0), 0)
 p.comment("audio on/off", 420, 214, 100)
 p.box("ezdac~", 420, 236, 45, 45, 2, 0)
 # DRUMS: pattern buttons (index → the chopper's pattern picker), auto switches, chaos, sweep now

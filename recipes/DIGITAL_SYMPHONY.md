@@ -149,6 +149,7 @@ snaps open on each note, plus a sine an octave below.
 - **Scales:** click one to roll a random bassline in that scale. To add a scale, duplicate a message and edit the semitone numbers. Sends `av_scale`.
 - **Root:** the key as a MIDI note. Sends `av_root`, so the tampura and bells retune with it.
 - **Brightness:** how far the filter opens on each note (in Hz).
+- **Evolve** ("the bassline … isn't evolving enough"): every N loops (2 by default), `av_evolve_line.js` rewrites a few steps (3 by default) with notes from the current scale, leaving step 1 on the root. A quarter of the new steps are ties. About 1 in 5 times, two notes also jump up an octave; about 1 in 10 times, the groove shifts by two steps. Brightness drifts between 700 and 4000 Hz and resonance between 0.3 and 0.8, for acid squelch. It stays in key because the quantizer snaps every note. The conductor has a **bass evolve** toggle too (`av_bass_evolve`).
 
 ### 2c. Jungle bass: `jungle_bass.maxpat`
 **Recipe:** `recipes/max/jungle_bass.py`

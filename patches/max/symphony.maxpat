@@ -272,8 +272,8 @@
      "patching_rect": [
       10,
       2009.0,
-      1282,
-      443.0
+      1300,
+      527.0
      ],
      "name": "bassline.maxpat",
      "offset": [
@@ -298,7 +298,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2472.0,
+      2556.0,
       300,
       20.0
      ],
@@ -314,7 +314,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2494.0,
+      2578.0,
       1200,
       495
      ],
