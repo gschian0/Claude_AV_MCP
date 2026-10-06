@@ -116,7 +116,7 @@ env = clamp(min(subfrac, 1 - subfrac)*(len/16/rl)/fade, 0, 1);
 out1 = sample(loop, (slice + subfrac/rl)/16)*env;
 out2 = step;
 """
-c = Patch([40.0, 40.0, 960.0, 640.0])
+c = Patch([40.0, 40.0, 960.0, 900.0])
 c.comment("JONGLY CHOPPER — after ModSquad. The jongly loop is cut into 16 slices. The green row says which slice each step plays; the orange row says how many times that step re-fires (rolls). Pick a pattern, or let AUTO move through them.", 20, 8, 900)
 c.obj("buffer~ jongly jongly.aif", 20, 70, 1, 2, ["float", "bang"])
 c.obj("buffer~ chopsteps 2", 200, 70, 1, 2, ["float", "bang"])
@@ -175,9 +175,42 @@ pr = c.obj("prepend rate", xr + 180, ya + 118, 1, 1); c.wire(lm, 0, fl, 0); c.wi
 
 gen = c.obj("gen~", 20, 534, 1, 2, ["signal", "signal"], w=200.0, patcher=gen_sub("dsp.gen", CHOP_CODE, 0, 2))
 for m in rolls + [pr, pch]: c.wire(m, 0, gen, 0)
-g = c.obj("*~ 0.5", 20, 566, 2, 1, ["signal"]); c.wire(gen, 0, g, 0)
-dac = c.box("ezdac~", 20, 594, 45, 45, 2, 0); c.wire(g, 0, dac, 0); c.wire(g, 0, dac, 1)
-c.comment("click to start audio", 70, 606, 140)
+# --- FILTER SWEEPS on the drums: click a sweep, it fires on the next beat (every 4 steps) ---
+yf = 660
+c.comment("FILTER SWEEPS — click one; it starts on the next beat. Each message = mode (1 LP · 2 HP · 3 BP) then cutoff/time pairs (MIDI note, ms). 'open' resets.", 20, yf, 900)
+SWEEPS = [("open", "1 132 0"),
+          ("LP up · 1 loop", "1 40 0 132 2822"),
+          ("LP down · 1 loop", "1 132 0 45 2822"),
+          ("LP dip · 1 beat", "1 132 0 55 150 132 550"),
+          ("HP riser · 2 loops", "2 20 0 105 5644"),
+          ("HP drop-out", "2 105 0 20 1411"),
+          ("BP wah", "3 50 0 115 350 50 350")]
+sreg = c.obj("zl reg", 560, yf + 30, 2, 2, ["", ""])
+arm = c.obj("t b", 640, yf + 30, 1, 1, ["bang"]); one = c.msg("1", 690, yf + 30)
+fg = c.obj("gate 1", 560, yf + 90, 2, 1)
+c.wire(arm, 0, one, 0); c.wire(one, 0, fg, 0)
+for k, (name, seq) in enumerate(SWEEPS):
+    col, row = k % 4, k // 4
+    x, y = 20 + col*135, yf + 30 + row*52
+    c.comment(name, x, y, 130); m = c.msg(seq, x, y + 22, 125)
+    c.wire(m, 0, sreg, 1); c.wire(m, 0, arm, 0)
+b4 = c.obj("% 4", 760, yf + 64, 2, 1, ["int"]); bs = c.obj("sel 0", 760, yf + 90, 2, 2, ["bang", ""])
+c.wire(b4, 0, bs, 0); c.wire(bs, 0, fg, 1)
+fire = c.obj("t b b", 560, yf + 116, 1, 2, ["bang", "bang"]); c.wire(fg, 0, fire, 0)
+zero = c.msg("0", 640, yf + 116); c.wire(fire, 0, zero, 0); c.wire(zero, 0, fg, 0)    # one-shot: close after firing
+c.wire(fire, 1, sreg, 0)
+slc = c.obj("zl slice 1", 560, yf + 142, 2, 2, ["", ""]); c.wire(sreg, 0, slc, 0)
+cut = c.obj("line~ 132", 680, yf + 168, 2, 2, ["signal", "bang"]); c.wire(slc, 1, cut, 0)
+mtf = c.obj("mtof~", 680, yf + 194, 1, 1, ["signal"]); c.wire(cut, 0, mtf, 0)
+c.comment("resonance (0-1)", 760, yf + 142, 110)
+rq = c.box("flonum", 760, yf + 166, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0, maximum=0.95)
+c.wire(c.obj("loadmess 0.5", 820, yf + 166, 1, 1), 0, rq, 0)
+svf = c.obj("svf~ 1000 0.5", 20, yf + 140, 3, 4, ["signal"] * 4); c.wire(gen, 0, svf, 0); c.wire(mtf, 0, svf, 1); c.wire(rq, 0, svf, 2)
+sel3 = c.obj("selector~ 3 1", 20, yf + 170, 4, 1, ["signal"]); c.wire(slc, 0, sel3, 0)
+for k in range(3): c.wire(svf, k, sel3, k + 1)
+g = c.obj("*~ 0.5", 20, yf + 200, 2, 1, ["signal"]); c.wire(sel3, 0, g, 0)
+dac = c.box("ezdac~", 20, yf + 228, 45, 45, 2, 0); c.wire(g, 0, dac, 0); c.wire(g, 0, dac, 1)
+c.comment("click to start audio", 70, yf + 240, 140)
 
 # step readout + broadcast (the Buddha bass follows jongly_step) + loop counter for AUTO
 sn = c.obj("snapshot~ 5", 240, 566, 2, 1, ["float"]); c.wire(gen, 1, sn, 0)
@@ -185,6 +218,7 @@ ch = c.obj("change", 240, 592, 1, 3, ["", "int", "int"]); c.wire(sn, 0, ch, 0)
 num = c.box("number", 330, 592, 50, 22, 1, 2, ["", "bang"]); c.wire(ch, 0, num, 0); c.comment("step", 382, 593, 40)
 snd = c.obj("s jongly_step", 240, 618, 1, 0); c.wire(ch, 0, snd, 0)
 s0 = c.obj("sel 0", 440, 566, 2, 2, ["bang", ""]); c.wire(ch, 0, s0, 0)           # one bang per loop
+c.wire(ch, 0, b4, 0)                                                                # beat clock for sweeps
 gt = c.obj("gate 1", 440, 592, 2, 1); c.wire(at, 0, gt, 0); c.wire(s0, 0, gt, 1)
 cnt = c.obj("counter", 500, 592, 3, 4, ["int", "", "", "int"]); c.wire(gt, 0, cnt, 0)
 md = c.obj("% 2", 570, 592, 2, 1, ["int"]); c.wire(cnt, 0, md, 0); c.wire(nn, 0, md, 1)

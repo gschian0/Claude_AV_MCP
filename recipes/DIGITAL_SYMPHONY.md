@@ -19,9 +19,9 @@ combination and they play together.
 
 | Send / receive | Sent by | Used by | Meaning |
 |---|---|---|---|
-| `jongly_step` | jongly chopper | bassline, bells | current step 0–15 (one step = 176.36 ms, ~170 bpm) |
-| `av_scale` | bassline (scale buttons) | bells | scale as semitones over 2 octaves |
-| `av_root` | bassline (root number) | tampura, bells | key as a MIDI note (33 = A1) |
+| `jongly_step` | jongly chopper | bassline, jungle bass, bells | current step 0–15 (one step = 176.36 ms, ~170 bpm) |
+| `av_scale` | bassline (scale buttons) | jungle bass, bells | scale as semitones over 2 octaves |
+| `av_root` | bassline (root number) | tampura, jungle bass, bells | key as a MIDI note (33 = A1) |
 
 If the chopper isn't running, switch on **free-run** in the bassline or bells
 patch. It clocks them at the same tempo.
@@ -41,6 +41,7 @@ originally"
 - **Rolls** row: how many times each step re-fires (1 = normal, 2–8 = roll).
 - **Patterns** set both rows at once: straight, stutter, chop, roll, shuffle, half, backwards.
 - **Auto** picks a new pattern every N loops. **Chaos** sets the chance of a random jump on each step. **Live roll** rolls every step. **Rate** is tape speed.
+- **Filter sweeps** ("trigger fiter sweeps on the drums"): `svf~` on the output. Click a sweep and it starts on the next beat. Choices: open, LP up, LP down, LP dip, HP riser, HP drop-out, BP wah. Each message is a mode (1 LP · 2 HP · 3 BP) followed by cutoff/time pairs (MIDI note, ms) for `line~` → `mtof~`, so you can write your own. **Resonance** goes from 0 to 0.95.
 
 ### 2. Low tampura: `sine_test.maxpat` (+ `buddha_smear~.maxpat`)
 **Recipe:** `recipes/max/tampura_drone.py`
@@ -74,6 +75,20 @@ snaps open on each note, plus a sine an octave below.
 - **Scales:** click one to roll a random bassline in that scale. To add a scale, duplicate a message and edit the semitone numbers. Sends `av_scale`.
 - **Root:** the key as a MIDI note. Sends `av_root`, so the tampura and bells retune with it.
 - **Brightness:** how far the filter opens on each note (in Hz).
+
+### 2c. Jungle bass: `jungle_bass.maxpat`
+**Recipe:** `recipes/max/jungle_bass.py`
+
+**Asked for:** "a jungle bass is what we need with the drone ... this acid sounds
+cool too so lets add a fm jungle bass"
+
+**What it is:** a deep FM sub for long, gliding jungle notes. The modulator runs
+at `ratio` × pitch, and the FM index blooms up to **growl** on each note, then
+settles. An optional wobble LFO on the index is synced to 170 bpm (1/2, 1/4,
+1/8, 1/16). It's mixed with a pure sine sub, then goes through `tanh~` drive and
+a gentle `lores~`. Key and scale follow the bassline patch.
+- **Pattern** row: 1 = root, 13 = an octave up, 0 = tie (most steps are ties, so notes are long). Presets: roller, drop, steppy, dread, walk-down. **Random** stays in the shared scale, with 2 in 3 steps tied.
+- **Octave** shifts it against the key. **Glide** in ms (90). **Growl**, **ratio** (1 = warm, 0.5 = growly, 2 = hollow), **wobble** rate and depth, **drive**.
 
 ### 3. Glass bells: `glass_bells.maxpat`
 **Recipe:** `recipes/max/glass_bells.py`
