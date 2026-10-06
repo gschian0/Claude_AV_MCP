@@ -243,3 +243,5 @@ feeds new image into the loop. The **render** toggle sends a black seed texture
 - **How:** a `gen~` voice plays a random vocal in a random chop style: clean, chopped (3× first 80 ms, "oi-oi-oi"), machine gun (4× 50 ms, +3 st), dropped (−5 st) or reverse. Each buffer's own sample rate keeps the pitch correct, and the read position is guarded the same way as the chopper fix.
 - A dark dub delay (dotted 1/8 at 170 BPM, 265 ms, feedback through a 2.5 kHz low-pass) feeds into the level control. The conductor has a new **vox** fader (`av_level_vox`, 0.4).
 - It is in `symphony.maxpat` and `digital_symphony.maxpat`, next to the visuals.
+
+- **Pitch rolls / pitch LFO on-off** ("we should be able to turn off pitch rolls too"): two toggles next to the PITCH controls, **rolls** and **LFO**. Off keeps the settings and just stops applying them.

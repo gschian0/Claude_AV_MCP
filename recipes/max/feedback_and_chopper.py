@@ -222,6 +222,8 @@ Param thresh(-20);  // dB where compression starts
 Param ratio(3);     // 3:1 above the threshold
 Param makeup(4);    // dB of gain back after compressing
 Param prstep(1);    // PITCH ROLL: semitones added on each roll repeat (negative = falling rolls)
+Param prollon(1);   // pitch rolls on/off (off keeps prstep, just stops applying it)
+Param lfoon(1);     // pitch LFO on/off
 Param lfodepth(0.5);  // PITCH LFO depth in semitones
 Param lforate(1);  // LFO cycles per loop (mode 0) / per step (mode 1) / per roll hit (mode 2)
 Param lfomode(2);  // 0 = synced to the loop, 1 = retriggers every step, 2 = retriggers every roll hit (multi-trigger)
@@ -263,7 +265,7 @@ rd = fixnan(rd);
 lph = (lfomode < 0.5) ? ph*lforate : ((lfomode < 1.5) ? frac*lforate : subfrac*lforate);
 lw = lph - floor(lph);
 lfo = (lfoshape < 0.5) ? sin(6.283185307*lw) : 1 - 2*lw;
-semi = clamp(fixnan(clamp(transpose, -24, 24) + spt + clamp(prstep, -12, 12)*subn + clamp(lfodepth, 0, 24)*lfo), -36, 36);
+semi = clamp(fixnan(clamp(transpose, -24, 24) + spt + ((prollon > 0.5) ? clamp(prstep, -12, 12)*subn : 0) + ((lfoon > 0.5) ? clamp(lfodepth, 0, 24)*lfo : 0)), -36, 36);
 rd = clamp(rd + clamp(fixnan(rate), -4, 4)*exp(semi*0.05776226505), -len, len);
 idx = clamp(fixnan(wrap((slice*len/16 + rd)/len, 0, 1)), 0, 0.999999);
 dry = ok*sample(loop, idx)*env*(1 - mute)*(1 - clamp(dyn, 0, 1)*(1 - sv));
@@ -344,13 +346,19 @@ for k, (ui, name, init) in enumerate([(cmp_on, "comp", 1), (cth, "thresh", -20),
     pp = c.obj(f"prepend {name}", 820, 520 + 26*k, 1, 1); c.wire(ui, 0, pp, 0); c.wire(pp, 0, gen, 0)
 grs = c.obj("snapshot~ 50", 820, 624, 2, 1, ["float"]); c.wire(gen, 2, grs, 0); c.wire(grs, 0, cgr, 0)
 # PITCH: rolls that climb/fall + a pitch LFO tied to the sequencer (loop / step / every roll hit)
-c.comment("PITCH roll st · LFO depth st · rate", 20, 586, 220)
+c.comment("PITCH roll st · LFO depth st · rate · on: rolls LFO", 20, 586, 260)
 prs = c.box("flonum", 20, 606, 50, 22, 1, 2, ["", "bang"], format=6)
 lfd = c.box("flonum", 76, 606, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0)
 lfr = c.box("flonum", 132, 606, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0)
 for k, (ui, name, init) in enumerate([(prs, "prstep", 1), (lfd, "lfodepth", 0.5), (lfr, "lforate", 1)]):
     c.wire(c.obj(f"loadmess {init}", 1000, 520 + 26*k, 1, 1), 0, ui, 0)
     pp = c.obj(f"prepend {name}", 1080, 520 + 26*k, 1, 1); c.wire(ui, 0, pp, 0); c.wire(pp, 0, gen, 0)
+# on/off toggles for the pitch rolls and the pitch LFO (also from anywhere: av_chop_prollon / av_chop_lfoon)
+for k, (x, name) in enumerate([(192, "prollon"), (220, "lfoon")]):
+    tg = c.box("toggle", x, 606, 22, 22, 1, 1, ["int"])
+    c.wire(c.obj("loadmess 1", 1000, 598 + 26*k, 1, 1), 0, tg, 0)
+    pp = c.obj(f"prepend {name}", 1080, 598 + 26*k, 1, 1); c.wire(tg, 0, pp, 0); c.wire(pp, 0, gen, 0)
+    c.wire(c.obj(f"r av_chop_{name}", 1180, 598 + 26*k, 0, 1), 0, tg, 0)
 c.comment("LFO sync: loop · step · roll hit   shape: sine · dive", 20, 636, 220)
 for k, m_ in enumerate(["lfomode 0", "lfomode 1", "lfomode 2", "lfoshape 0", "lfoshape 1"]):
     m = c.msg(m_, 20 + (k % 3)*72 if k < 3 else 20 + (k - 3)*80, 656 if k < 3 else 682, 68 if k < 3 else 76)

@@ -6,6 +6,10 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Chopper: pitch rolls and pitch LFO on/off
+> "we should be able to turn off pitch rolls too"
+- Two toggles next to the PITCH controls: **rolls** (`prollon`) and **LFO** (`lfoon`), both on by default. Off stops applying the effect but keeps its settings. Also controllable through `av_chop_prollon` / `av_chop_lfoon`.
+
 ### `3050c6b` Glass bells audible again
 > "fix the glass bells i can't really even hear them"
 - Cause: the baked 15:59 state had the bells' octave at **263** semitones above the bass root, which puts every note above hearing, and decay at **79 ms** (tiny clicks). Both were kept as captured at the time and flagged as odd.
