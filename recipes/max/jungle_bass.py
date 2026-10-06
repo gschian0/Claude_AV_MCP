@@ -39,6 +39,7 @@ rsc = p.obj("r av_scale", xs, 84, 0, 1); lsc = p.obj("loadmess 0 0 7 12 0 2 3 5 
 tll = p.obj("t l l", xs, 136, 1, 2, ["", ""]); p.wire(rsc, 0, tll, 0); p.wire(lsc, 0, tll, 0)
 zlen = p.obj("zl len", xs + 80, 162, 2, 2, ["", ""]); p.wire(tll, 1, zlen, 0)
 rb = p.box("button", xs, 190, 24, 24, 1, 1, ["bang"]); p.comment("random", xs + 28, 192, 60)
+rro = p.obj("r av_reroll_jungle", xs + 100, 190, 0, 1); p.wire(rro, 0, rb, 0)   # conductor re-roll
 uz = p.obj("uzi 16", xs, 220, 2, 3, ["bang", "bang", "int"]); p.wire(rb, 0, uz, 0)
 r3 = p.obj("random 3", xs, 246, 2, 1, ["int"]); p.wire(uz, 0, r3, 0)
 s0 = p.obj("sel 0", xs, 272, 2, 2, ["bang", ""]); p.wire(r3, 0, s0, 0)
@@ -58,7 +59,11 @@ oc = p.box("number", 690, 230, 40, 22, 1, 2, ["", "bang"], minimum=-24, maximum=
 pak = p.obj("pak 33 0", 520, 256, 2, 1); p.wire(rr, 0, pak, 0); p.wire(lr, 0, pak, 0); p.wire(oc, 0, pak, 1)
 zs = p.obj("zl sum", 520, 282, 2, 2, ["", ""]); p.wire(pak, 0, zs, 0)
 km = p.obj("- 1", 520, 308, 2, 1, ["int"]); p.wire(zs, 0, km, 0)
-nt = p.obj("+ 32", 400, 256, 2, 1, ["int"]); p.wire(tb, 1, nt, 0); p.wire(km, 0, nt, 1)
+nt = p.obj("+ 32", 400, 256, 2, 1, ["int"]); p.wire(km, 0, nt, 1)
+qm = p.obj("- 1", 260, 256, 2, 1, ["int"]); qj = p.obj("js av_quantize.js", 260, 256 + 26, 1, 1)
+qp = p.obj("+ 1", 260, 256 + 52, 2, 1, ["int"]); p.wire(tb, 1, qm, 0); p.wire(qm, 0, qj, 0); p.wire(qj, 0, qp, 0); p.wire(qp, 0, nt, 0)   # snap to the scale
+p.wire(tll, 0, qj, 0)
+
 mtof = p.obj("mtof", 400, 282, 1, 1, ["float"]); p.wire(nt, 0, mtof, 0)
 gl = p.box("number", 800, 230, 50, 22, 1, 2, ["", "bang"], minimum=0); p.wire(p.obj("loadmess 90", 860, 230, 1, 1), 0, gl, 0)
 pk = p.obj("pack 0. 90", 400, 308, 2, 1); p.wire(mtof, 0, pk, 0); p.wire(gl, 0, pk, 1)
@@ -106,7 +111,9 @@ dr = p.box("flonum", 370, 690, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.1
 pre = p.obj("*~ 2.", 20, 690, 2, 1, SIG); p.wire(amp, 0, pre, 0); p.wire(dr, 0, pre, 1)
 th = p.obj("tanh~", 20, 716, 1, 1, SIG); p.wire(pre, 0, th, 0)
 lp = p.obj("lores~ 1400 0.1", 20, 742, 3, 1, SIG); p.wire(th, 0, lp, 0)
-g = p.obj("*~ 0.45", 20, 768, 2, 1, SIG); p.wire(lp, 0, g, 0)
+lvr = p.obj("r av_level_jungle", 140, 742, 0, 1); lvk = p.obj("pack 0. 40", 140, 742 + 26, 2, 1)
+lvs = p.obj("line~ 0.45", 140, 742 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 0, lvk, 0); p.wire(lvk, 0, lvs, 0)
+g = p.obj("*~ 0.45", 20, 768, 2, 1, SIG); p.wire(lp, 0, g, 0); p.wire(lvs, 0, g, 1)
 dac = p.box("ezdac~", 20, 798, 45, 45, 2, 0); p.wire(g, 0, dac, 0); p.wire(g, 0, dac, 1)
 p.comment("click to start audio", 70, 810, 160)
 p.dump(f"{out}/jungle_bass.maxpat"); check(f"{out}/jungle_bass.maxpat")

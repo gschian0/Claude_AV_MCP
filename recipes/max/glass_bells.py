@@ -69,11 +69,13 @@ tin = p.obj("tapin~ 3000", 560, 560, 1, 1, ["tapconnect"]); p.wire(bell, 0, tin,
 tout = p.obj("tapout~ 353 529", 560, 590, 2, 2, SIG * 2); p.wire(tin, 0, tout, 0)
 fb = p.obj("*~ 0.4", 680, 590, 2, 1, SIG); p.wire(tout, 1, fb, 0); p.wire(fb, 0, tin, 0)
 p.comment("feedback", 740, 591, 70)
+lvr = p.obj("r av_level_bells", 800, 620, 0, 1); lvk = p.obj("pack 0. 40", 800, 620 + 26, 2, 1)
+lvs = p.obj("line~ 0.25", 800, 620 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 0, lvk, 0); p.wire(lvk, 0, lvs, 0)
 outs = []
 for k, x in enumerate((560, 680)):
     w = p.obj("*~ 0.6", x, 620, 2, 1, SIG); p.wire(tout, k, w, 0)
     mx = p.obj("+~", x, 646, 2, 1, SIG); p.wire(bell, 0, mx, 0); p.wire(w, 0, mx, 1)
-    g = p.obj("*~ 0.25", x, 672, 2, 1, SIG); p.wire(mx, 0, g, 0); outs.append(g)
+    g = p.obj("*~ 0.25", x, 672, 2, 1, SIG); p.wire(mx, 0, g, 0); p.wire(lvs, 0, g, 1); outs.append(g)
 dac = p.box("ezdac~", 620, 700, 45, 45, 2, 0); p.wire(outs[0], 0, dac, 0); p.wire(outs[1], 0, dac, 1)
 p.comment("click to start audio", 670, 712, 140)
 p.dump(f"{out}/glass_bells.maxpat"); check(f"{out}/glass_bells.maxpat")

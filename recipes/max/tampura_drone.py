@@ -20,7 +20,7 @@ def fm_voice(p, x, y, base, mult, drift_rate, r_rate, i_rate):
     ms = p.obj("*~", x + 160, y + 162, 2, 1, SIG); p.wire(mod, 0, ms, 0); p.wire(dev, 0, ms, 1)
     cf = p.obj("+~", x, y + 188, 2, 1, SIG); p.wire(fc, 0, cf, 0); p.wire(ms, 0, cf, 1)
     car = p.obj("cycle~", x, y + 214, 2, 1, SIG); p.wire(cf, 0, car, 0)
-    return car
+    return car, b, index
 
 p = Patch([60.0, 60.0, 940.0, 840.0])
 p.present = True
@@ -50,12 +50,42 @@ envR = p.obj("line~ 0.5", 460, 230, 2, 2, ["signal", "bang"]); p.wire(pa, 0, env
 p.comment("Sa", 420, 201, 30); p.comment("Pa", 580, 201, 30)
 
 # --- two FM voices: Sa = root (left), Pa = fifth (right) ---
-L = fm_voice(p, 20, 300, pitch, 1.0, 0.011, 0.007, 0.019)
-R = fm_voice(p, 460, 300, pitch, 1.5, 0.0089, 0.0053, 0.023)
+L, Lmult, Lindex = fm_voice(p, 20, 300, pitch, 1.0, 0.011, 0.007, 0.019)
+R, Rmult, Rindex = fm_voice(p, 460, 300, pitch, 1.5, 0.0089, 0.0053, 0.023)
+
+# --- EVOLVE: every N pluck cycles Pa wanders to another consonant interval (always in key) and each
+#     voice's FM brightness drifts toward a new target, so the drone keeps changing shape ---
+xe = 640
+p.comment("EVOLVE every N cycles · Pa wanders 5th / 4th / octave / octave+5th; tone drifts", xe, 60, 290)
+ev = p.box("toggle", xe, 84, 22, 22, 1, 1, ["int"]); p.wire(p.obj("loadmess 1", xe + 30, 84, 1, 1), 0, ev, 0)
+rev = p.obj("r av_evolve", xe + 110, 84, 0, 1); p.wire(rev, 0, ev, 0)
+evn = p.box("number", xe + 200, 84, 40, 22, 1, 2, ["", "bang"], minimum=1); p.wire(p.obj("loadmess 3", xe + 245, 84, 1, 1), 0, evn, 0)
+p.comment("cycles", xe + 200, 108, 50)
+c0 = p.obj("sel 0", xe, 140, 2, 2, ["bang", ""]); p.wire(cn, 0, c0, 0)          # one bang per Pa·Sa·Sa·Sa cycle
+eg = p.obj("gate 1", xe, 166, 2, 1); p.wire(ev, 0, eg, 0); p.wire(c0, 0, eg, 1)
+ec = p.obj("counter", xe, 192, 3, 4, ["int", "", "", "int"]); p.wire(eg, 0, ec, 0)
+em = p.obj("% 3", xe + 70, 192, 2, 1, ["int"]); p.wire(ec, 0, em, 0); p.wire(evn, 0, em, 1)
+e0 = p.obj("sel 0", xe + 120, 192, 2, 2, ["bang", ""]); p.wire(em, 0, e0, 0)
+et = p.obj("t b b b", xe + 120, 218, 1, 3, ["bang"] * 3); p.wire(e0, 0, et, 0)
+# Pa's interval
+ri = p.obj("random 5", xe + 120, 244, 2, 1, ["int"]); p.wire(et, 2, ri, 0)
+il = p.obj("zl lookup", xe + 120, 270, 2, 2, ["", ""]); p.wire(ri, 0, il, 0)
+p.wire(p.obj("loadmess 7 5 12 19 7", xe + 200, 244, 1, 1), 0, il, 1)
+ivn = p.box("number", xe + 200, 270, 40, 22, 1, 2, ["", "bang"]); p.wire(il, 0, ivn, 0); p.comment("semitones", xe + 245, 271, 70)
+ex = p.obj("expr exp($f1*0.05776226505)", xe + 120, 296, 1, 1, ["float"]); p.wire(il, 0, ex, 0)   # 2^(semitones/12)
+ep = p.obj("pack 0. 4000", xe + 120, 322, 2, 1); p.wire(ex, 0, ep, 0)
+emv = p.obj("line~ 1.5", xe + 120, 348, 2, 2, ["signal", "bang"]); p.wire(ep, 0, emv, 0); p.wire(emv, 0, Rmult, 1)
+# brightness targets for each voice
+for k, (src, dst) in enumerate(((1, Lindex), (0, Rindex))):
+    rr_ = p.obj("random 100", xe + k*110, 380, 2, 1, ["int"]); p.wire(et, src, rr_, 0)
+    sc = p.obj("scale 0 99 0.8 3.5", xe + k*110, 406, 6, 1, ["float"]); p.wire(rr_, 0, sc, 0)
+    pk2 = p.obj("pack 0. 8000", xe + k*110, 432, 2, 1); p.wire(sc, 0, pk2, 0)
+    ln = p.obj("line~ 1.8", xe + k*110, 458, 2, 2, ["signal", "bang"]); p.wire(pk2, 0, ln, 0); p.wire(ln, 0, dst, 1)
 ys = 550
 # --- LEVEL: one slider for the whole drone, smoothed so moves don't click ---
 p.comment("LEVEL", 300, ys - 30, 60)
 lv = p.box("slider", 300, ys - 8, 24, 140, 1, 1, [""], floatoutput=1, size=1.0, min=0.0)
+p.wire(p.obj("r av_level_tampura", 390, ys - 8, 0, 1), 0, lv, 0)   # conductor mix
 lvn = p.box("flonum", 330, ys + 110, 50, 22, 1, 2, ["", "bang"], format=6)
 p.wire(p.obj("loadmess 0.5", 330, ys - 8, 1, 1), 0, lv, 0); p.wire(lv, 0, lvn, 0)
 lvp = p.obj("pack 0. 40", 390, ys + 20, 2, 1); p.wire(lv, 0, lvp, 0)

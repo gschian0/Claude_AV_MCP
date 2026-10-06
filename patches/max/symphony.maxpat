@@ -28,7 +28,7 @@
       1400,
       40.0
      ],
-     "text": "DIGITAL SYMPHONY \u2014 every instrument in one window. Open this instead of the single patches (it runs one copy of each). Turn audio on with any speaker. Visuals: keys work in fullscreen (see the feedback panel).",
+     "text": "DIGITAL SYMPHONY \u2014 the conductor on top runs everything; every instrument's panel below. Open this instead of the single patches (it runs one copy of each). Turn audio on with any speaker. Visuals: keys work in fullscreen (see the feedback panel).",
      "linecount": 2
     }
    },
@@ -44,7 +44,7 @@
       300,
       20.0
      ],
-     "text": "JONGLY CHOPPER",
+     "text": "CONDUCTOR",
      "linecount": 1
     }
    },
@@ -57,10 +57,10 @@
      "patching_rect": [
       10,
       62,
-      930,
-      776.0
+      940,
+      318.0
      ],
-     "name": "jongly_chopper.maxpat",
+     "name": "conductor.maxpat",
      "offset": [
       0.0,
       0.0
@@ -82,12 +82,12 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      960,
-      40,
+      10,
+      400.0,
       300,
       20.0
      ],
-     "text": "GEN FEEDBACK",
+     "text": "JONGLY CHOPPER",
      "linecount": 1
     }
    },
@@ -98,12 +98,12 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      960,
-      62,
-      762,
-      644.0
+      10,
+      422.0,
+      930,
+      776.0
      ],
-     "name": "gen_feedback.maxpat",
+     "name": "jongly_chopper.maxpat",
      "offset": [
       0.0,
       0.0
@@ -125,12 +125,12 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      10,
-      858.0,
+      960,
+      400.0,
       300,
       20.0
      ],
-     "text": "SINE TEST",
+     "text": "GEN FEEDBACK",
      "linecount": 1
     }
    },
@@ -141,12 +141,12 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      10,
-      880.0,
-      900,
-      407.0
+      960,
+      422.0,
+      810,
+      644.0
      ],
-     "name": "sine_test.maxpat",
+     "name": "gen_feedback.maxpat",
      "offset": [
       0.0,
       0.0
@@ -168,12 +168,12 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      930,
-      858.0,
+      10,
+      1218.0,
       300,
       20.0
      ],
-     "text": "GLASS BELLS",
+     "text": "SINE TEST",
      "linecount": 1
     }
    },
@@ -184,12 +184,12 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      930,
-      880.0,
-      860,
-      388.0
+      10,
+      1240.0,
+      955,
+      441.0
      ],
-     "name": "glass_bells.maxpat",
+     "name": "sine_test.maxpat",
      "offset": [
       0.0,
       0.0
@@ -211,12 +211,12 @@
      "numinlets": 1,
      "numoutlets": 0,
      "patching_rect": [
-      10,
-      1307.0,
+      985,
+      1218.0,
       300,
       20.0
      ],
-     "text": "BASSLINE",
+     "text": "GLASS BELLS",
      "linecount": 1
     }
    },
@@ -227,12 +227,12 @@
      "numinlets": 0,
      "numoutlets": 0,
      "patching_rect": [
-      10,
-      1329.0,
-      1282,
-      443.0
+      985,
+      1240.0,
+      860,
+      388.0
      ],
-     "name": "bassline.maxpat",
+     "name": "glass_bells.maxpat",
      "offset": [
       0.0,
       0.0
@@ -255,11 +255,11 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1792.0,
+      1701.0,
       300,
       20.0
      ],
-     "text": "JUNGLE BASS",
+     "text": "BASSLINE",
      "linecount": 1
     }
    },
@@ -271,7 +271,50 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1814.0,
+      1723.0,
+      1282,
+      443.0
+     ],
+     "name": "bassline.maxpat",
+     "offset": [
+      0.0,
+      0.0
+     ],
+     "embed": 0,
+     "bgmode": 0,
+     "border": 1,
+     "clickthrough": 0,
+     "enablehscroll": 0,
+     "enablevscroll": 0,
+     "lockeddragscroll": 0,
+     "viewvisibility": 1
+    }
+   },
+   {
+    "box": {
+     "id": "obj-14",
+     "maxclass": "comment",
+     "numinlets": 1,
+     "numoutlets": 0,
+     "patching_rect": [
+      10,
+      2186.0,
+      300,
+      20.0
+     ],
+     "text": "JUNGLE BASS",
+     "linecount": 1
+    }
+   },
+   {
+    "box": {
+     "id": "obj-15",
+     "maxclass": "bpatcher",
+     "numinlets": 0,
+     "numoutlets": 0,
+     "patching_rect": [
+      10,
+      2208.0,
       1200,
       495
      ],

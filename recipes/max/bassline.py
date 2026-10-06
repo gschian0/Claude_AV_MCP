@@ -32,7 +32,10 @@ for i, (name, seq) in enumerate(LINES):
     if i == 0: p.wire(dl, 0, m, 0)
 sl = p.obj("sel 0", 300, 196, 2, 2, ["bang", ""]); p.wire(ms, 1, sl, 0)      # right outlet = fetched value
 tb = p.obj("t b i", 300, 222, 1, 2, ["bang", "int"]); p.wire(sl, 1, tb, 0)
-nt = p.obj("+ 32", 360, 248, 2, 1, ["int"]); p.wire(tb, 1, nt, 0)            # value 1 → MIDI 33 (A1)
+nt = p.obj("+ 32", 360, 248, 2, 1, ["int"])                                   # value 1 → MIDI 33 (A1)
+qm = p.obj("- 1", 200, 248, 2, 1, ["int"]); qj = p.obj("js av_quantize.js", 200, 248 + 26, 1, 1)
+qp = p.obj("+ 1", 200, 248 + 52, 2, 1, ["int"]); p.wire(tb, 1, qm, 0); p.wire(qm, 0, qj, 0); p.wire(qj, 0, qp, 0); p.wire(qp, 0, nt, 0)   # snap to the scale
+
 mtof = p.obj("mtof", 360, 274, 1, 1, ["float"]); p.wire(nt, 0, mtof, 0)
 pk = p.obj("pack 0. 25", 360, 300, 2, 1); p.wire(mtof, 0, pk, 0)             # 25 ms glide
 pitch = p.obj("line~ 55.", 360, 326, 2, 2, ["signal", "bang"]); p.wire(pk, 0, pitch, 0)
@@ -42,9 +45,11 @@ p.comment("glide", 420, 300, 50); p.comment("pluck env", 400, 274 - 22, 80)
 
 # --- root note: sets what slider value 1 means ---
 p.comment("root (MIDI)", 480, 222, 80)
+# the key is shared: editing it here (or in the conductor) broadcasts av_root; incoming av_root only updates the display
 lmr = p.obj("loadmess 33", 560, 196, 1, 1); rn = p.box("number", 560, 222, 50, 22, 1, 2, ["", "bang"], minimum=12, maximum=60)
-rm1 = p.obj("- 1", 560, 248, 2, 1, ["int"]); p.wire(lmr, 0, rn, 0); p.wire(rn, 0, rm1, 0); p.wire(rm1, 0, nt, 1)
-sroot = p.obj("s av_root", 620, 248, 1, 0); p.wire(rn, 0, sroot, 0)   # shared with other instruments
+sroot = p.obj("s av_root", 620, 248, 1, 0); p.wire(lmr, 0, rn, 0); p.wire(rn, 0, sroot, 0)
+rroot = p.obj("r av_root", 680, 196, 0, 1); rset = p.obj("prepend set", 680, 222, 1, 1); p.wire(rroot, 0, rset, 0); p.wire(rset, 0, rn, 0)
+rm1 = p.obj("- 1", 680, 248, 2, 1, ["int"]); p.wire(rroot, 0, rm1, 0); p.wire(rm1, 0, nt, 1)
 p.comment("33 = A1 · 36 = C2 · 28 = E1", 615, 223, 180)
 
 # --- random bassline in a scale ---
@@ -62,12 +67,15 @@ for k, (name, notes) in enumerate(SCALES):
     y = 140 + 26*k
     p.comment(name, xs, y + 1, 80); m = p.msg("0 0 7 12 " + notes, xs + 80, y, 300); p.wire(m, 0, tbl, 0)
 yb = 150 + 26*len(SCALES)
-tll = p.obj("t l l", xs + 60, yb + 26, 1, 2, ["", ""]); p.wire(tbl, 1, tll, 0)
+# scale buttons broadcast av_scale; the local copy (and the quantizer) listen to av_scale like everyone else
+ssc = p.obj("s av_scale", xs + 220, yb, 1, 0); p.wire(tbl, 1, ssc, 0)
+rsc = p.obj("r av_scale", xs + 220, yb + 26, 0, 1)
+tll = p.obj("t l l", xs + 60, yb + 26, 1, 2, ["", ""]); p.wire(rsc, 0, tll, 0); p.wire(tll, 0, qj, 0)
 lms = p.obj("loadmess 0 0 7 12 " + SCALES[0][1], xs + 60, yb, 1, 1); p.wire(lms, 0, tll, 0)   # minor at load (no re-roll)
-ssc = p.obj("s av_scale", xs + 220, yb + 26, 1, 0); p.wire(tll, 0, ssc, 0)   # shared scale
 zlen = p.obj("zl len", xs + 140, yb + 52, 2, 2, ["", ""]); p.wire(tll, 1, zlen, 0)
 p.comment("random", xs, yb + 80, 60); rb = p.box("button", xs + 56, yb + 78, 24, 24, 1, 1, ["bang"])
 uz = p.obj("uzi 16", xs, yb + 106, 2, 3, ["bang", "bang", "int"]); p.wire(rb, 0, uz, 0); p.wire(tbl, 0, uz, 0)
+rro = p.obj("r av_reroll_bass", xs + 100, yb + 78, 0, 1); p.wire(rro, 0, rb, 0)   # conductor re-roll
 r5 = p.obj("random 5", xs, yb + 132, 2, 1, ["int"]); p.wire(uz, 0, r5, 0)
 s0 = p.obj("sel 0", xs, yb + 158, 2, 2, ["bang", ""]); p.wire(r5, 0, s0, 0)
 tie = p.msg("0", xs, yb + 184); p.wire(s0, 0, tie, 0)                    # 1 in 5 steps = tie
@@ -92,7 +100,9 @@ sub = p.obj("cycle~", 140, yv + 26, 2, 1, SIG); p.wire(hp, 0, sub, 0)
 sg = p.obj("*~ 0.6", 140, yv + 52, 2, 1, SIG); p.wire(sub, 0, sg, 0)
 mx = p.obj("+~", 20, yv + 108, 2, 1, SIG); p.wire(lp, 0, mx, 0); p.wire(sg, 0, mx, 1)
 amp = p.obj("*~", 20, yv + 134, 2, 1, SIG); p.wire(mx, 0, amp, 0); p.wire(env, 0, amp, 1)
-g = p.obj("*~ 0.4", 20, yv + 160, 2, 1, SIG); p.wire(amp, 0, g, 0)
+lvr = p.obj("r av_level_bassline", 140, yv + 160, 0, 1); lvk = p.obj("pack 0. 40", 140, yv + 160 + 26, 2, 1)
+lvs = p.obj("line~ 0.4", 140, yv + 160 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 0, lvk, 0); p.wire(lvk, 0, lvs, 0)
+g = p.obj("*~ 0.4", 20, yv + 160, 2, 1, SIG); p.wire(amp, 0, g, 0); p.wire(lvs, 0, g, 1)
 dac = p.box("ezdac~", 20, yv + 190, 45, 45, 2, 0); p.wire(g, 0, dac, 0); p.wire(g, 0, dac, 1)
 p.comment("click to start audio", 70, yv + 202, 160)
 p.dump(f"{out}/bassline.maxpat"); check(f"{out}/bassline.maxpat")

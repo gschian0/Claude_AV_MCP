@@ -4,12 +4,13 @@ out = sys.argv[1]
 
 # ================= gen video feedback =================
 FB_CODE = r"""// Infinite feedback: last frame (in1) is zoomed, twisted and colour-bled back into itself,
-// with a wandering ring as the seed. decay 1 = nothing ever fades.
+// with a wandering ring and spinning wireframe cubes as the seeds. decay 1 = nothing ever fades.
 Param tick(0);
 Param zoom(0.99);
 Param twist(0.02);
 Param decay(0.985);
 Param drift(0.003);
+Param cubes(1);    // how much of the wireframe-cube layer (in2) feeds the loop
 
 asp = dim.x/dim.y;
 cx = (norm.x - 0.5)*asp;
@@ -39,9 +40,12 @@ cr = 0.5 + 0.5*sin(tick*0.5);
 cg = 0.5 + 0.5*sin(tick*0.5 + 2.094);
 cb = 0.5 + 0.5*sin(tick*0.5 + 4.188);
 
-out1 = vec(clamp(hr*decay + cr*ring, 0, 1),
-           clamp(hg*decay + cg*ring, 0, 1),
-           clamp(hb*decay + cb*ring, 0, 1), 1);
+// second seed: the wireframe cubes rendered by jit.gl.node 'cubes'
+cu = sample(in2, norm)*cubes;
+
+out1 = vec(clamp(hr*decay + cr*ring + cu.r, 0, 1),
+           clamp(hg*decay + cg*ring + cu.g, 0, 1),
+           clamp(hb*decay + cb*ring + cu.b, 0, 1), 1);
 """
 p = Patch([60.0, 60.0, 900.0, 960.0])
 p.present = True
@@ -64,9 +68,19 @@ pre = p.obj("prepend tick", 170, 260, 1, 1)
 p.wire(tbb, 1, cnt, 0); p.wire(cnt, 0, div, 0); p.wire(div, 0, pre, 0)
 reg = p.obj("zl reg", 20, 230, 2, 2, ["", ""])
 p.wire(tbb, 0, reg, 0)
-pix = p.obj("jit.gl.pix fbw @dim 1280 720 @adapt 0 @type float16", 20, 300, 1, 2, ["jit_gl_texture", ""],
-            patcher=gen_sub("jit.gen", FB_CODE, 1, 1))
-p.wire(reg, 0, pix, 0); p.wire(pre, 0, pix, 0)
+pix = p.obj("jit.gl.pix fbw @dim 1280 720 @adapt 0 @type float16", 20, 300, 2, 2, ["jit_gl_texture", ""],
+            patcher=gen_sub("jit.gen", FB_CODE, 2, 1))
+# --- wireframe cubes: av_cubes.js makes N gridshapes drawing into this node; its captured texture is pix in2 ---
+node = p.obj("jit.gl.node fbw @name cubes @capture 1 @adapt 0 @dim 1280 720 @erase_color 0 0 0 0", 520, 300, 1, 2, ["jit_gl_texture", ""])
+p.wire(node, 0, pix, 1)
+cjs = p.obj("js av_cubes.js", 520, 270, 1, 0)
+p.comment("CUBES (x key)", 600, 200, 100)
+cton = p.box("toggle", 600, 222, 22, 22, 1, 1, ["int"]); p.wire(p.obj("loadmess 1", 630, 222, 1, 1), 0, cton, 0)
+cpre = p.obj("prepend cubes", 600, 248, 1, 1); p.wire(cton, 0, cpre, 0); p.wire(cpre, 0, pix, 0)
+p.comment("how many", 700, 200, 70)
+ccnt = p.box("number", 700, 222, 40, 22, 1, 2, ["", "bang"], minimum=1, maximum=24); p.wire(p.obj("loadmess 5", 745, 222, 1, 1), 0, ccnt, 0)
+cpc = p.obj("prepend count", 700, 248, 1, 1); p.wire(ccnt, 0, cpc, 0); p.wire(cpc, 0, cjs, 0)
+p.wire(reg, 0, pix, 0); p.wire(pre, 0, pix, 0); p.wire(pre, 0, cjs, 0)
 slab = p.obj("jit.gl.slab fbw @type float16", 20, 350, 2, 2, ["jit_gl_texture", ""])
 p.wire(pix, 0, slab, 0); p.wire(slab, 0, reg, 1)
 vp = p.obj("jit.gl.videoplane fbw @transform_reset 2", 280, 350, 1, 2, ["jit_gl_texture", ""])
@@ -82,16 +96,17 @@ for m in ["decay 1.", "decay 0.985", "decay 0.9", "zoom 0.97", "zoom 1.02", "twi
 p.comment("decay 1. = infinite (never fades) · zoom > 1 pulls inward · 'decay 0.' a moment to clear", 520, 90, 180)
 # --- KEYS: play the feedback from the keyboard (works in fullscreen; [key] hears every Max window) ---
 yk = 540
-p.comment("KEYS (when 'keys on'): f fullscreen · 1-5 decay (0.9 → ∞) · ↑↓ zoom in/out · ←→ twist · w/s drift more/less · c clear · r reset", 20, yk, 660)
+p.comment("KEYS (when 'keys on'): f fullscreen · 1-5 decay (0.9 → ∞) · ↑↓ zoom in/out · ←→ twist · w/s drift more/less · c clear · r reset · x cubes on/off", 20, yk, 660)
 kon = p.box("toggle", 20, yk + 44, 22, 22, 1, 1, ["int"]); p.comment("keys on", 46, yk + 46, 60)
 p.wire(p.obj("loadmess 1", 110, yk + 44, 1, 1), 0, kon, 0)
 key = p.obj("key", 20, yk + 76, 0, 4, ["int", "int", "int", "int"])
 kg = p.obj("gate 1", 20, yk + 102, 2, 1); p.wire(kon, 0, kg, 0); p.wire(key, 0, kg, 1)
 # ascii: f=102 1-5=49-53 up=30 down=31 left=28 right=29 w=119 s=115 c=99 r=114
-codes = [102, 49, 50, 51, 52, 53, 30, 31, 28, 29, 119, 115, 99, 114]
+codes = [102, 49, 50, 51, 52, 53, 30, 31, 28, 29, 119, 115, 99, 114, 120]
 ks = p.obj("sel " + " ".join(map(str, codes)), 20, yk + 128, 2, len(codes) + 1)
 p.wire(kg, 0, ks, 0)
 p.wire(ks, 0, fs, 0)                                     # f → flip the fullscreen toggle
+p.wire(ks, 14, cton, 0)                                  # x → cubes on/off
 
 def readout(label, x, y):
     p.comment(label, x, y, 50); return p.box("flonum", x + 50, y, 60, 22, 1, 2, ["", "bang"], format=6)
@@ -259,7 +274,9 @@ c.wire(c.obj("loadmess 0.5", 820, yf + 166, 1, 1), 0, rq, 0)
 svf = c.obj("svf~ 1000 0.5", 20, yf + 140, 3, 4, ["signal"] * 4); c.wire(gen, 0, svf, 0); c.wire(mtf, 0, svf, 1); c.wire(rq, 0, svf, 2)
 sel3 = c.obj("selector~ 3 1", 20, yf + 170, 4, 1, ["signal"]); c.wire(slc, 0, sel3, 0)
 for k in range(3): c.wire(svf, k, sel3, k + 1)
-g = c.obj("*~ 0.5", 20, yf + 200, 2, 1, ["signal"]); c.wire(sel3, 0, g, 0)
+lvr = c.obj("r av_level_chopper", 140, yf + 200, 0, 1); lvk = c.obj("pack 0. 40", 140, yf + 226, 2, 1)
+lvs = c.obj("line~ 0.5", 140, yf + 252, 2, 2, ["signal", "bang"]); c.wire(lvr, 0, lvk, 0); c.wire(lvk, 0, lvs, 0)
+g = c.obj("*~ 0.5", 20, yf + 200, 2, 1, ["signal"]); c.wire(sel3, 0, g, 0); c.wire(lvs, 0, g, 1)
 dac = c.box("ezdac~", 20, yf + 228, 45, 45, 2, 0); c.wire(g, 0, dac, 0); c.wire(g, 0, dac, 1)
 c.comment("click to start audio", 70, yf + 240, 140)
 

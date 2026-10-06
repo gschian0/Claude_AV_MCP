@@ -9,13 +9,14 @@ def panel_size(name):
     r = [b["box"]["presentation_rect"] for b in d["boxes"] if b["box"].get("presentation")]
     return [max(x + w for x, y, w, h in r) + 10, max(y + h for x, y, w, h in r) + 10]
 
-ROWS = [["jongly_chopper.maxpat", "gen_feedback.maxpat"],
+ROWS = [["conductor.maxpat"],
+        ["jongly_chopper.maxpat", "gen_feedback.maxpat"],
         ["sine_test.maxpat", "glass_bells.maxpat"],
         ["bassline.maxpat"],
         ["jungle_bass.maxpat"]]
 p = Patch([0.0, 40.0, 1500.0, 940.0])
 p.present = False
-p.comment("DIGITAL SYMPHONY — every instrument in one window. Open this instead of the single patches (it runs one copy of each). Turn audio on with any speaker. Visuals: keys work in fullscreen (see the feedback panel).", 10, 6, 1400)
+p.comment("DIGITAL SYMPHONY — the conductor on top runs everything; every instrument's panel below. Open this instead of the single patches (it runs one copy of each). Turn audio on with any speaker. Visuals: keys work in fullscreen (see the feedback panel).", 10, 6, 1400)
 y = 40
 for row in ROWS:
     x, row_h = 10, 0

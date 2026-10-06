@@ -12,6 +12,18 @@ Close the patches in Max before rebuilding, then reopen them. If you edit a
 patch by hand in Max, the next rebuild overwrites it, so copy the change back
 into the recipe.
 
+## The conductor: `conductor.maxpat`
+**Recipe:** `recipes/max/conductor.py` · **Asked for:** "the bassline needs to be more in key … i would like one patch to control them all"
+
+It sits at the top of the symphony window and runs everything through sends:
+- **KEY:** note buttons (A, B♭, B, C, D, E, F, G) or a MIDI number → `av_root`. The bassline's own root box does the same, and each one shows the other's changes.
+- **SCALE** → `av_scale`. Both basslines pass every note through `av_quantize.js`, which snaps it to the nearest note in the scale. So presets, hand-drawn sliders and old patterns all stay in key without re-rolling.
+- **NEW LINES:** re-roll the acid or jungle line in the current scale (`av_reroll_bass` / `av_reroll_jungle`).
+- **MIX:** a fader each for drums, tampura, acid, jungle and bells (`av_level_*`). A fader takes over that instrument's level once you move it.
+- **Drone evolve** (`av_evolve`) and **audio on/off**.
+
+Why the parts sounded out of key: the saved state had the bassline root on 12 (C) and the tampura key on 54 (F#). Both values were removed from `state/`, so the key now comes from one place.
+
 ## The symphony window: `symphony.maxpat`
 **Recipe:** `recipes/max/symphony.py` · **Asked for:** "make a gui patch that puts all the gui's together"
 
@@ -37,6 +49,9 @@ With **keys on** (the toggle in the feedback panel, on by default), `[key]` hear
 | `w` / `s` | drift more / less (by 0.002, range 0–0.05) |
 | `c` | clear the screen, then restore the decay |
 | `r` | reset decay, zoom, twist and drift to the defaults |
+| `x` | wireframe cubes on/off |
+
+**Wireframe cubes** ("move 3D cubes in wireframe with multi colors like the circle around in the feedback loop"): `av_cubes.js` creates N `jit.gl.gridshape` cubes (5 by default, up to 24) drawing into `jit.gl.node cubes`. That node's captured texture is the pix's second input, so the cubes feed the loop like the ring does. Each cube orbits on its own path, tumbles and cycles through the rainbow.
 
 Turn **keys on** off while typing into number boxes elsewhere, because the keys go to every window.
 
@@ -112,7 +127,8 @@ volume, so the drone never stops), then go through a `pfft~` spectral smear
 (`vectral~ slide 20 400`) and `degrade~` for lo-fi, at 0.5 gain.
 - **Key** follows `av_root` from the bassline and glides over 800 ms when it changes.
 - **Pluck cycle** toggle and **ms per pluck** (800 by default).
-- **Level** slider ("we need level for the drone"): 0 to 1, starts at 0.5, smoothed over 40 ms.
+- **Level** slider ("we need level for the drone"): 0 to 1, starts at 0.5, smoothed over 40 ms. The conductor's tampura fader drives it too.
+- **Evolve** ("the drones need to be more evolving"): every N pluck cycles (3 by default), Pa glides over 4 s to another consonant interval (5th, 4th, octave or octave+5th, which are in key in every scale here). Each voice's FM brightness also drifts over 8 s toward a new random target between 0.8 and 3.5.
 
 ### 2b. Bassline: `bassline.maxpat`
 **Recipe:** `recipes/max/bassline.py`
