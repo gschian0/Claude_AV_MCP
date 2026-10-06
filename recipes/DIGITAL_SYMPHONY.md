@@ -61,6 +61,7 @@ volume, so the drone never stops), then go through a `pfft~` spectral smear
 (`vectral~ slide 20 400`) and `degrade~` for lo-fi, at 0.5 gain.
 - **Key** follows `av_root` from the bassline and glides over 800 ms when it changes.
 - **Pluck cycle** toggle and **ms per pluck** (800 by default).
+- **Level** slider ("we need level for the drone"): 0 to 1, starts at 0.5, smoothed over 40 ms.
 
 ### 2b. Bassline: `bassline.maxpat`
 **Recipe:** `recipes/max/bassline.py`

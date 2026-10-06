@@ -52,6 +52,13 @@ p.comment("Sa", 420, 201, 30); p.comment("Pa", 580, 201, 30)
 L = fm_voice(p, 20, 300, pitch, 1.0, 0.011, 0.007, 0.019)
 R = fm_voice(p, 460, 300, pitch, 1.5, 0.0089, 0.0053, 0.023)
 ys = 550
+# --- LEVEL: one slider for the whole drone, smoothed so moves don't click ---
+p.comment("LEVEL", 300, ys - 30, 60)
+lv = p.box("slider", 300, ys - 8, 24, 140, 1, 1, [""], floatoutput=1, size=1.0, min=0.0)
+lvn = p.box("flonum", 330, ys + 110, 50, 22, 1, 2, ["", "bang"], format=6)
+p.wire(p.obj("loadmess 0.5", 330, ys - 8, 1, 1), 0, lv, 0); p.wire(lv, 0, lvn, 0)
+lvp = p.obj("pack 0. 40", 390, ys + 20, 2, 1); p.wire(lv, 0, lvp, 0)
+lvl = p.obj("line~ 0.5", 390, ys + 46, 2, 2, ["signal", "bang"]); p.wire(lvp, 0, lvl, 0)
 outs = []
 for x, v, env in ((20, L, envL), (460, R, envR)):
     a = p.obj("*~", x, ys, 2, 1, SIG); p.wire(v, 0, a, 0); p.wire(env, 0, a, 1)
@@ -59,7 +66,7 @@ for x, v, env in ((20, L, envL), (460, R, envR)):
     dry = p.obj("*~ 0.6", x + 200, ys + 30, 2, 1, SIG); p.wire(a, 0, dry, 0)
     mx = p.obj("+~", x, ys + 60, 2, 1, SIG); p.wire(fft, 0, mx, 0); p.wire(dry, 0, mx, 1)
     lo = p.obj("degrade~ 0.6 12", x, ys + 90, 3, 1, SIG); p.wire(mx, 0, lo, 0)
-    g = p.obj("*~ 0.5", x, ys + 120, 2, 1, SIG); p.wire(lo, 0, g, 0); outs.append(g)
+    g = p.obj("*~", x, ys + 120, 2, 1, SIG); p.wire(lo, 0, g, 0); p.wire(lvl, 0, g, 1); outs.append(g)
 dac = p.box("ezdac~", 300, ys + 150, 45, 45, 2, 0); p.wire(outs[0], 0, dac, 0); p.wire(outs[1], 0, dac, 1)
 p.comment("click to start audio", 350, ys + 162, 160)
 p.dump(f"{out}/sine_test.maxpat"); check(f"{out}/sine_test.maxpat")
