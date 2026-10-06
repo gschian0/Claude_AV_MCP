@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Cookbook: Part 2 "Advanced cooking" + gen~ lint in every build
+### `3c71d39` Cookbook: Part 2 "Advanced cooking" + gen~ lint in every build
 > "ok lets ake sure this is in the recipe cookbook now as more advanced cooking"
 - `recipes/DIGITAL_SYMPHONY.md` now has contents and two parts:
   - **Part 1 — The set:** the original chapters. The conductor MIX now lists vox and gran; new Max 9 lessons on Param assignment, buffer sample rate and unique `send~` names.
