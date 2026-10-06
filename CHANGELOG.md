@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Granular chopper visible: own row under the speed chopper
+### `18448de` Granular chopper visible: own row under the speed chopper
 > "i don't see the granular one"
 - It was placed to the right of the speed chopper at x = 1372, which is off-screen on a 1512-pt-wide laptop display. It now has its own row directly below the speed chopper in `symphony.maxpat` and `digital_symphony.maxpat`, and the window is back to 1500 wide.
 
