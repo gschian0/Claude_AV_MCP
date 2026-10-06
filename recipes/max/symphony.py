@@ -10,7 +10,7 @@ def panel_size(name):
     return [max(x + w for x, y, w, h in r) + 10, max(y + h for x, y, w, h in r) + 10]
 
 ROWS = [["conductor.maxpat"],
-        ["jongly_chopper.maxpat"],
+        ["jongly_chopper.maxpat", "jongly_granular.maxpat"],
         ["gen_feedback.maxpat", "vocal_chops.maxpat"],
         ["sine_test.maxpat", "glass_bells.maxpat"],
         ["bassline.maxpat"],
@@ -28,7 +28,7 @@ for row in ROWS:
               clickthrough=0, enablehscroll=0, enablevscroll=0, lockeddragscroll=0, viewvisibility=1)
         x += w + 20; row_h = max(row_h, h + 22)
     y += row_h + 20
-p.rect = [0.0, 40.0, 1500.0, min(y, 940.0)]
+p.rect = [0.0, 40.0, 1800.0, min(y, 940.0)]
 p.dump(f"{out}/symphony.maxpat"); check(f"{out}/symphony.maxpat")
 
 # digital_symphony.maxpat: the same layout with every instrument EMBEDDED, so the whole set is one patch file.

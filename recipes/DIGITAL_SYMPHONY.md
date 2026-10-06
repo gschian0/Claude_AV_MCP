@@ -245,3 +245,19 @@ feeds new image into the loop. The **render** toggle sends a black seed texture
 - It is in `symphony.maxpat` and `digital_symphony.maxpat`, next to the visuals.
 
 - **Pitch rolls / pitch LFO on-off** ("we should be able to turn off pitch rolls too"): two toggles next to the PITCH controls, **rolls** and **LFO**. Off keeps the settings and just stops applying them.
+
+
+## Jongly Granular (`jongly_granular.maxpat`) — side by side with the speed chopper
+
+> "can we make jongly granular too as an upgrade in a patch with the same patch copied and ment to played side by side with the granular version and the speed version"
+
+- Both choppers now come from one recipe, `recipes/max/chopper.py` (`speed` builds `jongly_chopper.maxpat`, `granular` builds `jongly_granular.maxpat`; `feedback_and_chopper.py` runs both).
+- **Speed version** (unchanged sound): tape-style, so pitch and speed move together. It now also sends its loop phase on `send~ jongly_phase`.
+- **Granular version:** the same sequencer, slice/roll/velocity/pitch rows, presets, AUTO, chaos, sweeps and compressor. Each slice plays as **4 overlapping Hann grains**:
+  - pitch (transpose, step pitch, pitch rolls, LFO) changes only the grains' playback rate
+  - time moves through the slice at **time speed** (`scan`)
+  - so it can drop an octave without slowing, or slow or freeze without changing pitch
+- **GRAIN controls:** size (ms, 90), jitter (0.15), time speed (0, 0.25, 0.5, 1, 2), **freeze**, **sync**.
+- **Sync:** with sync on, it follows the speed chopper's clock while that one is running, so both hit the same step. It free-runs at its own `rate` if the speed chopper isn't open or is stopped.
+- **Independent:** own buffers (`g…`), own step send (`gjongly_step`), own receives (`av_gchop_*`, `av_gdrum_pattern`, …). So the conductor's drum buttons only drive the speed chopper, and the two can run different patterns. Mix with the conductor's new **gran** fader (`av_level_granular`, 0.35). Only the speed chopper feeds the visuals.
+- In `symphony.maxpat` and `digital_symphony.maxpat` the two choppers sit side by side.

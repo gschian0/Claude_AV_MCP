@@ -6,6 +6,12 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Jongly Granular: a granular chopper to play side by side with the speed chopper
+> "can we make jongly granular too as an upgrade in a patch with the same patch copied and ment to played side by side with the granular version and the speed version"
+- The chopper moved into `recipes/max/chopper.py`, which builds both `jongly_chopper.maxpat` (speed, unchanged apart from a new `send~ jongly_phase`) and the new `jongly_granular.maxpat`.
+- The granular `gen~` has 4 overlapping Hann grains, independent pitch and time, GRAIN size, jitter, time speed, freeze and sync. It follows the speed chopper's phase when that one is running and free-runs otherwise, with the same crash guards.
+- Own buffers, sends and receives (`g` prefix); conductor **gran** fader; both choppers side by side in the symphony patches.
+
 ### `b6b816d` Chopper: pitch rolls and pitch LFO on/off
 > "we should be able to turn off pitch rolls too"
 - Two toggles next to the PITCH controls: **rolls** (`prollon`) and **LFO** (`lfoon`), both on by default. Off stops applying the effect but keeps its settings. Also controllable through `av_chop_prollon` / `av_chop_lfoon`.
