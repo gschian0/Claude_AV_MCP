@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Pitch FX on the breaks, wobble sequencer, pocket filters, saved state from the "perfect" run
+### `fea127d` Pitch FX on the breaks, wobble sequencer, pocket filters, saved state from the "perfect" run
 > "this run is perfect exactly where it is now ... can we also add pitch rolls and lfo pitch sync and multi trigger pitch lfo linked to the jongly sequencers ... automate the wobbles and parameters on the wobble bass so it switches up and the basses should have some synced filters that aren't too extreme that make the bass suck into the pocket of the groove .. make sure to log all changes"
 
 - **Saved state:** baked the 15:59 capture of every instrument exactly as captured, with one exception. The chopper's **rate** box reads 0 even while the drums play at rate 1, because it's only given a display value at load, so it isn't restored. `save_state.py` now has a per-control `EXCLUDE` list for cases like this and no longer skips the visuals patch. Values in this capture that look unusual but were kept as asked: bells octave 263, jungle ratio 52, tampura key 12, tampura evolve every 696 cycles, drum compressor off.
