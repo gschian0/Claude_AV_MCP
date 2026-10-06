@@ -226,8 +226,11 @@ Param lfomode(2);  // 0 = synced to the loop, 1 = retriggers every step, 2 = ret
 Param lfoshape(0); // 0 = sine wobble, 1 = saw dive (starts high, drops)
 History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1);
 
-len = dim(loop);
-ph = wrap(ph + rate/len, 0, 1);
+// SAFETY: an empty/reloading buffer (len 0) or a bad value would make the read index NaN/inf and
+// sample() would read outside the buffer and crash Max (it did, 2026-10-06). Keep every value finite.
+len = max(dim(loop), 1);
+ok = (dim(loop) > 64) ? 1 : 0;
+ph = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/len), 0, 1);
 step = floor(ph*16);
 if (step != lastStep) {
 	v = peek(steps, step, 0);
@@ -250,18 +253,20 @@ env = clamp(min(subfrac, 1 - subfrac)*(len/16/rl)/fade, 0, 1);
 subn = floor(sub);
 hit = step*16 + subn;
 if (hit != lastHit) { rd = 0; lastHit = hit; }
+rd = fixnan(rd);
 lph = (lfomode < 0.5) ? ph*lforate : ((lfomode < 1.5) ? frac*lforate : subfrac*lforate);
 lw = lph - floor(lph);
 lfo = (lfoshape < 0.5) ? sin(6.283185307*lw) : 1 - 2*lw;
-semi = prstep*subn + lfodepth*lfo;
-rd = rd + rate*exp(semi*0.05776226505);
-dry = sample(loop, wrap((slice*len/16 + rd)/len, 0, 1))*env*(1 - mute);
+semi = clamp(fixnan(clamp(prstep, -12, 12)*subn + clamp(lfodepth, 0, 24)*lfo), -36, 36);
+rd = clamp(rd + clamp(fixnan(rate), -4, 4)*exp(semi*0.05776226505), -len, len);
+idx = clamp(fixnan(wrap((slice*len/16 + rd)/len, 0, 1)), 0, 0.999999);
+dry = ok*sample(loop, idx)*env*(1 - mute);
 
 // compressor: envelope follower (3 ms attack, 120 ms release) → gain reduction above thresh at 'ratio'
 att = 1 - exp(-1/(0.003*samplerate));
 rel = 1 - exp(-1/(0.12*samplerate));
 a = abs(dry);
-envf = envf + ((a > envf) ? att : rel)*(a - envf);
+envf = fixnan(envf + ((a > envf) ? att : rel)*(a - envf));
 over = max(atodb(max(envf, 0.00001)) - thresh, 0);
 gr = over*(1 - 1/max(ratio, 1));
 out1 = (comp > 0) ? dry*dbtoa(makeup - gr) : dry;

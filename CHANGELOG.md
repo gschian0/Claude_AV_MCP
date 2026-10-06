@@ -6,6 +6,12 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Crash fix: chopper `gen~` can no longer read outside its buffer
+> "max quit" (crash report: `EXC_BAD_ACCESS` in `dsp_gen_perform64` on the audio thread)
+
+- The crash was in the jongly chopper's `gen~`, the only `gen~` in the set. The registers show a float-to-int overflow (`0x7fffffff` / `0x80000000`) and an infinity, which fits a NaN or infinite read index making `sample()` read far outside the `jongly` buffer. The likely triggers are the buffer briefly being empty (length 0 divides by zero, and the NaN then sticks in the History) or an extreme pitch value.
+- Guards: buffer length floored at 1 and output muted until the loop is loaded; `rate` clamped to ±4; pitch-roll step clamped to ±12, LFO depth to 0–24, total pitch to ±36 semitones; the per-hit read pointer is clamped and NaN-reset; the final read index is NaN-checked and clamped to 0–1; the compressor's envelope is NaN-reset. The sound is unchanged at normal settings.
+
 ### `fea127d` Pitch FX on the breaks, wobble sequencer, pocket filters, saved state from the "perfect" run
 > "this run is perfect exactly where it is now ... can we also add pitch rolls and lfo pitch sync and multi trigger pitch lfo linked to the jongly sequencers ... automate the wobbles and parameters on the wobble bass so it switches up and the basses should have some synced filters that aren't too extreme that make the bass suck into the pocket of the groove .. make sure to log all changes"
 
