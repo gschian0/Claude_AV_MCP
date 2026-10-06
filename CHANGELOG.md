@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Granular chopper plays its own break, fitted to jongly
+### `715ef1c` Granular chopper plays its own break, fitted to jongly
 > "i just can't hear the granular chopper can you have it play a different loop synced up to jongly ?"
 - Likely reason it was inaudible: it played the same jongly loop, slices and steps as the speed chopper, so it only doubled it.
 - `buffer~ gjongly` now loads its own break from Live's Core Library. **LOOP** buttons: dnblive (D&B Live 170, the default, same 2.82 s length as jongly), rolling (D&B Rolling 170), scatty (Break Scatty 174), funkchop (Break Funk Chop 115), or jongly.
