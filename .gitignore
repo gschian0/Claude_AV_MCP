@@ -15,3 +15,6 @@ config/av.toml
 # OS / tools
 .DS_Store
 node_modules/
+
+# Raw state capture from Max (baked into recipes/max/state/ by save_state.py)
+patches/max/captured_state.json

@@ -1,5 +1,7 @@
 """Tiny helper for writing .maxpat JSON with embedded gen codeboxes."""
-import json
+import json, pathlib
+STATE_DIR = pathlib.Path(__file__).resolve().parent / "state"
+SAME_KIND = {"number": {"number", "flonum"}, "flonum": {"number", "flonum"}}
 APPV = {"major": 9, "minor": 0, "revision": 0, "architecture": "x64", "modernui": 1}
 
 class Patch:
@@ -25,7 +27,36 @@ class Patch:
         return {"fileversion": 1, "appversion": APPV, "classnamespace": self.ns, "rect": self.rect,
                 "boxes": self.boxes, "lines": self.lines}
     def dump(self, path):
+        state = STATE_DIR / (pathlib.Path(path).name + ".json")
+        if state.exists():
+            self.apply_state(json.load(open(state)), state.name)
         open(path, "w").write(json.dumps({"patcher": self.to_dict()}, indent=1) + "\n")
+
+    def apply_state(self, items, label):
+        """SAVED STATE block: on load, push each captured control value back into its control.
+        Controls are matched by class + position. Display-only boxes (nothing connected out) are
+        skipped; boxes that follow an [r ...] restore a beat later so they win over the broadcast."""
+        boxes = {b["box"]["id"]: b["box"] for b in self.boxes}
+        has_out = {l["patchline"]["source"][0] for l in self.lines}
+        fed_by_r = {l["patchline"]["destination"][0] for l in self.lines
+                    if boxes[l["patchline"]["source"][0]].get("text", "").startswith("r ")}
+        def fmt(v):
+            vals = v if isinstance(v, list) else [v]
+            return " ".join(str(int(x)) if float(x).is_integer() else f"{x:.4g}" for x in vals)
+        x0 = max(b["patching_rect"][0] + b["patching_rect"][2] for b in boxes.values()) + 40
+        self.comment(f"SAVED STATE — re-applied on load (recipes/max/state/{label}; recapture with state_capture.maxpat)", x0, 10, 300)
+        lb = self.obj("loadbang", x0, 70, 1, 1, ["bang"])
+        early = self.obj("delay 600", x0, 96, 2, 1, ["bang"]); late = self.obj("delay 900", x0 + 80, 96, 2, 1, ["bang"])
+        self.wire(lb, 0, early, 0); self.wire(lb, 0, late, 0)
+        y = 130
+        for it in items:
+            kinds = SAME_KIND.get(it["cls"], {it["cls"]})
+            hit = [b for b in boxes.values() if b["maxclass"] in kinds
+                   and abs(b["patching_rect"][0] - it["at"][0]) <= 1 and abs(b["patching_rect"][1] - it["at"][1]) <= 1]
+            if not hit or it["value"] is None or hit[0]["id"] not in has_out:
+                continue
+            m = self.msg(fmt(it["value"]), x0, y, 260); y += 26
+            self.wire(late if hit[0]["id"] in fed_by_r else early, 0, m, 0); self.wire(m, 0, hit[0]["id"], 0)
 
 def gen_sub(ns, code, n_in, n_out):
     """Gen subpatcher: [in k] -> codebox -> [out k]."""

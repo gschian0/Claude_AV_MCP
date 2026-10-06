@@ -12,6 +12,29 @@ Close the patches in Max before rebuilding, then reopen them. If you edit a
 patch by hand in Max, the next rebuild overwrites it, so copy the change back
 into the recipe.
 
+## Saved state ("create a loadbang state of the current settings")
+
+Max doesn't save most control values (number boxes, sliders, multisliders) in
+the patch file, so the recipes record them instead:
+
+1. Set everything up the way you like it in Max, with the instrument patches open.
+2. Open `patches/max/state_capture.maxpat`. On load it runs `state_dump.js`,
+   which walks every open window and writes `patches/max/captured_state.json`.
+3. Run `python3 recipes/max/save_state.py && python3 recipes/max/build_all.py`.
+
+`save_state.py` writes one `recipes/max/state/<patch>.json` per patch. When a
+recipe builds that patch, `maxgen.py` adds a **SAVED STATE** column: a
+`loadbang` triggers one message per control 0.6 s after the patch opens, after
+all the presets have loaded, so the snapshot wins. Controls that follow a
+`[r …]` (like the tampura's key) restore at 0.9 s so they win over broadcasts.
+Display-only boxes are skipped. The visuals' render/fullscreen toggles aren't
+saved.
+
+**Not captured** (these are message clicks, not controls): the chopper's live
+roll, held filter sweep, the jungle bass wobble rate, and which scale button
+was last clicked. Delete a `state/*.json` file to go back to the recipe's
+defaults.
+
 ## The ensemble
 
 All the instruments share one clock and one key, so you can open any
