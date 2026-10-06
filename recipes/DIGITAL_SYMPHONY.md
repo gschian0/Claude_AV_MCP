@@ -28,6 +28,16 @@ The saved chopper chaos was lowered from 1.0 to 0.2, because at 1.0 every step i
 
 Why the parts sounded out of key: the saved state had the bassline root on 12 (C) and the tampura key on 54 (F#). Both values were removed from `state/`, so the key now comes from one place.
 
+## All-in-one: `digital_symphony.maxpat`
+**Asked for:** "take all of these patches that are open and put them in one patch"
+
+The same layout as `symphony.maxpat`, but with every instrument (and the
+conductor) **embedded** in a single file instead of linked, so the whole set
+lives in one patch. It's written by `symphony.py` after the linked version.
+Keep it in `patches/max/`, because it still loads the `av_*.js` scripts and
+`buddha_smear~.maxpat` (the `pfft~` loads that by name) from next to it, and
+`jongly.aif` comes from Max's own media folder.
+
 ## The symphony window: `symphony.maxpat`
 **Recipe:** `recipes/max/symphony.py` · **Asked for:** "make a gui patch that puts all the gui's together"
 

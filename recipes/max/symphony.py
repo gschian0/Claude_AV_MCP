@@ -29,5 +29,17 @@ for row in ROWS:
     y += row_h + 20
 p.rect = [0.0, 40.0, 1500.0, min(y, 940.0)]
 p.dump(f"{out}/symphony.maxpat"); check(f"{out}/symphony.maxpat")
+
+# digital_symphony.maxpat: the same layout with every instrument EMBEDDED, so the whole set is one patch file.
+# It still needs its neighbours in patches/max: the av_*.js scripts and buddha_smear~.maxpat (pfft~ loads it by name).
+for b in p.boxes:
+    box = b["box"]
+    if box["maxclass"] == "bpatcher":
+        box["embed"] = 1
+        box["patcher"] = json.load(open(f"{out}/{box['name']}"))["patcher"]
+        del box["name"]
+p.boxes[0]["box"]["text"] = ("DIGITAL SYMPHONY (all-in-one) — every instrument embedded in this one file; the conductor on top runs everything. "
+                             "Keep it in patches/max next to the av_*.js scripts and buddha_smear~.maxpat.")
+p.dump(f"{out}/digital_symphony.maxpat"); check(f"{out}/digital_symphony.maxpat")
 for row in ROWS:
     print("   ", "  |  ".join(f"{n}: {panel_size(n)}" for n in row))
