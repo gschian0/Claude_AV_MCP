@@ -212,7 +212,11 @@ Param rate(1);      // 1 = original tempo (~170 bpm); tape-style, pitch follows
 Param fade(48);     // samples of fade at slice/roll edges (kills clicks)
 Param chaos(0.15);  // 0 = play the pattern exactly, 1 = every step random
 Param rollnow(0);   // live roll: >= 2 re-fires every step this many times
-History ph(0), lastStep(-1), slice(0), roll(1), mute(0);
+Param comp(1);      // compressor on/off: evens out the loop's hits
+Param thresh(-20);  // dB where compression starts
+Param ratio(3);     // 3:1 above the threshold
+Param makeup(4);    // dB of gain back after compressing
+History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0);
 
 len = dim(loop);
 ph = wrap(ph + rate/len, 0, 1);
@@ -233,8 +237,18 @@ frac = ph*16 - step;
 sub = frac*rl;
 subfrac = sub - floor(sub);
 env = clamp(min(subfrac, 1 - subfrac)*(len/16/rl)/fade, 0, 1);
-out1 = sample(loop, (slice + subfrac/rl)/16)*env*(1 - mute);
+dry = sample(loop, (slice + subfrac/rl)/16)*env*(1 - mute);
+
+// compressor: envelope follower (3 ms attack, 120 ms release) → gain reduction above thresh at 'ratio'
+att = 1 - exp(-1/(0.003*samplerate));
+rel = 1 - exp(-1/(0.12*samplerate));
+a = abs(dry);
+envf = envf + ((a > envf) ? att : rel)*(a - envf);
+over = max(atodb(max(envf, 0.00001)) - thresh, 0);
+gr = over*(1 - 1/max(ratio, 1));
+out1 = (comp > 0) ? dry*dbtoa(makeup - gr) : dry;
 out2 = step;
+out3 = (comp > 0) ? gr : 0;
 """
 c = Patch([40.0, 40.0, 960.0, 1000.0])
 c.present = True
@@ -288,7 +302,18 @@ c.comment("RATE (tape speed)", xr, ya + 96, 130)
 lm = c.obj("loadmess set 1.", xr, ya + 118, 1, 1); fl = c.box("flonum", xr + 110, ya + 118, 60, 22, 1, 2, ["", "bang"], format=6)
 pr = c.obj("prepend rate", xr + 180, ya + 118, 1, 1); c.wire(lm, 0, fl, 0); c.wire(fl, 0, pr, 0)
 
-gen = c.obj("gen~", 20, 534, 1, 2, ["signal", "signal"], w=200.0, patcher=gen_sub("dsp.gen", CHOP_CODE, 0, 2))
+gen = c.obj("gen~", 20, 534, 1, 3, ["signal"] * 3, w=200.0, patcher=gen_sub("dsp.gen", CHOP_CODE, 0, 3))
+# COMPRESSOR controls (inside the gen~): on · threshold dB · ratio · makeup dB · gain reduction readout
+c.comment("COMP on · thresh dB · ratio · makeup dB · reduction dB", 240, 534, 330)
+cmp_on = c.box("toggle", 240, 556, 22, 22, 1, 1, ["int"])
+cth = c.box("flonum", 268, 556, 50, 22, 1, 2, ["", "bang"], format=6, maximum=0.0)
+crt = c.box("flonum", 324, 556, 44, 22, 1, 2, ["", "bang"], format=6, minimum=1.0)
+cmk = c.box("flonum", 374, 556, 44, 22, 1, 2, ["", "bang"], format=6)
+cgr = c.box("flonum", 430, 556, 50, 22, 1, 2, ["", "bang"], format=6)
+for k, (ui, name, init) in enumerate([(cmp_on, "comp", 1), (cth, "thresh", -20), (crt, "ratio", 3), (cmk, "makeup", 4)]):
+    c.wire(c.obj(f"loadmess {init}", 900, 520 + 26*k, 1, 1), 0, ui, 0)
+    pp = c.obj(f"prepend {name}", 820, 520 + 26*k, 1, 1); c.wire(ui, 0, pp, 0); c.wire(pp, 0, gen, 0)
+grs = c.obj("snapshot~ 50", 820, 624, 2, 1, ["float"]); c.wire(gen, 2, grs, 0); c.wire(grs, 0, cgr, 0)
 for m in rolls + [pr, pch]: c.wire(m, 0, gen, 0)
 # --- FILTER SWEEPS on the drums: click a sweep, it fires on the next beat (every 4 steps) ---
 yf = 740

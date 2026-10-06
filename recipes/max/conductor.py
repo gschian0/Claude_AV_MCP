@@ -38,7 +38,7 @@ for k, (label, send) in enumerate([("bassline", "av_reroll_bass"), ("jungle", "a
 
 # MIX: one fader per instrument; it takes over that instrument's level when moved
 p.comment("MIX (moves take over each instrument's level)", 600, 50, 340)
-for k, (label, name, init) in enumerate([("drums", "chopper", 0.5), ("tampura", "tampura", 0.165), ("acid", "bassline", 0.4),
+for k, (label, name, init) in enumerate([("drums", "chopper", 0.5), ("tampura", "tampura", 0.2), ("acid", "bassline", 0.5),
                                          ("jungle", "jungle", 0.45), ("bells", "bells", 0.25)]):
     x = 600 + k*64
     sl = p.box("slider", x, 74, 26, 140, 1, 1, [""], floatoutput=1, size=1.0, min=0.0)

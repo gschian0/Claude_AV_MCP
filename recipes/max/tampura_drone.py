@@ -87,7 +87,7 @@ p.comment("LEVEL", 300, ys - 30, 60)
 lv = p.box("slider", 300, ys - 8, 24, 140, 1, 1, [""], floatoutput=1, size=1.0, min=0.0)
 p.wire(p.obj("r av_level_tampura", 390, ys - 8, 0, 1), 0, lv, 0)   # conductor mix
 lvn = p.box("flonum", 330, ys + 110, 50, 22, 1, 2, ["", "bang"], format=6)
-p.wire(p.obj("loadmess 0.5", 330, ys - 8, 1, 1), 0, lv, 0); p.wire(lv, 0, lvn, 0)
+p.wire(p.obj("loadmess 0.2", 330, ys - 8, 1, 1), 0, lv, 0); p.wire(lv, 0, lvn, 0)
 lvp = p.obj("pack 0. 40", 390, ys + 20, 2, 1); p.wire(lv, 0, lvp, 0)
 lvl = p.obj("line~ 0.5", 390, ys + 46, 2, 2, ["signal", "bang"]); p.wire(lvp, 0, lvl, 0)
 outs = []

@@ -118,6 +118,7 @@ originally"
 - **Patterns** set both rows at once: straight, stutter, chop, roll, shuffle, half, backwards. The list lives in `recipes/max/ensemble.py` (shared with the conductor).
 - **Jump-up** ("jumpup jungle 2 2 3 style"): `jump 2-2-3` groups the hits 2+2+3+2+2+3+2, `jump 3-3-2` groups them 3+3+2+3+3+2, and `jump roll` ends on a snare roll.
 - **Breakdowns** ("the breaks should change in breakpu sometimes"): `breakdown` is a half-time kick and snare with rests, and `break build` brings the hits back in with a roll. AUTO includes both, so they come up now and then.
+- **Compressor** ("add a little compression on the drum loop too to even it"): inside the `gen~`, after the slicing and before the filter sweeps. An envelope follower (3 ms attack, 120 ms release) drives the gain reduction. Defaults: on, threshold -20 dB, ratio 3:1, makeup +4 dB. The panel shows the live gain reduction in dB.
 - **Auto** picks a new pattern every N loops. **Chaos** sets the chance of a random jump on each step. **Live roll** rolls every step. **Rate** is tape speed.
 - **Filter sweeps** ("trigger fiter sweeps on the drums" … "should auto trigger and never go down to 0 so they are audible"): `svf~` on the output. Click a sweep and it starts on the next beat. Choices: open, LP up, LP down+back, LP dip, LP wah, HP riser, HP swell. Every sweep stays audible (the low-pass never closes below about 260 Hz, the high-pass never rises above about 1.3 kHz) and ends fully open. **AUTO SWEEP** (on by default) fires a random sweep every N loops (2 by default), and **sweep now** fires one immediately. Each message is a mode (1 LP · 2 HP) followed by cutoff/time pairs (MIDI note, ms), so you can write your own. **Resonance** goes from 0 to 0.95.
 
@@ -139,7 +140,7 @@ volume, so the drone never stops), then go through a `pfft~` spectral smear
 (`vectral~ slide 20 400`) and `degrade~` for lo-fi, at 0.5 gain.
 - **Key** follows `av_root` from the bassline and glides over 800 ms when it changes.
 - **Pluck cycle** toggle and **ms per pluck** (800 by default).
-- **Level** slider ("we need level for the drone"): 0 to 1, starts at 0.5, smoothed over 40 ms. The conductor's tampura fader drives it too.
+- **Level** slider ("we need level for the drone"; later "the drone is too loud"): 0 to 1, starts at 0.2, smoothed over 40 ms. The conductor's tampura fader drives it too.
 - **Evolve** ("the drones need to be more evolving"): every N pluck cycles (3 by default), Pa glides over 4 s to another consonant interval (5th, 4th, octave or octave+5th, which are in key in every scale here). Each voice's FM brightness also drifts over 8 s toward a new random target between 0.8 and 3.5.
 
 ### 2b. Bassline: `bassline.maxpat`
@@ -154,7 +155,7 @@ snaps open on each note, plus a sine an octave below.
 - **Bass** row: slider 1 = root, 13 = an octave up, 0 = tie. Presets: dub, walk, pedal, octaves, acid, rolling, squelch.
 - **Scales:** click one to roll a random bassline in that scale. To add a scale, duplicate a message and edit the semitone numbers. Sends `av_scale`.
 - **Root:** the key as a MIDI note. Sends `av_root`, so the tampura and bells retune with it.
-- **Brightness:** how far the filter opens on each note (in Hz).
+- **Brightness:** how far the filter opens on each note (in Hz). The saved value was 200 Hz, which made the bass sound muffled at the start ("the bass doesn't reall sound like much when it starts"); it's now 1800 Hz, and the default level went up from 0.4 to 0.5.
 - **Evolve** ("the bassline … isn't evolving enough"): every N loops (2 by default), `av_evolve_line.js` rewrites a few steps (3 by default) with notes from the current scale, leaving step 1 on the root. A quarter of the new steps are ties. About 1 in 5 times, two notes also jump up an octave; about 1 in 10 times, the groove shifts by two steps. Brightness drifts between 700 and 4000 Hz and resonance between 0.3 and 0.8, for acid squelch. It stays in key because the quantizer snaps every note. The conductor has a **bass evolve** toggle too (`av_bass_evolve`).
 - **Evolve presets** ("and add presets to it"), as *every N loops · changes*: steady `4 1`, drift `2 3`, restless `1 5`, wild `1 8`. They're also in the conductor (`av_bass_evolve_preset`).
 

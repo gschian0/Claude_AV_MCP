@@ -1205,10 +1205,10 @@
      "patching_rect": [
       664,
       330,
-      140.0,
+      126.0,
       22.0
      ],
-     "text": "loadmess set 0.165",
+     "text": "loadmess set 0.2",
      "outlettype": [
       ""
      ]
@@ -1291,7 +1291,7 @@
       126.0,
       22.0
      ],
-     "text": "loadmess set 0.4",
+     "text": "loadmess set 0.5",
      "outlettype": [
       ""
      ]

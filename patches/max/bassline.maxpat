@@ -2834,7 +2834,7 @@
       77.0,
       22.0
      ],
-     "text": "line~ 0.4",
+     "text": "line~ 0.5",
      "outlettype": [
       "signal",
       "bang"
@@ -2853,7 +2853,7 @@
       56.0,
       22.0
      ],
-     "text": "*~ 0.4",
+     "text": "*~ 0.5",
      "outlettype": [
       "signal"
      ]
@@ -2985,7 +2985,7 @@
       260,
       22.0
      ],
-     "text": "200",
+     "text": "1800",
      "outlettype": [
       ""
      ]

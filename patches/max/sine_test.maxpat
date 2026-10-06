@@ -1778,7 +1778,7 @@
       98.0,
       22.0
      ],
-     "text": "loadmess 0.5",
+     "text": "loadmess 0.2",
      "outlettype": [
       ""
      ]
