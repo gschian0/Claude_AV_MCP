@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Jongly Granular: a granular chopper to play side by side with the speed chopper
+### `1972cdb` Jongly Granular: a granular chopper to play side by side with the speed chopper
 > "can we make jongly granular too as an upgrade in a patch with the same patch copied and ment to played side by side with the granular version and the speed version"
 - The chopper moved into `recipes/max/chopper.py`, which builds both `jongly_chopper.maxpat` (speed, unchanged apart from a new `send~ jongly_phase`) and the new `jongly_granular.maxpat`.
 - The granular `gen~` has 4 overlapping Hann grains, independent pitch and time, GRAIN size, jitter, time speed, freeze and sync. It follows the speed chopper's phase when that one is running and free-runs otherwise, with the same crash guards.
