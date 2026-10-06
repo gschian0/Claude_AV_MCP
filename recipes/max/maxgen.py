@@ -115,3 +115,24 @@ def check(path):
     bad = [l for l in d["lines"] if (s := l["patchline"]["source"])[0] not in ids or (t := l["patchline"]["destination"])[0] not in ids
            or s[1] >= ids[s[0]]["numoutlets"] or t[1] >= ids[t[0]]["numinlets"]]
     print(f"{path}: {len(ids)} boxes, {len(d['lines'])} cords, bad cords: {bad}")
+
+def add_pocket(p, clocks, x, y, top, dip):
+    """POCKET: on every beat (each 4th jongly step) the bass's lowpass dips and its level ducks a little, then
+    both recover over ~260 ms, so the bass breathes with the drums. Gentle by design: at amount 1 the cutoff
+    drops by `dip` (fraction of `top` Hz) and the level by 30%. Returns (cutoff signal, gain signal)."""
+    S = ["signal"]
+    p.comment("POCKET — each beat the filter dips + level ducks a touch, then opens (amount 0-1; conductor: av_pocket)", x, y, 330)
+    amt = p.box("flonum", x, y + 44, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0, maximum=1.0)
+    p.wire(p.obj("loadmess 0.5", x + 60, y + 44, 1, 1), 0, amt, 0); p.wire(p.obj("r av_pocket", x + 150, y + 44, 0, 1), 0, amt, 0)
+    b4 = p.obj("% 4", x, y + 74, 2, 1, ["int"])
+    for c in clocks: p.wire(c, 0, b4, 0)
+    bs = p.obj("sel 0", x, y + 100, 2, 2, ["bang", ""]); p.wire(b4, 0, bs, 0)
+    em = p.msg("0, 1 260", x, y + 126); p.wire(bs, 0, em, 0)
+    env = p.obj("line~ 1", x, y + 152, 2, 2, S + ["bang"]); p.wire(em, 0, env, 0)
+    inv = p.obj("!-~ 1", x, y + 178, 2, 1, S); p.wire(env, 0, inv, 0)
+    d = p.obj("*~ 0.5", x, y + 204, 2, 1, S); p.wire(inv, 0, d, 0); p.wire(amt, 0, d, 1)
+    cm = p.obj(f"*~ {-top*dip:g}", x + 90, y + 230, 2, 1, S); p.wire(d, 0, cm, 0)
+    cut = p.obj(f"+~ {top:g}", x + 90, y + 256, 2, 1, S); p.wire(cm, 0, cut, 0)
+    gm = p.obj("*~ -0.3", x, y + 230, 2, 1, S); p.wire(d, 0, gm, 0)
+    gain = p.obj("+~ 1.", x, y + 256, 2, 1, S); p.wire(gm, 0, gain, 0)
+    return cut, gain

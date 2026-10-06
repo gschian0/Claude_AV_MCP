@@ -75,6 +75,8 @@ With **keys on** (the toggle in the feedback panel, on by default), `[key]` hear
 
 Turn **keys on** off while typing into number boxes elsewhere, because the keys go to every window.
 
+Every change is logged in `CHANGELOG.md` at the repo root.
+
 ## Saved state ("create a loadbang state of the current settings")
 
 Max doesn't save most control values (number boxes, sliders, multisliders) in
@@ -129,6 +131,7 @@ originally"
 - **Jump-up** ("jumpup jungle 2 2 3 style"): `jump 2-2-3` groups the hits 2+2+3+2+2+3+2, `jump 3-3-2` groups them 3+3+2+3+3+2, and `jump roll` ends on a snare roll.
 - **Breakdowns** ("the breaks should change in breakpu sometimes"): `breakdown` is a half-time kick and snare with rests, and `break build` brings the hits back in with a roll. AUTO includes both, so they come up now and then.
 - **Compressor** ("add a little compression on the drum loop too to even it"): inside the `gen~`, after the slicing and before the filter sweeps. An envelope follower (3 ms attack, 120 ms release) drives the gain reduction. Defaults: on, threshold -20 dB, ratio 3:1, makeup +4 dB. The panel shows the live gain reduction in dB.
+- **Pitch FX** ("pitch rolls and lfo pitch sync and multi trigger pitch lfo linked to the jongly sequencers"): each slice and roll hit has its own read pointer, so hits can be pitched without changing the timing. **Pitch roll** adds N semitones on each roll repeat. The **pitch LFO** (depth in semitones, rate) can be synced to the loop, to each step, or retriggered on each roll hit (multi-trigger), with a sine or saw "dive" shape.
 - **Auto** picks a new pattern every N loops. **Chaos** sets the chance of a random jump on each step. **Live roll** rolls every step. **Rate** is tape speed.
 - **Filter sweeps** ("trigger fiter sweeps on the drums" … "should auto trigger and never go down to 0 so they are audible"): `svf~` on the output. Click a sweep and it starts on the next beat. Choices: open, LP up, LP down+back, LP dip, LP wah, HP riser, HP swell. Every sweep stays audible (the low-pass never closes below about 260 Hz, the high-pass never rises above about 1.3 kHz) and ends fully open. **AUTO SWEEP** (on by default) fires a random sweep every N loops (2 by default), and **sweep now** fires one immediately. Each message is a mode (1 LP · 2 HP) followed by cutoff/time pairs (MIDI note, ms), so you can write your own. **Resonance** goes from 0 to 0.95.
 
@@ -182,6 +185,8 @@ settles. An optional wobble LFO on the index is synced to 170 bpm (1/2, 1/4,
 a gentle `lores~`. Key and scale follow the bassline patch.
 - **Pattern** row: 1 = root, 13 = an octave up, 0 = tie (most steps are ties, so notes are long). Presets: roller, drop, steppy, dread, walk-down. **Random** stays in the shared scale, with 2 in 3 steps tied.
 - **Evolve** ("jungle bass ins't evolving enouth"): every N loops (2 by default) it rewrites some steps (3 by default) with `av_evolve_line.js`, where 60% of the new steps are ties so notes stay long. It also re-rolls the sound: growl 1–6, ratio 0.5/1/1/2, wobble rate 1/2 · 1/4 · 1/8, and wobble depth 0–1. Presets: steady, drift, restless, wild. The conductor has **jungle evolve**, and its evolve presets drive both basses (`av_jungle_evolve`, `av_jungle_evolve_preset`).
+- **Wobble sequencer** ("automate the wobbles … so it switches up"): each beat takes its wobble rate from a 4-beat pattern (steady, build, talk, triplet, stutter), and the LFO restarts on the beat. Evolve switches patterns.
+- **Pocket** ("synced filters that aren't too extreme that make the bass suck into the pocket of the groove"): on each beat the 1400 Hz low-pass dips and the level ducks a little, then both recover over about 260 ms. The acid bassline has the same thing through a gentle 2500 Hz low-pass. The conductor's **bass pocket** sets both.
 - **Octave** shifts it against the key. **Glide** in ms (90). **Growl**, **ratio** (1 = warm, 0.5 = growly, 2 = hollow), **wobble** rate and depth, **drive**.
 
 ### 3. Glass bells: `glass_bells.maxpat`

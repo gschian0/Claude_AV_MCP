@@ -1,9 +1,9 @@
 import sys
-from maxgen import Patch, check
+from maxgen import Patch, check, add_pocket
 out = sys.argv[1]
 SIG = ["signal"]
 
-p = Patch([60.0, 60.0, 1240.0, 900.0])
+p = Patch([60.0, 60.0, 1400.0, 1200.0])
 p.present = True
 p.comment("JUNGLE BASS — deep FM sub for the tampura: long gliding notes with an FM growl that blooms on each note, optional tempo-synced wobble, driven through tanh~. Clocked by the jongly chopper; key + scale follow the bassline patch (av_root / av_scale).", 20, 8, 1180)
 
@@ -113,7 +113,11 @@ th = p.obj("tanh~", 20, 716, 1, 1, SIG); p.wire(pre, 0, th, 0)
 lp = p.obj("lores~ 1400 0.1", 20, 742, 3, 1, SIG); p.wire(th, 0, lp, 0)
 lvr = p.obj("r av_level_jungle", 140, 742, 0, 1); lvk = p.obj("pack 0. 40", 140, 742 + 26, 2, 1)
 lvs = p.obj("line~ 0.45", 140, 742 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 0, lvk, 0); p.wire(lvk, 0, lvs, 0)
-g = p.obj("*~ 0.45", 20, 768, 2, 1, SIG); p.wire(lp, 0, g, 0); p.wire(lvs, 0, g, 1)
+# pocket: the 1400 Hz lowpass dips on each beat and the level ducks a touch
+pcut, pgain = add_pocket(p, [rs, cn], 1000, 440, 1400, 0.7)
+p.wire(pcut, 0, lp, 1)
+pg = p.obj("*~", 100, 794, 2, 1, SIG); p.wire(lp, 0, pg, 0); p.wire(pgain, 0, pg, 1)
+g = p.obj("*~ 0.45", 20, 768, 2, 1, SIG); p.wire(pg, 0, g, 0); p.wire(lvs, 0, g, 1)
 dac = p.box("ezdac~", 20, 798, 45, 45, 2, 0); p.wire(g, 0, dac, 0); p.wire(g, 0, dac, 1)
 p.comment("click to start audio", 70, 810, 160)
 # --- EVOLVE: every N loops rewrite some steps (mostly ties, so notes stay long) and re-roll the sound ---
@@ -148,9 +152,29 @@ p.wire(r1, 0, s1 := p.obj("scale 0 99 1. 6.", xe + 280, ye + 224, 6, 1, ["float"
 r2 = p.obj("random 4", xe + 400, ye + 198, 2, 1, ["int"]); p.wire(et, 2, r2, 0)
 l2 = p.obj("zl lookup", xe + 400, ye + 224, 2, 2, ["", ""]); p.wire(r2, 0, l2, 0); p.wire(l2, 0, rt, 0)
 p.wire(p.obj("loadmess 0.5 1. 1. 2.", xe + 400, ye + 250, 1, 1), 0, l2, 1)
-r3 = p.obj("random 3", xe + 280, ye + 276, 2, 1, ["int"]); p.wire(et, 1, r3, 0)
-l3 = p.obj("zl lookup", xe + 280, ye + 302, 2, 2, ["", ""]); p.wire(r3, 0, l3, 0); p.wire(l3, 0, wl, 0)
-p.wire(p.obj("loadmess 1.42 2.83 5.67", xe + 280, ye + 328, 1, 1), 0, l3, 1)
+# WOBBLE SEQ: the wobble rate changes every beat from a 4-beat pattern and the LFO restarts on each beat,
+# so wobbles lock to the drums; evolve switches between patterns
+xw, yw = 1000, 740
+p.comment("WOBBLE SEQ — rate per beat from a 4-beat pattern (Hz at 170 bpm: 1.42 = 1/2 · 2.83 = 1/4 · 5.67 = 1/8 · 8.5 = 1/8T · 11.33 = 1/16); LFO restarts each beat", xw, yw, 360)
+wsq = p.box("toggle", xw, yw + 64, 22, 22, 1, 1, ["int"]); p.comment("auto wobble", xw + 26, yw + 66, 90)
+p.wire(p.obj("loadmess 1", xw + 120, yw + 64, 1, 1), 0, wsq, 0)
+wb4 = p.obj("% 4", xw, yw + 260, 2, 1, ["int"]); p.wire(rs, 0, wb4, 0); p.wire(cn, 0, wb4, 0)
+wbs = p.obj("sel 0", xw, yw + 286, 2, 2, ["bang", ""]); p.wire(wb4, 0, wbs, 0)
+wgt = p.obj("gate 1", xw, yw + 312, 2, 1); p.wire(wsq, 0, wgt, 0); p.wire(wbs, 0, wgt, 1)
+wtb = p.obj("t b b", xw, yw + 338, 1, 2, ["bang", "bang"]); p.wire(wgt, 0, wtb, 0)
+wph = p.msg("0.", xw + 80, yw + 364); p.wire(wtb, 1, wph, 0); p.wire(wph, 0, wl, 1)       # restart the LFO on the beat
+wct = p.obj("counter 0 3", xw, yw + 364, 3, 4, ["int", "", "", "int"]); p.wire(wtb, 0, wct, 0)
+wlk = p.obj("zl lookup", xw, yw + 390, 2, 2, ["", ""]); p.wire(wct, 0, wlk, 0); p.wire(wlk, 0, wl, 0)
+WOB = [("steady", "2.83 2.83 2.83 2.83"), ("build", "1.42 2.83 5.67 11.33"), ("talk", "5.67 2.83 8.5 2.83"),
+       ("triplet", "8.5 8.5 5.67 8.5"), ("stutter", "11.33 5.67 11.33 2.83")]
+wms = []
+for k, (name, v) in enumerate(WOB):
+    p.comment(name, xw + (k % 3)*120, yw + 90 + (k // 3)*44, 110); m = p.msg(v, xw + (k % 3)*120, yw + 110 + (k // 3)*44, 116)
+    p.wire(m, 0, wlk, 1); wms.append(m)
+p.wire(p.obj("loadbang", xw + 200, yw + 260, 1, 1, ["bang"]), 0, wms[2], 0)
+r3 = p.obj(f"random {len(WOB)}", xe + 280, ye + 276, 2, 1, ["int"]); p.wire(et, 1, r3, 0)     # evolve picks a new wobble pattern
+l3 = p.obj("sel " + " ".join(str(k) for k in range(len(WOB))), xe + 280, ye + 302, 2, len(WOB) + 1); p.wire(r3, 0, l3, 0)
+for k, m in enumerate(wms): p.wire(l3, k, m, 0)
 r4 = p.obj("random 100", xe + 400, ye + 276, 2, 1, ["int"]); p.wire(et, 0, r4, 0)
 p.wire(r4, 0, s4 := p.obj("scale 0 99 0. 1.", xe + 400, ye + 302, 6, 1, ["float"]), 0); p.wire(s4, 0, wd, 0)
 

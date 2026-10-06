@@ -1,9 +1,9 @@
 import sys
-from maxgen import Patch, check
+from maxgen import Patch, check, add_pocket
 out = sys.argv[1]
 SIG = ["signal"]
 
-p = Patch([60.0, 60.0, 1320.0, 700.0])
+p = Patch([60.0, 60.0, 1320.0, 1000.0])
 p.present = True
 p.comment("BASSLINE — a 16-step bassline over the tampura (locked to the jongly chopper, or free-running at 170 bpm). Sets the key (av_root) and scale (av_scale) for the tampura and bells. Voice: filtered saw + sub sine.", 20, 8, 840)
 
@@ -138,7 +138,11 @@ mx = p.obj("+~", 20, yv + 108, 2, 1, SIG); p.wire(lp, 0, mx, 0); p.wire(sg, 0, m
 amp = p.obj("*~", 20, yv + 134, 2, 1, SIG); p.wire(mx, 0, amp, 0); p.wire(env, 0, amp, 1)
 lvr = p.obj("r av_level_bassline", 140, yv + 160, 0, 1); lvk = p.obj("pack 0. 40", 140, yv + 160 + 26, 2, 1)
 lvs = p.obj("line~ 0.5", 140, yv + 160 + 52, 2, 2, ["signal", "bang"]); p.wire(lvr, 0, lvk, 0); p.wire(lvk, 0, lvs, 0)
-g = p.obj("*~ 0.5", 20, yv + 160, 2, 1, SIG); p.wire(amp, 0, g, 0); p.wire(lvs, 0, g, 1)
+# pocket: a gentle 2500 Hz lowpass that dips on each beat, plus a small level duck
+pcut, pgain = add_pocket(p, [rs, cn], 920, 660, 2500, 0.8)
+pf = p.obj("lores~ 2500 0.15", 100, yv + 186, 3, 1, SIG); p.wire(amp, 0, pf, 0); p.wire(pcut, 0, pf, 1)
+pg = p.obj("*~", 100, yv + 212, 2, 1, SIG); p.wire(pf, 0, pg, 0); p.wire(pgain, 0, pg, 1)
+g = p.obj("*~ 0.5", 20, yv + 160, 2, 1, SIG); p.wire(pg, 0, g, 0); p.wire(lvs, 0, g, 1)
 dac = p.box("ezdac~", 20, yv + 190, 45, 45, 2, 0); p.wire(g, 0, dac, 0); p.wire(g, 0, dac, 1)
 p.comment("click to start audio", 70, yv + 202, 160)
 p.dump(f"{out}/bassline.maxpat"); check(f"{out}/bassline.maxpat")

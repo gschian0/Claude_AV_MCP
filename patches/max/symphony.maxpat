@@ -101,7 +101,7 @@
       10,
       712.0,
       930,
-      884.0
+      934.0
      ],
      "name": "jongly_chopper.maxpat",
      "offset": [
@@ -169,7 +169,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1616.0,
+      1666.0,
       300,
       20.0
      ],
@@ -185,7 +185,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1638.0,
+      1688.0,
       955,
       441.0
      ],
@@ -212,7 +212,7 @@
      "numoutlets": 0,
      "patching_rect": [
       985,
-      1616.0,
+      1666.0,
       300,
       20.0
      ],
@@ -228,7 +228,7 @@
      "numoutlets": 0,
      "patching_rect": [
       985,
-      1638.0,
+      1688.0,
       860,
       388.0
      ],
@@ -255,7 +255,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2099.0,
+      2149.0,
       300,
       20.0
      ],
@@ -271,9 +271,9 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2121.0,
+      2171.0,
       1300,
-      573.0
+      610.0
      ],
      "name": "bassline.maxpat",
      "offset": [
@@ -298,7 +298,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2714.0,
+      2801.0,
       300,
       20.0
      ],
@@ -314,9 +314,9 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2736.0,
-      1200,
-      613.0
+      2823.0,
+      1360,
+      756.0
      ],
      "name": "jungle_bass.maxpat",
      "offset": [

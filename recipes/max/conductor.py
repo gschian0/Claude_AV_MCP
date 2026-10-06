@@ -38,6 +38,9 @@ for k, (label, send) in enumerate([("bassline", "av_reroll_bass"), ("jungle", "a
 
 # MIX: one fader per instrument; it takes over that instrument's level when moved
 p.comment("MIX (moves take over each instrument's level)", 600, 50, 340)
+p.comment("bass pocket (0-1)", 600, 262, 120)
+pk = p.box("flonum", 720, 262, 50, 22, 1, 2, ["", "bang"], format=6, minimum=0.0, maximum=1.0)
+p.wire(p.obj("loadmess set 0.5", 780, 262, 1, 1), 0, pk, 0); p.wire(pk, 0, p.obj("s av_pocket", 720, 600, 1, 0), 0)
 for k, (label, name, init) in enumerate([("drums", "chopper", 0.5), ("tampura", "tampura", 0.2), ("acid", "bassline", 0.5),
                                          ("jungle", "jungle", 0.45), ("bells", "bells", 0.25)]):
     x = 600 + k*64
