@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Snapshots + tempo-synced, auto-moving grains
+### `745f04f` Snapshots + tempo-synced, auto-moving grains
 > "lets now focus on figureing out how to save presets and full snapshots" / "and we should automate the grains tempo synced up too"
 - **Snapshots:** `av_snapshots.js` + `snapshots.maxpat` (recipe `snapshots.py`, next to the conductor in both symphony patches):
   - 8 store/recall slots and named saves with a recall menu
