@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Crash fix: chopper `gen~` can no longer read outside its buffer
+### `370f637` Crash fix: chopper `gen~` can no longer read outside its buffer
 > "max quit" (crash report: `EXC_BAD_ACCESS` in `dsp_gen_perform64` on the audio thread)
 
 - The crash was in the jongly chopper's `gen~`, the only `gen~` in the set. The registers show a float-to-int overflow (`0x7fffffff` / `0x80000000`) and an infinity, which fits a NaN or infinite read index making `sample()` read far outside the `jongly` buffer. The likely triggers are the buffer briefly being empty (length 0 divides by zero, and the NaN then sticks in the History) or an extreme pitch value.
