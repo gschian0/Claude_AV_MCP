@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### Max: chopper pitch both ways + per-step velocity; new vocal chops sampler
+### `44912b3` Max: chopper pitch both ways + per-step velocity; new vocal chops sampler
 > "in max we need pitch down in the jongly chopper too so it can really go both ways ... some velocities built into the loops ... add one more sampler of a vocal sample that does chopped jungle yells every now and then"
 - Jongly chopper `gen~`: `transpose` (±24 st), per-step pitch (`choppitch`, ±12 st), per-step velocity (`chopvelcut`) with a `dyn` amount. A new panel column has VELOCITY and STEP PITCH rows, 8 dynamics and 7 pitch presets, transpose buttons, and `av_chop_transpose` / `av_chop_dyn` receives. Existing controls haven't moved, so the baked saved state still applies.
 - New `vocal_chops.maxpat` (recipe `vocal_chops.py`): six Core Library yells, a random chance per beat with cooldown, five chop styles, a guarded `gen~` voice and a dub delay. Added to the conductor mix (**vox**), `build_all.py`, `symphony.maxpat` and `digital_symphony.maxpat` (which now has the visuals and vocals on their own row).
