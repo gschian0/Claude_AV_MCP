@@ -6,6 +6,10 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Ableton "Warp Garden" session
+> "lets now try to create a session in ableton with ableton mcp and create some cool frequency warping physical model sounds with cool time fased effects and evolving grooves"
+- `recipes/ableton/`: `live.py` (a minimal client for the AbletonMCP Remote Script), `build_session.py` (six tracks with physical models: Collision, Tension, Corpus, plus Meld and DS drums), and `tune.py` (frequency-shift, spectral, grain and stutter settings). The clips are 3, 4, 5, 7, 16 and 32 beats long, so the grooves drift against each other. No changes to Max.
+
 ### `370f637` Crash fix: chopper `gen~` can no longer read outside its buffer
 > "max quit" (crash report: `EXC_BAD_ACCESS` in `dsp_gen_perform64` on the audio thread)
 
