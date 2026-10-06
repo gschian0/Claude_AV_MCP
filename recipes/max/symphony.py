@@ -9,7 +9,7 @@ def panel_size(name):
     r = [b["box"]["presentation_rect"] for b in d["boxes"] if b["box"].get("presentation")]
     return [max(x + w for x, y, w, h in r) + 10, max(y + h for x, y, w, h in r) + 10]
 
-ROWS = [["conductor.maxpat"],
+ROWS = [["conductor.maxpat", "snapshots.maxpat"],
         ["jongly_chopper.maxpat"],
         ["gen_feedback.maxpat", "vocal_chops.maxpat"],
         ["sine_test.maxpat", "glass_bells.maxpat"],
@@ -24,7 +24,7 @@ for row in ROWS:
     for name in row:
         w, h = panel_size(name)
         p.comment(name.replace(".maxpat", "").replace("_", " ").upper(), x, y, 300)
-        p.box("bpatcher", x, y + 22, w, h, 0, 0, name=name, offset=[0.0, 0.0], embed=0, bgmode=0, border=1,
+        p.box("bpatcher", x, y + 22, w, h, 0, 0, name=name, varname=name.replace(".maxpat", ""), offset=[0.0, 0.0], embed=0, bgmode=0, border=1,
               clickthrough=0, enablehscroll=0, enablevscroll=0, lockeddragscroll=0, viewvisibility=1)
         x += w + 20; row_h = max(row_h, h + 22)
     y += row_h + 20
@@ -52,7 +52,7 @@ w, h = panel_size("jongly_granular.maxpat")
 g = Patch([0.0, 40.0, w + 20, h + 50])
 g.present = False
 g.comment("JONGLY GRANULAR — open next to digital_symphony.maxpat (it syncs to the speed chopper there). Don't also open jongly_granular.maxpat.", 10, 6, w)
-gb = g.box("bpatcher", 10, 28, w, h, 0, 0, offset=[0.0, 0.0], embed=1, bgmode=0, border=1, clickthrough=0,
+gb = g.box("bpatcher", 10, 28, w, h, 0, 0, varname="jongly_granular", offset=[0.0, 0.0], embed=1, bgmode=0, border=1, clickthrough=0,
            enablehscroll=0, enablevscroll=0, lockeddragscroll=0, viewvisibility=1)
 g.boxes[-1]["box"]["patcher"] = json.load(open(f"{out}/jongly_granular.maxpat"))["patcher"]
 g.dump(f"{out}/granular_side.maxpat"); check(f"{out}/granular_side.maxpat")

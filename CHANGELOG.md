@@ -6,6 +6,16 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Snapshots + tempo-synced, auto-moving grains
+> "lets now focus on figureing out how to save presets and full snapshots" / "and we should automate the grains tempo synced up too"
+- **Snapshots:** `av_snapshots.js` + `snapshots.maxpat` (recipe `snapshots.py`, next to the conductor in both symphony patches):
+  - 8 store/recall slots and named saves with a recall menu
+  - recall scope (all or one instrument), recall on the bar
+  - files in `patches/max/snapshots/`; recall skips display-only controls and the chopper's 0 rate box
+  - `bake_snapshot.py` turns a snapshot into the startup state
+  - Symphony bpatchers now have their instrument name as `varname`; `maxgen` panels also show `umenu` and `textedit`.
+- **Granular grains:** `gdiv` = grain size as a division of the jongly step (default ÷2). **AUTO GRAINS** re-rolls sync division, time speed and jitter on the beat every N beats, and sometimes freezes through the last beat of the bar.
+
 ### `12fc54f` Fix: granular chopper's gen~ didn't compile
 > "not counting" (the granular step counter was frozen, so the `gen~` code wasn't running)
 - Cause: the granular code assigned its pitch ratio to `ratio`, which is already the compressor's `Param ratio`. `gen~` won't compile code that assigns to a Param, so the whole granular chopper was silent from the start.

@@ -263,3 +263,28 @@ feeds new image into the loop. The **render** toggle sends a black seed texture
 - Open **`granular_side.maxpat`** next to `digital_symphony.maxpat` to play the two side by side ("just make a new patch with the granular to open side by side"). The granular chopper isn't inside the symphony patches, so only one copy runs. Don't also open `jongly_granular.maxpat`.
 
 - **Own loop** ("can you have it play a different loop synced up to jongly ?"): the granular chopper loads a different break (LOOP: dnblive, the default, plus rolling, scatty, funkchop, jongly) from Live's Core Library. **fit** stretches it to jongly's bar through grain time speed, so it stays step-locked with no pitch change.
+
+
+## Snapshots (`snapshots.maxpat`, `av_snapshots.js`)
+
+> "lets now focus on figureing out how to save presets and full snapshots"
+
+- **Panel:** at the top of `symphony.maxpat` and `digital_symphony.maxpat`, next to the conductor.
+- **What's captured:** every control (multisliders, numbers, toggles, sliders, menus) of every open instrument, found in every open window under `patches/max/`. This includes the panels embedded in `digital_symphony.maxpat` and `granular_side.maxpat`; each embedded panel is named after its instrument.
+- **STORE 1–8 / RECALL 1–8:** quick slots, saved as `patches/max/snapshots/slot<n>.json`.
+- **Named snapshots:** type a name + Return to save it; pick one from **recall saved** to recall it.
+- **scope:** recall everything (**all**) or only one instrument from a snapshot, e.g. only the drum pattern.
+- **on the bar:** recalls wait for jongly step 0, so changes land on the downbeat.
+- Recall only sets controls that drive something (connected outputs), and never sets the chopper's display-only rate box to 0.
+- **Bake** a snapshot into the startup state: `python3 recipes/max/bake_snapshot.py <name> && python3 recipes/max/build_all.py`.
+
+## Granular: tempo-synced grains + AUTO GRAINS
+
+> "and we should automate the grains tempo synced up too"
+
+- **SYNC grain = step ÷** (`gdiv`, default 2; buttons 0, 1, 2, 4, 8): grain size = one jongly step ÷ N. It follows the rate and jongly's length, so grains pulse in time. 0 = free size in ms.
+- **AUTO GRAINS** (on, every 2 beats): on the beat it re-rolls
+  - sync division from 1, 2, 2, 4, 4, 8
+  - time speed from 1, 1, 1, 0.5, 0.25, 2
+  - jitter from 0.05, 0.15, 0.15, 0.4
+- It also has a 1-in-4 chance to **freeze** through the bar's last beat (step 12), letting go at the next bar start. With AUTO off, a freeze you set by hand stays put.

@@ -22,7 +22,7 @@ def granularize(code):
       "Param scan(1);      // TIME speed through each slice, independent of pitch (0.5 = half speed, 0 = still)\n"
       "Param freeze(0);    // 1 = time stops: the grains hold the current spot (pitch still moves)\n"
       "Param sync(1);      // 1 = follow the speed chopper's clock (in1 = its loop phase) whenever it is running\n"
-      "Param fit(1);       // 1 = stretch this loop's slices to jongly's step length (time only), so a different loop stays in sync\n"
+      "Param fit(1);       // 1 = stretch this loop's slices to jongly's step length (time only), so a different loop stays in sync\n"      "Param gdiv(0);      // TEMPO-SYNCED grain size: 0 = use gsize ms; 1/2/4/8 = one jongly step divided by this\n"
       "Buffer ref(\"jongly\");  // the speed chopper's loop: only its length is read, to fit this loop to it\n"),
      ("History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1), sv(1), spt(0);",
       "History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1), sv(1), spt(0);\n"
@@ -40,7 +40,8 @@ def granularize(code):
       "fitk = (fit > 0.5 && dim(ref) > 64) ? clamp(len/dim(ref), 0.125, 8) : 1;   // this loop's length / jongly's length\n"
       "rd = clamp(rd + ((freeze > 0.5) ? 0 : clamp(fixnan(rate), -4, 4)*clamp(fixnan(scan), 0, 4)*fitk), -len, len);\n"
       "base = slice*len/16 + rd;\n"
-      "gsz = clamp(fixnan(gsize), 10, 500)*samplerate*0.001;\n"
+      "stepl = ((fit > 0.5 && dim(ref) > 64) ? dim(ref) : len)/16/max(abs(clamp(fixnan(rate), -4, 4)), 0.05);   // one step, in samples\n"
+      "gsz = (gdiv >= 1) ? clamp(stepl/clamp(floor(gdiv), 1, 16), 0.01*samplerate, 0.5*samplerate) : clamp(fixnan(gsize), 10, 500)*samplerate*0.001;\n"
       "jit = clamp(fixnan(jitter), 0, 1)*gsz;\n"
       "gp = wrap(fixnan(gp + 1/gsz), 0, 1);\n"
       "q0 = gp; q1 = wrap(gp + 0.25, 0, 1); q2 = wrap(gp + 0.5, 0, 1); q3 = wrap(gp + 0.75, 0, 1);\n"
@@ -315,6 +316,39 @@ if G:
     c.wire(c.obj("loadmess 1", 1420, 840, 1, 1), 0, fitt, 0)
     pf = c.obj("prepend fit", 1520, 840, 1, 1); c.wire(fitt, 0, pf, 0); c.wire(pf, 0, gen, 0)
     lbl = c.obj("loadbang", 1420, 870, 1, 1, ["bang"]); c.wire(lbl, 0, lmsgs[0], 0)   # default: D&B Live 170 (same length as jongly)
+    # GRAIN SYNC: grain size locked to the step (tempo-synced); AUTO GRAINS re-rolls size/time/jitter on the beat
+    c.comment("SYNC grain = step ÷", xv + 300, 700, 130)
+    gdv = c.box("number", xv + 300, 722, 40, 22, 1, 2, ["", "bang"], minimum=0, maximum=16)
+    c.wire(c.obj("loadmess 2", 1420, 990, 1, 1), 0, gdv, 0)
+    pgd = c.obj("prepend gdiv", 1520, 990, 1, 1); c.wire(gdv, 0, pgd, 0); c.wire(pgd, 0, gen, 0)
+    for k, v in enumerate([0, 1, 2, 4, 8]):
+        c.wire(c.msg(f"{v}", xv + 300 + k * 28, 752, 26), 0, gdv, 0)
+    c.comment("(0 = free ms)", xv + 300, 776, 100)
+    c.comment("AUTO GRAINS · every N beats", xv + 240, 862, 200)
+    agt = c.box("toggle", xv + 240, 884, 22, 22, 1, 1, ["int"]); c.wire(c.obj("loadmess 1", 1420, 1020, 1, 1), 0, agt, 0)
+    agn = c.box("number", xv + 270, 884, 40, 22, 1, 2, ["", "bang"], minimum=1, maximum=32); c.wire(c.obj("loadmess 2", 1420, 1046, 1, 1), 0, agn, 0)
+    rgs = c.obj(f"r {P}jongly_step", 1620, 1030, 0, 1)
+    b4g = c.obj("% 4", 1620, 1056, 2, 1, ["int"]); c.wire(rgs, 0, b4g, 0)
+    bsel = c.obj("sel 0 12", 1620, 1082, 3, 3, ["bang", "bang", ""]); c.wire(rgs, 0, bsel, 0)        # 0 = bar start, 12 = last beat
+    s0g = c.obj("sel 0", 1700, 1056, 2, 2, ["bang", ""]); c.wire(b4g, 0, s0g, 0)                       # every beat
+    gg = c.obj("gate 1", 1700, 1082, 2, 1); c.wire(agt, 0, gg, 0); c.wire(s0g, 0, gg, 1)
+    gcn = c.obj("counter", 1760, 1082, 3, 4, ["int", "", "", "int"]); c.wire(gg, 0, gcn, 0)
+    gmd = c.obj("% 2", 1840, 1082, 2, 1, ["int"]); c.wire(gcn, 0, gmd, 0); c.wire(agn, 0, gmd, 1)
+    gs0 = c.obj("sel 0", 1900, 1082, 2, 2, ["bang", ""]); c.wire(gmd, 0, gs0, 0)
+    roll = c.obj("t b b b", 1900, 1108, 1, 3, ["bang"] * 3); c.wire(gs0, 0, roll, 0)
+    for k, (choices, dst) in enumerate([([1, 2, 2, 4, 4, 8], gdv), ([1, 1, 1, 0.5, 0.25, 2], gsc), ([0.05, 0.15, 0.15, 0.4], gjt)]):
+        tk = c.obj("t b b", 1900 + k * 120, 1134, 1, 2, ["bang", "bang"]); c.wire(roll, k, tk, 0)
+        rr = c.obj(f"random {len(choices)}", 1960 + k * 120, 1160, 2, 1, ["int"]); c.wire(tk, 1, rr, 0)      # 1st: pick the index
+        p1 = c.obj("+ 1", 1960 + k * 120, 1186, 2, 1, ["int"]); c.wire(rr, 0, p1, 0)
+        zl = c.obj("zl nth", 1900 + k * 120, 1238, 2, 2, ["", ""]); c.wire(p1, 0, zl, 1)
+        lst = c.msg(" ".join(str(v) for v in choices), 1900 + k * 120, 1212, 110); c.wire(tk, 0, lst, 0)     # 2nd: the choices
+        c.wire(lst, 0, zl, 0); c.wire(zl, 0, dst, 0)
+    # sometimes freeze through the last beat of the bar (a held stutter), always let go on the next bar
+    fz = c.obj("random 4", 1700, 1160, 2, 1, ["int"]); fzs = c.obj("sel 0", 1700, 1186, 2, 2, ["bang", ""])
+    fg2 = c.obj("gate 1", 1780, 1160, 2, 1); c.wire(agt, 0, fg2, 0); c.wire(bsel, 1, fg2, 1); c.wire(fg2, 0, fz, 0); c.wire(fz, 0, fzs, 0)
+    on1 = c.msg("1", 1700, 1212); c.wire(fzs, 0, on1, 0); c.wire(on1, 0, gfz, 0)
+    fg3 = c.obj("gate 1", 1840, 1186, 2, 1); c.wire(agt, 0, fg3, 0); c.wire(bsel, 0, fg3, 1)   # only AUTO lets go of its own freeze
+    off0 = c.msg("0", 1760, 1212); c.wire(fg3, 0, off0, 0); c.wire(off0, 0, gfz, 0)
     # DIAGNOSTICS: loop ms (0 = loop not loaded) · out level (0 = silent) — the panel's "step" number shows gen~ is running
     c.comment("CHECK: loop ms (0 = not loaded) · out level", xv, 838, 300)
     lms = c.box("flonum", xv, 860, 70, 22, 1, 2, ["", "bang"], format=6)

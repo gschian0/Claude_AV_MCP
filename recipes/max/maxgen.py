@@ -2,7 +2,7 @@
 import json, pathlib
 STATE_DIR = pathlib.Path(__file__).resolve().parent / "state"
 SAME_KIND = {"number": {"number", "flonum"}, "flonum": {"number", "flonum"}}
-PANEL_UI = {"multislider", "number", "flonum", "toggle", "slider", "button", "ezdac~"}
+PANEL_UI = {"multislider", "number", "flonum", "toggle", "slider", "button", "ezdac~", "umenu", "textedit"}
 APPV = {"major": 9, "minor": 0, "revision": 0, "architecture": "x64", "modernui": 1}
 
 class Patch:
