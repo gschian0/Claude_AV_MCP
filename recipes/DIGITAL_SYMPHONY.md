@@ -12,6 +12,14 @@ Close the patches in Max before rebuilding, then reopen them. If you edit a
 patch by hand in Max, the next rebuild overwrites it, so copy the change back
 into the recipe.
 
+**Contents**
+- **Part 1 — The set:** conductor, all-in-one and symphony windows, feedback keys, saved state, the ensemble, Max 9 lessons.
+- **Part 2 — Advanced cooking:** granular chopping side by side, expressive chopping, vocal chops, snapshots, gen~ kitchen safety, cooking in Ableton Live.
+
+Every change, with the request that prompted it, is in `CHANGELOG.md` at the repo root.
+
+# Part 1 — The set
+
 ## The conductor: `conductor.maxpat`
 **Recipe:** `recipes/max/conductor.py` · **Asked for:** "the bassline needs to be more in key … i would like one patch to control them all"
 
@@ -19,7 +27,7 @@ It sits at the top of the symphony window and runs everything through sends:
 - **KEY:** note buttons (A, B♭, B, C, D, E, F, G) or a MIDI number → `av_root`. The bassline's own root box does the same, and each one shows the other's changes.
 - **SCALE** → `av_scale`. Both basslines pass every note through `av_quantize.js`, which snaps it to the nearest note in the scale. So presets, hand-drawn sliders and old patterns all stay in key without re-rolling.
 - **NEW LINES:** re-roll the acid or jungle line in the current scale (`av_reroll_bass` / `av_reroll_jungle`).
-- **MIX:** a fader each for drums, tampura, acid, jungle and bells (`av_level_*`). A fader takes over that instrument's level once you move it.
+- **MIX:** a fader each for drums, tampura, acid, jungle, bells, **vox** (vocal chops) and **gran** (granular chopper) (`av_level_*`). A fader takes over that instrument's level once you move it.
 - **Drone evolve** (`av_evolve`) and **audio on/off**. Audio switches on by itself 1.5 s after the conductor loads ("this should just play").
 - **DRUMS** ("there should be a patch that controls everything"): every pattern by name (`av_drum_pattern`), auto patterns, auto sweeps, sweep now, and chaos.
 - **VISUALS:** render, fullscreen, cubes, and trail length (`decay 0.9 / 0.985 / 1.`, sent to the feedback through `av_fb`).
@@ -223,68 +231,76 @@ feeds new image into the loop. The **render** toggle sends a black seed texture
 - A message box can drive two destinations with commas: `s 1 2 3…, r 1 1 1…` → `[route s r]`.
 - `line~` accepts several target/time pairs in one list: `1 4 0.15 300`.
 - Embedded gen patchers use `"classnamespace": "dsp.gen"` (gen~) or `"jit.gen"` (jit.gl.pix).
+- gen~ will not compile code that **assigns to a `Param` or `Buffer` name**, and the object is then silent with no sign in the patch. The build now checks for this (see Part 2, kitchen safety).
+- `gen~` has no buffer sample rate: read it in Max and pass it in as a Param, or pitch is off by the 44.1/48 kHz ratio. The vocal chops use `buffer~` right outlet → `info~` → first outlet for this; that outlet choice is not yet confirmed by ear.
+- Only one `send~` per name, so a second copy of an instrument needs its own names (the granular chopper uses a `g` prefix).
 
+# Part 2 — Advanced cooking
 
-## Chopper: pitch both ways + dynamics (velocity) in the loop
+Techniques built on top of the set. Each chapter covers the dish, how it's cooked, and the knobs to taste.
 
-> "in max we need pitch down in the jongly chopper too so it can really go both ways and play fully expressibly and we can also have some velocities built into the loops so we can really build a dynamic"
+## A. Two choppers side by side: speed and granular
+**Recipe:** `recipes/max/chopper.py` (run by `feedback_and_chopper.py`) · **Patches:** `jongly_chopper.maxpat` (in the symphony), `granular_side.maxpat` (its own window; open it next to `digital_symphony.maxpat`) · **Asked for:** "can we make jongly granular too … played side by side with the granular version and the speed version", "can you have it play a different loop synced up to jongly ?", "we should automate the grains tempo synced up too"
 
-- **TRANSPOSE** (−24 to +24 semitones, with buttons for −12, −7, −5, 0, +5, +7, +12) pitches the whole break down or up without changing its timing. Also controllable through `av_chop_transpose`.
-- **STEP PITCH** row (purple): per-step semitones from −12 to +12. Presets: flat, dropend, riseend, dubdrop, seesaw, dive, octaves. It stacks with the pitch rolls and the pitch LFO; total pitch is limited to ±36 semitones.
-- **VELOCITY** row (blue): per-step loudness. Presets: flat, groove (the default), accents, ghosts, swell, build, fade, drop. **dynamics amount** (0–1, also `av_chop_dyn`) scales how much the row affects the sound.
-- Velocity is stored as a cut (1 − velocity) in `chopvelcut`, so an empty buffer means full volume and a failed load can never silence the drums.
+**One recipe, two dishes.** `chopper.py speed` and `chopper.py granular` share the whole sequencer: slice, roll, velocity and step-pitch rows, presets, AUTO, chaos, sweeps and the compressor. Only the clock and the playback differ.
 
-## Vocal chops (`vocal_chops.maxpat`, recipe `vocal_chops.py`)
+**Speed (tape).** Each slice hit has its own read pointer that runs at `rate × 2^(semitones/12)`, so pitch and speed move together like tape.
 
-> "lets add one more sampler of a vocal sample that does chopped jungle yells every now and then"
+**Granular.**
+- **Grains:** four Hann-windowed grains, a quarter-period apart, so they always sum to a steady level.
+  - Each grain starts at the current slice position plus random `jitter`.
+  - It reads at the pitch ratio. The slice position moves at `rate × scan × fit`.
+  - So pitch and time are independent: drop an octave without slowing down; slow down (`scan`) or `freeze` without changing pitch.
+- **Clock sharing:** the speed chopper sends its loop phase on `send~ jongly_phase`. The granular one follows it while it is moving (`sync`) and free-runs otherwise.
+- **A different loop, still in sync:** the granular chopper loads its own break.
+  - **LOOP** buttons: D&B Live 170 (the default), Rolling, Scatty, Funk Chop, or jongly. They're read from Live's Core Library, not copied into the repo.
+  - **fit** reads jongly's length (`Buffer ref("jongly")`) and multiplies the slice speed by loop length ÷ jongly length, so 16 slices land on jongly's 16 steps.
+- **Tempo-synced grains:** `gdiv` makes the grain size one jongly step ÷ N (default ÷2; 0 = free milliseconds).
+- **AUTO GRAINS:** every N beats, on the beat, it re-rolls the sync division, time speed and jitter. It sometimes freezes through the bar's last beat and lets go on the downbeat.
+- **Own names:** `g`-prefixed buffers, sends and receives (`gjongly`, `gchopsteps`, `gjongly_step`, `av_gchop_*`), so the two can run different patterns. It has the conductor's **gran** fader. Only the speed chopper feeds the visuals.
+- **CHECK readouts** (`step`, `loop ms`, `out level`) on the granular panel tell you which stage is silent.
 
-- Six one-shot vocals are read from Ableton Live's Core Library at load: Chop Jungle, Chop Oi, Shout Wha, Crowd Hey, Check It Out, That Bass. The repo only stores their paths.
-- **When:** on even jongly steps, a 30‰ chance per step (about one yell every few bars at 170 BPM), with a 2.5 s cooldown. Controls: **AUTO YELLS**, **YELL NOW**, chance, cooldown; `av_vox_yell` and `av_vox_chance` work from anywhere.
-- **How:** a `gen~` voice plays a random vocal in a random chop style: clean, chopped (3× first 80 ms, "oi-oi-oi"), machine gun (4× 50 ms, +3 st), dropped (−5 st) or reverse. Each buffer's own sample rate keeps the pitch correct, and the read position is guarded the same way as the chopper fix.
-- A dark dub delay (dotted 1/8 at 170 BPM, 265 ms, feedback through a 2.5 kHz low-pass) feeds into the level control. The conductor has a new **vox** fader (`av_level_vox`, 0.4).
-- It is in `symphony.maxpat` and `digital_symphony.maxpat`, next to the visuals.
+**To taste:** grain size (sync ÷1 = smooth, ÷8 = buzzy), jitter (0.05 tight → 0.4 smeared), time speed (0.25 slow-motion, 2 double-time), transpose −12 for a sub-octave break that stays in time.
 
-- **Pitch rolls / pitch LFO on-off** ("we should be able to turn off pitch rolls too"): two toggles next to the PITCH controls, **rolls** and **LFO**. Off keeps the settings and just stops applying them.
+## B. Expressive chopping: pitch both ways and dynamics
+**Asked for:** "pitch down in the jongly chopper too so it can really go both ways … velocities built into the loops", "we should be able to turn off pitch rolls too"
+- **TRANSPOSE:** ±24 semitones, quick buttons, `av_chop_transpose`. The whole break moves; on the speed chopper the timing stays.
+- **STEP PITCH row:** per-step semitones (±12). Presets: dropend, riseend, dubdrop, seesaw, dive, octaves, flat.
+- **Pitch rolls and pitch LFO:** each has an on/off toggle (`prollon`, `lfoon`). Off keeps the settings. Total pitch is clamped to ±36 semitones.
+- **VELOCITY row:** per-step loudness. Presets: groove (the default), accents, ghosts, swell, build, fade, drop. **dynamics amount** (`av_chop_dyn`) scales it.
+- *Technique:* velocity is stored as a **cut** (1 − velocity), so an empty or failed buffer means full volume and can never silence the drums.
 
+## C. Vocal chops: yells that drop in by chance
+**Recipe:** `vocal_chops.py` · **Asked for:** "chopped jungle yells every now and then"
+- **Chance:** on even jongly steps it rolls a per-mille chance (30‰). A **cooldown** gate (2.5 s) stops yells piling up. **YELL NOW**, `av_vox_yell`, `av_vox_chance`.
+- **Voice:** each yell picks one of six Core Library vocals and one chop style: clean, chopped, machine gun, dropped, reverse. Each style is a message of `gen~` Params (`stut`, `stutlen`, `pitch`, `rev`) sent just before the `trig` counter.
+- *Technique:* a one-shot `gen~` voice triggered by a changing `trig` Param, with each buffer's sample rate passed in (see Part 1's lessons), into a dark dotted-1/8 dub delay.
 
-## Jongly Granular (`jongly_granular.maxpat`) — side by side with the speed chopper
+## D. Snapshots: save and recall the whole set live
+**Patch:** `snapshots.maxpat` (next to the conductor) · **Engine:** `patches/max/av_snapshots.js` · **Asked for:** "how to save presets and full snapshots"
+- **What's saved:** every UI control (multisliders, numbers, toggles, sliders, menus) of every open instrument, in every open window under `patches/max/`, including the panels embedded in `digital_symphony.maxpat` and `granular_side.maxpat`.
+  - Each embedded panel's `varname` is its instrument name, which is how a snapshot knows whose controls are whose.
+  - Controls are matched by class and position.
+- **STORE / RECALL 1–8**, **save as** (type + Return), **recall saved** menu.
+- **scope:** recall all, or one instrument (just the drum pattern from slot 3, say). **on the bar:** waits for jongly step 0.
+- **Safety:** recall only sets controls that drive something, and never sets the chopper's display-only rate box to 0.
+- **From live snapshot to startup state:** `python3 recipes/max/bake_snapshot.py <name> && python3 recipes/max/build_all.py`.
+  - This is the same SAVED STATE mechanism as `save_state.py` in Part 1.
+  - Check the values first: the "perfect" 15:59 bake once carried bells octave 263 and decay 79 ms, which silenced the bells. Their boxes are now clamped.
 
-> "can we make jongly granular too as an upgrade in a patch with the same patch copied and ment to played side by side with the granular version and the speed version"
+## E. Kitchen safety: gen~ rules that keep Max alive
+- **Never let an index go NaN or infinite.** `sample()` with a NaN/inf index reads outside the buffer and crashed Max (`EXC_BAD_ACCESS` in `dsp_gen_perform64`).
+  - Every chopper and voice clamps rate and pitch, wraps `fixnan`s around the phase and read pointers, floors the buffer length at 1, and mutes until the buffer has more than 64 samples.
+- **Never assign to a Param or Buffer name.** gen~ silently refuses to compile. `maxgen.check()` now runs `lint_gen()` on every codebox at build time and stops the build with the offending name.
+- **Display-only boxes** (fed only by `set`) read 0 in captures. Exclude them from bakes and recalls (`EXCLUDE` / `SKIP_ZERO`).
+- **Two copies of an instrument fight** over buffers and `send~` names. Open the symphony *or* the single patches, and keep the granular chopper only in `granular_side.maxpat`.
 
-- Both choppers now come from one recipe, `recipes/max/chopper.py` (`speed` builds `jongly_chopper.maxpat`, `granular` builds `jongly_granular.maxpat`; `feedback_and_chopper.py` runs both).
-- **Speed version** (unchanged sound): tape-style, so pitch and speed move together. It now also sends its loop phase on `send~ jongly_phase`.
-- **Granular version:** the same sequencer, slice/roll/velocity/pitch rows, presets, AUTO, chaos, sweeps and compressor. Each slice plays as **4 overlapping Hann grains**:
-  - pitch (transpose, step pitch, pitch rolls, LFO) changes only the grains' playback rate
-  - time moves through the slice at **time speed** (`scan`)
-  - so it can drop an octave without slowing, or slow or freeze without changing pitch
-- **GRAIN controls:** size (ms, 90), jitter (0.15), time speed (0, 0.25, 0.5, 1, 2), **freeze**, **sync**.
-- **Sync:** with sync on, it follows the speed chopper's clock while that one is running, so both hit the same step. It free-runs at its own `rate` if the speed chopper isn't open or is stopped.
-- **Independent:** own buffers (`g…`), own step send (`gjongly_step`), own receives (`av_gchop_*`, `av_gdrum_pattern`, …). So the conductor's drum buttons only drive the speed chopper, and the two can run different patterns. Mix with the conductor's new **gran** fader (`av_level_granular`, 0.35). Only the speed chopper feeds the visuals.
-- Open **`granular_side.maxpat`** next to `digital_symphony.maxpat` to play the two side by side ("just make a new patch with the granular to open side by side"). The granular chopper isn't inside the symphony patches, so only one copy runs. Don't also open `jongly_granular.maxpat`.
-
-- **Own loop** ("can you have it play a different loop synced up to jongly ?"): the granular chopper loads a different break (LOOP: dnblive, the default, plus rolling, scatty, funkchop, jongly) from Live's Core Library. **fit** stretches it to jongly's bar through grain time speed, so it stays step-locked with no pitch change.
-
-
-## Snapshots (`snapshots.maxpat`, `av_snapshots.js`)
-
-> "lets now focus on figureing out how to save presets and full snapshots"
-
-- **Panel:** at the top of `symphony.maxpat` and `digital_symphony.maxpat`, next to the conductor.
-- **What's captured:** every control (multisliders, numbers, toggles, sliders, menus) of every open instrument, found in every open window under `patches/max/`. This includes the panels embedded in `digital_symphony.maxpat` and `granular_side.maxpat`; each embedded panel is named after its instrument.
-- **STORE 1–8 / RECALL 1–8:** quick slots, saved as `patches/max/snapshots/slot<n>.json`.
-- **Named snapshots:** type a name + Return to save it; pick one from **recall saved** to recall it.
-- **scope:** recall everything (**all**) or only one instrument from a snapshot, e.g. only the drum pattern.
-- **on the bar:** recalls wait for jongly step 0, so changes land on the downbeat.
-- Recall only sets controls that drive something (connected outputs), and never sets the chopper's display-only rate box to 0.
-- **Bake** a snapshot into the startup state: `python3 recipes/max/bake_snapshot.py <name> && python3 recipes/max/build_all.py`.
-
-## Granular: tempo-synced grains + AUTO GRAINS
-
-> "and we should automate the grains tempo synced up too"
-
-- **SYNC grain = step ÷** (`gdiv`, default 2; buttons 0, 1, 2, 4, 8): grain size = one jongly step ÷ N. It follows the rate and jongly's length, so grains pulse in time. 0 = free size in ms.
-- **AUTO GRAINS** (on, every 2 beats): on the beat it re-rolls
-  - sync division from 1, 2, 2, 4, 4, 8
-  - time speed from 1, 1, 1, 0.5, 0.25, 2
-  - jitter from 0.05, 0.15, 0.15, 0.4
-- It also has a 1-in-4 chance to **freeze** through the bar's last beat (step 12), letting go at the next bar start. With AUTO off, a freeze you set by hand stays put.
+## F. Cooking in Ableton Live
+**Recipes:** `recipes/ableton/` (see its README) · Sends commands straight to the AbletonMCP Remote Script on TCP 9877 (`live.py`).
+- **Warp Garden** (118 BPM) and its **B section**: physical models (Collision, Tension, Corpus, Electric) into frequency-shift, spectral, grain and stutter effects. Polymetric clip lengths (3, 4, 5, 7, 9, 16, 32 beats) make the grooves drift and evolve.
+- **Jungle breakdowns** (170 BPM): the DS Drum Rack (all synthesized) into macro racks (Drum Transistor, Multiband Beat Repeat Echo, Knob 1 Super Looper). The second breakdown has an 8-bar mutating phrase and an Operator **Dub Bass**.
+- **Trip-hop** (85 BPM): Electric with 4-part voice-led harmony.
+- **Classic jump-up outro** (174 BPM): Crisp Kit two-step and a Reese Classic riff.
+- **Layers** (`build_layers.py`): sampled library sounds that mirror every clip of their source track, for a fatter mix.
+- `play_part.py 1–6` switches parts and tempo.
+- *Not yet:* Max following Live over **Link**. Live broadcasts Link, but the choppers run on their own clock. The plan is to drive the speed chopper's phase from a transport-locked `phasor~` with Link on in Max's transport; everything else already follows the chopper.

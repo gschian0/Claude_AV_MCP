@@ -6,6 +6,14 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### Cookbook: Part 2 "Advanced cooking" + gen~ lint in every build
+> "ok lets ake sure this is in the recipe cookbook now as more advanced cooking"
+- `recipes/DIGITAL_SYMPHONY.md` now has contents and two parts:
+  - **Part 1 — The set:** the original chapters. The conductor MIX now lists vox and gran; new Max 9 lessons on Param assignment, buffer sample rate and unique `send~` names.
+  - **Part 2 — Advanced cooking:** A. speed and granular choppers side by side (grains, clock sharing, fit, tempo-synced grains, AUTO GRAINS); B. expressive chopping; C. vocal chops; D. snapshots and baking; E. kitchen safety (NaN guards, Param rule, display-only boxes, duplicate instruments); F. cooking in Ableton Live, plus the Link plan.
+  - The per-feature notes previously appended at the end were folded into Part 2.
+- `maxgen.check()` now runs `lint_gen()`: the build stops if any gen~/jit.gen codebox assigns to a Param or Buffer name (the bug that silenced the granular chopper). Tested on that exact case.
+
 ### `745f04f` Snapshots + tempo-synced, auto-moving grains
 > "lets now focus on figureing out how to save presets and full snapshots" / "and we should automate the grains tempo synced up too"
 - **Snapshots:** `av_snapshots.js` + `snapshots.maxpat` (recipe `snapshots.py`, next to the conductor in both symphony patches):

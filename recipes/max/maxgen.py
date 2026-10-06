@@ -115,6 +115,27 @@ def check(path):
     bad = [l for l in d["lines"] if (s := l["patchline"]["source"])[0] not in ids or (t := l["patchline"]["destination"])[0] not in ids
            or s[1] >= ids[s[0]]["numoutlets"] or t[1] >= ids[t[0]]["numinlets"]]
     print(f"{path}: {len(ids)} boxes, {len(d['lines'])} cords, bad cords: {bad}")
+    lint_gen(d, path)
+
+def lint_gen(patcher, path):
+    """Kitchen safety for gen~ / jit.gl.pix code: gen refuses to compile a codebox that assigns to a Param or a
+    Buffer name, and then the whole object is silent with no sign in the patch (the granular chopper's 'ratio',
+    2026-10-06). Fail the build instead."""
+    import re
+    def codes(p):
+        for b in p.get("boxes", []):
+            box = b["box"]
+            if box.get("maxclass") == "codebox":
+                yield box.get("code", "")
+            if isinstance(box.get("patcher"), dict):
+                yield from codes(box["patcher"])
+    for code in codes(patcher):
+        bare = re.sub(r"//.*", "", code)
+        declared = set(re.findall(r"^\s*(?:Param|Buffer)\s+(\w+)", bare, re.M))
+        assigned = set(re.findall(r"(?<![=!<>\w.])(\w+)\s*=(?!=)", bare))
+        clash = sorted(declared & assigned)
+        if clash:
+            raise SystemExit(f"{path}: gen code assigns to Param/Buffer {clash} — gen~ won't compile it (rename the variable)")
 
 def add_pocket(p, clocks, x, y, top, dip):
     """POCKET: on every beat (each 4th jongly step) the bass's lowpass dips and its level ducks a little, then
