@@ -234,7 +234,7 @@
       840,
       1688.0,
       970,
-      388.0
+      400.0
      ],
      "name": "vocal_chops.maxpat",
      "varname": "vocal_chops",

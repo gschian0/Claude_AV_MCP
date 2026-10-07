@@ -6,6 +6,14 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### `PENDING` Vocal chops play back granular
+> "cool can we make the vocal sampels play back granular then push this to git hub"
+- The vocal `gen~` voice now plays each yell through 4 overlapping Hann grains (on by default).
+  - The read head moves at pitch rate × stretch, so yells stretch without changing pitch. Grains start at the head with random scatter and are clamped and NaN-guarded like the choppers.
+- New **GRAIN** controls: on, size (ms, 70), stretch (0.5), scatter (0.15). They're captured by snapshots and tiles.
+- Chop styles also set a stretch multiplier. Two new styles: **stretched** and **cloud**.
+- Cookbook Part 2 chapter C updated.
+
 ### `4527e14` 8-tile preset launcher with pictures, one-click start, render kick
 > "a preset system for this patches and how to save them in a project so they all open up together and just start like this" / "i want a few presets that can be launced all together and with one button to launche th preset with the preset graphic along with it" / "it doesn't start the frames cause it doesn't start the renderer"
 - **LAUNCH panel** (`snapshots.py`): 8 picture tiles; click to recall (on the bar if chosen), **store n** saves the preset and grabs a frame of the visuals as the tile picture, **star n** sets the startup preset. Adds `r av_launch`, `r av_store`, `r av_snapshot_cmd`. `maxgen` panels now show `fpic` and `ubutton`.

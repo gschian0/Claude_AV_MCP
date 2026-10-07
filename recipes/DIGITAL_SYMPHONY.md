@@ -274,6 +274,11 @@ Techniques built on top of the set. Each chapter covers the dish, how it's cooke
 **Recipe:** `vocal_chops.py` · **Asked for:** "chopped jungle yells every now and then"
 - **Chance:** on even jongly steps it rolls a per-mille chance (30‰). A **cooldown** gate (2.5 s) stops yells piling up. **YELL NOW**, `av_vox_yell`, `av_vox_chance`.
 - **Voice:** each yell picks one of six Core Library vocals and one chop style: clean, chopped, machine gun, dropped, reverse. Each style is a message of `gen~` Params (`stut`, `stutlen`, `pitch`, `rev`) sent just before the `trig` counter.
+- **Granular playback** (asked for: "make the vocal samples play back granular"). It's on by default; **GRAIN on** switches back to plain playback.
+  - The voice's read head crawls through the yell at pitch rate × **stretch** (0.5 = twice as long, with no pitch change).
+  - Four overlapping Hann grains of **size** ms start at the head, plus random **scatter**, and play at the pitch rate.
+  - Each chop style also sets a stretch multiplier, `gmul`. There are two new styles: **stretched** (×0.4) and **cloud** (×0.15, +7 semitones).
+  - Reverse plays each grain backwards, and stutters repeat the first `stutlen` of the head's path.
 - *Technique:* a one-shot `gen~` voice triggered by a changing `trig` Param, with each buffer's sample rate passed in (see Part 1's lessons), into a dark dotted-1/8 dub delay.
 
 ## D. Snapshots: save and recall the whole set live
