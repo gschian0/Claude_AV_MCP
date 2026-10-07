@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### `PENDING` Max follows Live: Link tempo/bar + key bridge
+### `c8009cb` Max follows Live: Link tempo/bar + key bridge
 > "is there any way we can sync live in pitch and time to max ?" / "i installed link"
 - **Jongly chopper (speed):**
   - `link.phasor~` drives the loop phase whenever Link is moving, so it's locked to Live's tempo and bars; otherwise it free-runs as before
