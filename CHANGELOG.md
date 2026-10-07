@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
-### `PENDING` Vocal chops play back granular
+### `04bc36e` Vocal chops play back granular
 > "cool can we make the vocal sampels play back granular then push this to git hub"
 - The vocal `gen~` voice now plays each yell through 4 overlapping Hann grains (on by default).
   - The read head moves at pitch rate × stretch, so yells stretch without changing pitch. Grains start at the head with random scatter and are clamped and NaN-guarded like the choppers.
