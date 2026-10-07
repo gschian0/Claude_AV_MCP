@@ -6,6 +6,16 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-06
 
+### `PENDING` Max follows Live: Link tempo/bar + key bridge
+> "is there any way we can sync live in pitch and time to max ?" / "i installed link"
+- **Jongly chopper (speed):**
+  - `link.phasor~` drives the loop phase whenever Link is moving, so it's locked to Live's tempo and bars; otherwise it free-runs as before
+  - new LINK panel: on, follow Live play/stop, keep pitch, beats per loop 4/8/16, Live tempo readout (`av_tempo`), `r av_link`
+- **Jongly granular:** while following, it measures the leader's real speed, so grains and the tempo-synced grain size follow Live's tempo.
+- **New `AV Bridge.amxd`** (recipe `av_bridge.py`): a Max for Live audio effect that sends Live 12's Key/Scale over UDP 7474.
+- **Conductor:** **FOLLOW LIVE KEY** turns the bridge's messages into `av_root` / `av_scale`.
+- The Live tempo readout is excluded from bakes. Cookbook Part 2 chapter H; chapter F points to it.
+
 ### `04bc36e` Vocal chops play back granular
 > "cool can we make the vocal sampels play back granular then push this to git hub"
 - The vocal `gen~` voice now plays each yell through 4 overlapping Hann grains (on by default).

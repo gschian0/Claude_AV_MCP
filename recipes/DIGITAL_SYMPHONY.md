@@ -14,7 +14,7 @@ into the recipe.
 
 **Contents**
 - **Part 1 — The set:** conductor, all-in-one and symphony windows, feedback keys, saved state, the ensemble, Max 9 lessons.
-- **Part 2 — Advanced cooking:** granular chopping side by side, expressive chopping, vocal chops, snapshots, gen~ kitchen safety, cooking in Ableton Live, launch tiles and one-click start.
+- **Part 2 — Advanced cooking:** granular chopping side by side, expressive chopping, vocal chops, snapshots, gen~ kitchen safety, cooking in Ableton Live, launch tiles and one-click start, playing in sync with Live (Link + key).
 
 Every change, with the request that prompted it, is in `CHANGELOG.md` at the repo root.
 
@@ -308,7 +308,7 @@ Techniques built on top of the set. Each chapter covers the dish, how it's cooke
 - **Classic jump-up outro** (174 BPM): Crisp Kit two-step and a Reese Classic riff.
 - **Layers** (`build_layers.py`): sampled library sounds that mirror every clip of their source track, for a fatter mix.
 - `play_part.py 1–6` switches parts and tempo.
-- *Not yet:* Max following Live over **Link**. Live broadcasts Link, but the choppers run on their own clock. The plan is to drive the speed chopper's phase from a transport-locked `phasor~` with Link on in Max's transport; everything else already follows the chopper.
+- **Max follows Live** in tempo, bar and key: see chapter H.
 
 ## G. Presets, launch tiles and one-click start
 **Patches:** `snapshots.maxpat` (LAUNCH panel), `start_symphony.maxpat` (recipe `launcher.py`), `DigitalSymphony.maxproj` · **Asked for:** "a few presets that can be launched all together and with one button to launch the preset with the preset graphic along with it", saved "so they all open up together and just start like this"
@@ -324,3 +324,22 @@ Techniques built on top of the set. Each chapter covers the dish, how it's cooke
   2. kicks the renderer
   3. after 3.5 s sends `boot`, which recalls `startup` if a tile has been starred
 - **Presets travel with the project:** `patches/max/snapshots/` (json + png) is tracked in git.
+
+## H. Playing with Live: Link tempo and the key bridge
+**Asked for:** "is there any way we can sync live in pitch and time to max ?" · Needs the **Link** package (Max Package Manager) and Live 12.
+- **Time (Ableton Link).** The speed chopper has a `link.phasor~` (`@quantum 8`, so one jongly loop = 8 beats = 2 bars), feeding the chopper `gen~`'s new inlet.
+  - While Link's phase is moving, the chopper's loop phase *is* Link's phase, so it's locked to Live's tempo and bars. Everything clocked by the chopper follows: bass, bells, vocals, the granular chopper, AUTO GRAINS and "on the bar".
+  - When the phase stops (LINK off, or Live stopped with *follow play/stop* on), the chopper free-runs on its own RATE again.
+  - **LINK** toggle (on): joins the Link session (`link.session enable`) and switches the `gen~` `link` Param. Remote: `s av_link 0/1`.
+  - **follow Live play/stop** (off by default): `link.phasor~ @lock 1`. Max then plays only while Live plays. This needs **Start Stop Sync** turned on in Live's Link settings, or Max never starts.
+  - **keep pitch** (on): when linked, slices play at their own pitch and are cut to Live's grid, instead of tape-speeding. At 118 BPM, tape-speeding would drop the break about 6 semitones. Turn it off for the turntable sound.
+  - **beats per loop** 4 / 8 / 16: 4 = double-time (85 BPM trip-hop → 170 feel), 16 = half-time.
+  - The Live tempo readout also broadcasts `av_tempo`.
+- **The granular chopper follows the clock's real speed.** It used to use its own RATE while following; now it measures how fast the speed chopper's phase moves (`grt`). Its grains, tempo-synced grain size and AUTO GRAINS therefore track Live's tempo too.
+- **Key (AV Bridge).** `patches/max/AV Bridge.amxd` (recipe `av_bridge.py`) is a Max for Live audio effect. Drop it on any Live track; audio passes through.
+  - Every second it reads Live's Key/Scale (`root_note`, `scale_intervals`) and sends them by UDP to `127.0.0.1:7474`.
+  - With **FOLLOW LIVE KEY** on in the conductor:
+    - root 0–11 (C = 0) → `av_root` 33–44 (A1–G#2)
+    - the scale's intervals → the two-octave `av_scale` list (`0 0 7 12` + intervals + intervals+12 + 24)
+  - Bassline, jungle bass, drone and bells then retune with Live's key. Only changes are passed on (`change`, `zl.change`).
+- *.amxd recipe:* a device file is `ampf` + version 4 + `aaaa` (audio effect) + an empty `meta` chunk + `ptch` + length + the patcher JSON (null-terminated), with `project.amxdtype` 1633771873.

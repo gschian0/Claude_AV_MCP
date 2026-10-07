@@ -7,7 +7,7 @@ import json, pathlib, sys
 here = pathlib.Path(__file__).resolve().parent
 name = sys.argv[1] if len(sys.argv) > 1 else "slot1"
 snap = json.load(open(here.parent.parent / "patches" / "max" / "snapshots" / f"{name}.json"))
-EXCLUDE = {"jongly_chopper": [[640, 598]], "jongly_granular": [[640, 598]],
+EXCLUDE = {"jongly_chopper": [[640, 598], [1300, 722]], "jongly_granular": [[640, 598]],
            "gen_feedback": [[70, 886], [310, 886], [430, 886], [550, 886]]}   # decay/zoom/twist/drift: 0 would black out the visuals   # display-only rate box (see save_state.py)
 for inst, items in snap["instruments"].items():
     keep = [{"cls": it["cls"], "at": it["rect"][:2], "value": it["value"]} for it in items

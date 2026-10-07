@@ -28,9 +28,13 @@ def granularize(code):
       "History ph(0), lastStep(-1), slice(0), roll(1), mute(0), envf(0), rd(0), lastHit(-1), sv(1), spt(0);\n"
       "History lastIn(-1), gp(0), gst0(0), gst1(0), gst2(0), gst3(0), gl0(1), gl1(1), gl2(1), gl3(1);"),
      ("ph = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/len), 0, 1);",
-      "own = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/((fit > 0.5 && dim(ref) > 64) ? dim(ref) : len)), 0, 1);\n"
+      "reflen = (fit > 0.5 && dim(ref) > 64) ? dim(ref) : len;\n"
+      "own = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/reflen), 0, 1);\n"
       "ext = clamp(fixnan(in1), 0, 0.999999);\n"
-      "ph = (sync > 0.5 && ext != lastIn) ? ext : own;   // the speed chopper's phase moves -> follow it; else free-run\n"
+      "fol = (sync > 0.5 && ext != lastIn) ? 1 : 0;\n"
+      "// following: run at the speed the leader's phase is actually moving (its rate, or Live's tempo over Link)\n"
+      "grt = (fol > 0.5) ? clamp(fixnan(wrap(ext - lastIn, -0.5, 0.5)*reflen), -4, 4) : clamp(fixnan(rate), -4, 4);\n"
+      "ph = (fol > 0.5) ? ext : own;   // the speed chopper's phase moves -> follow it; else free-run\n"
       "lastIn = ext;"),
      ("rd = clamp(rd + clamp(fixnan(rate), -4, 4)*exp(semi*0.05776226505), -len, len);\n"
       "idx = clamp(fixnan(wrap((slice*len/16 + rd)/len, 0, 1)), 0, 0.999999);\n"
@@ -38,9 +42,9 @@ def granularize(code):
       "// GRANULAR: rd moves through the slice at 'scan' (time), each grain reads at 'pratio' (pitch) — independent\n"
       "pratio = exp(semi*0.05776226505);   // NOT 'ratio': that is the compressor Param (gen~ refuses to assign to a Param)\n"
       "fitk = (fit > 0.5 && dim(ref) > 64) ? clamp(len/dim(ref), 0.125, 8) : 1;   // this loop's length / jongly's length\n"
-      "rd = clamp(rd + ((freeze > 0.5) ? 0 : clamp(fixnan(rate), -4, 4)*clamp(fixnan(scan), 0, 4)*fitk), -len, len);\n"
+      "rd = clamp(rd + ((freeze > 0.5) ? 0 : grt*clamp(fixnan(scan), 0, 4)*fitk), -len, len);\n"
       "base = slice*len/16 + rd;\n"
-      "stepl = ((fit > 0.5 && dim(ref) > 64) ? dim(ref) : len)/16/max(abs(clamp(fixnan(rate), -4, 4)), 0.05);   // one step, in samples\n"
+      "stepl = reflen/16/max(abs(grt), 0.05);   // one step, in samples\n"
       "gsz = (gdiv >= 1) ? clamp(stepl/clamp(floor(gdiv), 1, 16), 0.01*samplerate, 0.5*samplerate) : clamp(fixnan(gsize), 10, 500)*samplerate*0.001;\n"
       "jit = clamp(fixnan(jitter), 0, 1)*gsz;\n"
       "gp = wrap(fixnan(gp + 1/gsz), 0, 1);\n"
@@ -144,6 +148,23 @@ if G:
     CHOP_CODE = granularize(CHOP_CODE)
 else:
     CHOP_CODE = CHOP_CODE.replace("out3 = (comp > 0) ? gr : 0;", "out3 = (comp > 0) ? gr : 0;\nout4 = ph;   // loop phase -> send~ jongly_phase (the granular version follows it)")
+    # LINK: in1 = link.phasor~ phase over one loop (quantum = beats per loop). While Live's Link clock moves, the loop
+    # IS that phase (locked to Live's tempo and bar); when it stops (Live stopped, LINK off) the chopper free-runs.
+    for a, b in [
+        ("Param dyn(1);", "Param dyn(1);\nParam link(1);      // 1 = follow Ableton Link (Live's tempo + bar) whenever its clock is moving\n"
+                          "Param keep(1);      // 1 = when linked, slices keep their own pitch (cut to Live's grid) instead of tape-speeding"),
+        ("History ph(0),", "History lastLk(0);\nHistory ph(0),"),
+        ("ph = wrap(fixnan(ph + clamp(fixnan(rate), -4, 4)/len), 0, 1);",
+         "lin = clamp(fixnan(in1), 0, 0.999999);\n"
+         "ldp = wrap(lin - lastLk, -0.5, 0.5);\n"
+         "lastLk = lin;\n"
+         "lkd = (link > 0.5 && ldp != 0) ? 1 : 0;\n"
+         "rt = (lkd > 0.5) ? clamp(fixnan(ldp*len), -4, 4) : clamp(fixnan(rate), -4, 4);   // the speed the loop actually runs at\n"
+         "ph = (lkd > 0.5) ? lin : wrap(fixnan(ph + rt/len), 0, 1);"),
+        ("rd = clamp(rd + clamp(fixnan(rate), -4, 4)*exp(", "rd = clamp(rd + ((lkd > 0.5 && keep > 0.5) ? 1 : rt)*exp("),
+    ]:
+        assert CHOP_CODE.count(a) == 1, a
+        CHOP_CODE = CHOP_CODE.replace(a, b)
 c = Patch([40.0, 40.0, 1420.0, 1000.0])
 c.present = True
 c.comment(("JONGLY GRANULAR — the chopper as a grain cloud: same rows and presets, but pitch and time are independent (drop the break an octave without slowing it; slow or freeze time without changing pitch). Follows the speed chopper's clock when it is playing." if G else "JONGLY CHOPPER — after ModSquad. The jongly loop is cut into 16 slices. The green row says which slice each step plays; the orange row says how many times that step re-fires (rolls). Pick a pattern, or let AUTO move through them."), 20, 8, 900)
@@ -197,7 +218,7 @@ lm = c.obj("loadmess set 1.", xr, ya + 118, 1, 1); fl = c.box("flonum", xr + 110
 pr = c.obj("prepend rate", xr + 180, ya + 118, 1, 1); c.wire(lm, 0, fl, 0); c.wire(fl, 0, pr, 0)
 
 NOUT = 4
-gen = c.obj("gen~", 20, 534, 1, NOUT, ["signal"] * NOUT, w=200.0, patcher=gen_sub("dsp.gen", CHOP_CODE, 1 if G else 0, NOUT))
+gen = c.obj("gen~", 20, 534, 1, NOUT, ["signal"] * NOUT, w=200.0, patcher=gen_sub("dsp.gen", CHOP_CODE, 1, NOUT))
 if G:
     c.wire(c.obj("receive~ jongly_phase", 20, 508, 0, 1, ["signal"]), 0, gen, 0)   # clock from the speed version
 else:
@@ -285,6 +306,29 @@ for ui, name, init in [(tps, "transpose", 0), (dya, "dyn", 1)]:
 c.wire(c.obj(f"r av_{P}chop_transpose", 1520, 380, 0, 1), 0, tps, 0)
 c.wire(c.obj(f"r av_{P}chop_dyn", 1620, 380, 0, 1), 0, dya, 0)
 lbv = c.obj("loadbang", 1520, 330, 1, 1, ["bang"]); c.wire(lbv, 0, vmsgs[1][1], 0); c.wire(lbv, 0, pmsgs2[0][1], 0)   # groove dynamics, flat pitch
+
+# --- LINK (speed version only; the granular one follows the speed one): lock the loop to Live over Ableton Link ---
+if not G:
+    c.comment("LINK — follow Live (tempo + bar) · follow Live play/stop · keep pitch · beats per loop · Live tempo", xv, 700, 440)
+    lkt = c.box("toggle", xv, 722, 22, 22, 1, 1, ["int"])
+    lck = c.box("toggle", xv + 30, 722, 22, 22, 1, 1, ["int"])
+    kpt = c.box("toggle", xv + 60, 722, 22, 22, 1, 1, ["int"])
+    lph = c.obj("link.phasor~ 170 @quantum 8 @lock 0", 20, 482, 1, 2, ["signal", "signal"])
+    c.wire(lph, 0, gen, 0)
+    ses = c.obj("link.session", 1420, 860, 1, 2, ["", ""])
+    for k, (ui, init) in enumerate([(lkt, 1), (lck, 0), (kpt, 1)]):
+        c.wire(c.obj(f"loadmess {init}", 1420, 700 + 26*k, 1, 1), 0, ui, 0)
+    tli = c.obj("t i i", 1520, 700, 1, 2, ["int", "int"]); c.wire(lkt, 0, tli, 0)
+    plk = c.obj("prepend link", 1620, 700, 1, 1); c.wire(tli, 1, plk, 0); c.wire(plk, 0, gen, 0)
+    en = c.msg("enable $1", 1520, 830); c.wire(tli, 0, en, 0); c.wire(en, 0, ses, 0)   # join / leave the Link session
+    lk_ = c.msg("lock $1", 1520, 756); c.wire(lck, 0, lk_, 0); c.wire(lk_, 0, lph, 0)
+    pkp = c.obj("prepend keep", 1620, 782, 1, 1); c.wire(kpt, 0, pkp, 0); c.wire(pkp, 0, gen, 0)
+    for k, q in enumerate([4, 8, 16]):
+        m = c.msg(f"quantum {q}", xv + 92 + k * 74, 722, 70); c.wire(m, 0, lph, 0)
+    ltp = c.box("flonum", xv + 320, 722, 60, 22, 1, 2, ["", "bang"], format=6)   # display only: Live's tempo
+    pst = c.obj("prepend set", 1520, 886, 1, 1); c.wire(ses, 1, pst, 0); c.wire(pst, 0, ltp, 0)
+    c.wire(ses, 1, c.obj("s av_tempo", 1620, 886, 1, 0), 0)
+    c.wire(c.obj("r av_link", 1420, 806, 0, 1), 0, lkt, 0)
 
 # --- GRAIN controls (granular version only) ---
 if G:

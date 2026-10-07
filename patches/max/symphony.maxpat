@@ -145,8 +145,8 @@
      "patching_rect": [
       10,
       712.0,
-      1342,
-      934.0
+      1382,
+      958.0
      ],
      "name": "jongly_chopper.maxpat",
      "varname": "jongly_chopper",
@@ -172,7 +172,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1666.0,
+      1690.0,
       300,
       20.0
      ],
@@ -188,7 +188,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      1688.0,
+      1712.0,
       810,
       740.0
      ],
@@ -216,7 +216,7 @@
      "numoutlets": 0,
      "patching_rect": [
       840,
-      1666.0,
+      1690.0,
       300,
       20.0
      ],
@@ -232,7 +232,7 @@
      "numoutlets": 0,
      "patching_rect": [
       840,
-      1688.0,
+      1712.0,
       970,
       400.0
      ],
@@ -260,7 +260,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2448.0,
+      2472.0,
       300,
       20.0
      ],
@@ -276,7 +276,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2470.0,
+      2494.0,
       955,
       441.0
      ],
@@ -304,7 +304,7 @@
      "numoutlets": 0,
      "patching_rect": [
       985,
-      2448.0,
+      2472.0,
       300,
       20.0
      ],
@@ -320,7 +320,7 @@
      "numoutlets": 0,
      "patching_rect": [
       985,
-      2470.0,
+      2494.0,
       860,
       388.0
      ],
@@ -348,7 +348,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2931.0,
+      2955.0,
       300,
       20.0
      ],
@@ -364,7 +364,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      2953.0,
+      2977.0,
       1300,
       610.0
      ],
@@ -392,7 +392,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      3583.0,
+      3607.0,
       300,
       20.0
      ],
@@ -408,7 +408,7 @@
      "numoutlets": 0,
      "patching_rect": [
       10,
-      3605.0,
+      3629.0,
       1360,
       756.0
      ],

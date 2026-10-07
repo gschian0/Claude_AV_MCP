@@ -30,6 +30,26 @@ for k, (name, notes) in enumerate(SCALES):
     x, y = 20 + (k % 4)*95, 214 + (k // 4)*50
     p.comment(name, x, y, 90); m = p.msg("0 0 7 12 " + notes, x, y + 20, 88); p.wire(m, 0, ss, 0)
 
+# FOLLOW LIVE KEY: AV Bridge.amxd (on any track in Live) sends Live's Key/Scale over UDP 7474 -> av_root / av_scale
+p.comment("FOLLOW LIVE KEY (AV Bridge in Live)", 230, 76, 180)
+flk = p.box("toggle", 200, 74, 22, 22, 1, 1, ["int"])
+ur = p.obj("udpreceive 7474", 1100, 300, 1, 1)
+ug = p.obj("gate 1", 1100, 326, 2, 1); p.wire(flk, 0, ug, 0); p.wire(ur, 0, ug, 1)
+rte = p.obj("route root_note scale_intervals", 1100, 352, 1, 3, ["", "", ""]); p.wire(ug, 0, rte, 0)
+rch = p.obj("change", 1100, 378, 1, 3, ["", "int", "int"]); p.wire(rte, 0, rch, 0)
+rex = p.obj("expr 33 + (($i1 + 3) % 12)", 1100, 404, 1, 1); p.wire(rch, 0, rex, 0)   # Live root 0-11 (C=0) -> A1..G#2
+p.wire(rex, 0, kn, 0)
+zch = p.obj("zl.change", 1260, 378, 1, 2, ["", ""]); p.wire(rte, 1, zch, 0)
+tll = p.obj("t l l", 1260, 404, 1, 2, ["", ""]); p.wire(zch, 0, tll, 0)
+vx = p.obj("vexpr $i1 + 12", 1340, 430, 1, 1); p.wire(tll, 1, vx, 0)
+zj = p.obj("zl join", 1260, 456, 2, 2, ["", ""]); p.wire(vx, 0, zj, 1); p.wire(tll, 0, zj, 0)
+ap = p.obj("append 24", 1260, 482, 1, 1); p.wire(zj, 0, ap, 0)
+pp_ = p.obj("prepend 0 0 7 12", 1260, 508, 1, 1); p.wire(ap, 0, pp_, 0); p.wire(pp_, 0, ss, 0)
+# on toggle-on, forget the last values so the current Live key is applied at the next update
+clr = p.obj("sel 1", 1400, 300, 2, 2, ["bang", ""]); p.wire(flk, 0, clr, 0)
+cm = p.msg("clear", 1400, 326); p.wire(clr, 0, cm, 0); p.wire(cm, 0, zch, 0)
+cm2 = p.msg("set -1", 1460, 326); p.wire(clr, 0, cm2, 0); p.wire(cm2, 0, rch, 0)
+
 # NEW LINES: re-roll the basslines in the current scale
 p.comment("NEW LINES", 420, 50, 90)
 for k, (label, send) in enumerate([("bassline", "av_reroll_bass"), ("jungle", "av_reroll_jungle")]):
