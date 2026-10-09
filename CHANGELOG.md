@@ -4,6 +4,16 @@ Every change to the repo, newest first. Each entry quotes what was asked for
 (where there was a request) and lists what changed, with the commit hash.
 Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
+## 2026-10-09
+
+### `PENDING` Ableton part 7: vintage reggae breakdown
+> "do a vintage reggae breakdown in the ableton next part"
+- New `recipes/ableton/build_reggae.py`, slot 7, 75 BPM, A minor, 16 bars.
+  - Six new tracks from Core Library presets: Reggae Drums (Selector Kit Warm), Roots Bass (Skanker Bass), Skank Guitar (Reggae Chords Guitar), Bubble Organ (Organ Bandstand), Melodica (Transistor Reeds), Dub Horns (Horns Mellow).
+  - The parts: one-drop drums, roots bass with dub drops, skank on 2 and 4, organ bubble, melodica tune, horn answers.
+  - Dub FX: dotted-1/8 tape Echo and a short Reverb.
+- `play_part.py 7`. Cookbook Part 2 chapter F and the Ableton README updated.
+
 ## 2026-10-06
 
 ### `c8009cb` Max follows Live: Link tempo/bar + key bridge

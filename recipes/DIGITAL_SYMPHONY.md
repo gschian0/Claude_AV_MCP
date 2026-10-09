@@ -307,7 +307,16 @@ Techniques built on top of the set. Each chapter covers the dish, how it's cooke
 - **Trip-hop** (85 BPM): Electric with 4-part voice-led harmony.
 - **Classic jump-up outro** (174 BPM): Crisp Kit two-step and a Reese Classic riff.
 - **Layers** (`build_layers.py`): sampled library sounds that mirror every clip of their source track, for a fatter mix.
-- `play_part.py 1–6` switches parts and tempo.
+- **Vintage reggae breakdown** (75 BPM, `build_reggae.py`, part 7) in A minor (Am7 · Dm7 · F · G). It builds its own six tracks from Core Library presets:
+  - **Reggae Drums** (Selector Kit Warm): a one drop, with kick and rim together on beat 3 and nothing on 1, swung hats and triplet tom fills.
+  - **Roots Bass** (Skanker Bass): leaves space on the one, with dub drop-outs under the fills.
+  - **Skank Guitar** (Reggae Chords Guitar): chops on 2 and 4.
+  - **Bubble Organ** (Organ Bandstand): the low "e"/"a" plus chord-on-the-"and" bubble.
+  - **Melodica** (Transistor Reeds): a minor-pentatonic tune.
+  - **Dub Horns** (Horns Mellow): third answers.
+  - The arrangement builds up: dub bars → + skank → + melodica → + horns.
+  - Dub FX: dotted-1/8 tape Echo (dark filter, wobble, noise) and a short spring-ish Reverb. The drum echo is high-passed, so only the rims throw.
+- `play_part.py 1–7` switches parts and tempo.
 - **Max follows Live** in tempo, bar and key: see chapter H.
 
 ## G. Presets, launch tiles and one-click start

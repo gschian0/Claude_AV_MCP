@@ -93,3 +93,4 @@ Re-run `build_layers.py` whenever the source clips change; it replaces the layer
   - Open-hat lift at the top of the phrase, and a snare/tom fill every 4 bars.
 - **Jump Up Bass** (new track): Reese Classic playing a bouncy 2-bar call and response with octave jumps. Bars 5–8 lift a minor third to the F centre.
 - **Dub Bass:** clean sub roots. **Meld Pad:** Dm → B♭ → F → C (the Pad and Dub Mid layers follow automatically).
+- `build_reggae.py`: part 7, a vintage reggae / dub breakdown at 75 BPM in slot 7. It creates the Reggae Drums, Roots Bass, Skank Guitar, Bubble Organ, Melodica and Dub Horns tracks if they're missing. Play it with `python3 play_part.py 7`.
