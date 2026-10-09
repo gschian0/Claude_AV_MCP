@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-09
 
-### `PENDING` Ableton part 7: vintage reggae breakdown
+### `5106179` Ableton part 7: vintage reggae breakdown
 > "do a vintage reggae breakdown in the ableton next part"
 - New `recipes/ableton/build_reggae.py`, slot 7, 75 BPM, A minor, 16 bars.
   - Six new tracks from Core Library presets: Reggae Drums (Selector Kit Warm), Roots Bass (Skanker Bass), Skank Guitar (Reggae Chords Guitar), Bubble Organ (Organ Bandstand), Melodica (Transistor Reeds), Dub Horns (Horns Mellow).
