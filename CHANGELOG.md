@@ -6,7 +6,7 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-09
 
-### `PENDING` Ableton part 8: classic roots reggae
+### `a838086` Ableton part 8: classic roots reggae
 > "its good on the beat the but dubstep is not classic do a classic part for this and the bad swing is good you messed up but i like it"
 - New `build_reggae_classic.py`, slot 8, 75 BPM.
   - Same one drop and the same swung hats (the 0.62 swing is kept deliberately).
