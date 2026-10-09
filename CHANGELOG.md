@@ -6,6 +6,15 @@ Musical details for each instrument are in `recipes/DIGITAL_SYMPHONY.md`.
 
 ## 2026-10-09
 
+### `PENDING` Ableton part 8: classic roots reggae
+> "its good on the beat the but dubstep is not classic do a classic part for this and the bad swing is good you messed up but i like it"
+- New `build_reggae_classic.py`, slot 8, 75 BPM.
+  - Same one drop and the same swung hats (the 0.62 swing is kept deliberately).
+  - Steady walking bass, skank and organ bubble all the way through, no dub drops.
+  - Am-Am-D-D-F-G-Am-Am.
+  - Horn-section theme in thirds, then melodica lead with horn harmony.
+- New `reggae_fx.py`: dub or classic Echo/Reverb for the shared reggae tracks. `play_part.py 7` and `play_part.py 8` switch it; `build_reggae.py` uses it.
+
 ### `5106179` Ableton part 7: vintage reggae breakdown
 > "do a vintage reggae breakdown in the ableton next part"
 - New `recipes/ableton/build_reggae.py`, slot 7, 75 BPM, A minor, 16 bars.

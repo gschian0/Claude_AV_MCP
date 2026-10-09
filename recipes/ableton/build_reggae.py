@@ -114,12 +114,5 @@ HORN = {6: [(2, [64, 69], 1.5)], 7: [(2, [62, 67], 1.5)],
         14: [(2.5, [60, 65], .5), (3, [60, 65], .9)], 15: [(2.5, [62, 67], .5), (3, [62, 71], .9)]}
 put("Dub Horns", [n(p, bar * 4 + t, l, hv(88)) for bar, hits in HORN.items() for t, ps, l in hits for p in ps])
 
-# ---- dub FX: dotted-1/8 tape echo (dark, wobbly) + short spring-ish reverb ----
-for name, wet, fb, hp in [("Skank Guitar", .32, .55, .3), ("Melodica", .35, .5, .25), ("Dub Horns", .3, .5, .25), ("Reggae Drums", .16, .45, .5)]:
-    ti = idx[name]
-    devs = [x["name"] for x in live.cmd("get_track_info", track_index=ti)["devices"]]
-    by_name(ti, devs.index("Echo"), {"L Sync": 1, "L Division": -3, "L Sync Mode": 2, "Link": 1, "Feedback": fb,
-                                     "Filter On": 1, "HP Freq": hp, "LP Freq": .55, "Wobble On": 1, "Wobble Amt": .3,
-                                     "Noise On": 1, "Noise Amt": .12, "Dry Wet": wet})
-    by_name(ti, devs.index("Reverb"), {"Decay Time": .35, "Room Size": .45, "Dry/Wet": .22, "Predelay": .1})
+import reggae_fx; reggae_fx.set_fx("dub")
 print("part 7 ready: python3 play_part.py 7")

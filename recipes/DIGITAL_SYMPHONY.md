@@ -316,7 +316,13 @@ Techniques built on top of the set. Each chapter covers the dish, how it's cooke
   - **Dub Horns** (Horns Mellow): third answers.
   - The arrangement builds up: dub bars → + skank → + melodica → + horns.
   - Dub FX: dotted-1/8 tape Echo (dark filter, wobble, noise) and a short spring-ish Reverb. The drum echo is high-passed, so only the rims throw.
-- `play_part.py 1–7` switches parts and tempo.
+- **Classic roots reggae** (75 BPM, `build_reggae_classic.py`, part 8). The user's verdict on part 7: "its good on the beat but dubstep is not classic … the bad swing is good you messed up but i like it".
+  - Same tracks, same one drop, and the same lopsided swung hats: `SW = 0.62` is kept on purpose.
+  - Played straight through like a 70s studio band: a walking bass on every bar, skank and bubble all the way, no drop-outs.
+  - Am · Am · D · D · F · G · Am · Am, with D major for the dorian lift.
+  - The horn section plays the theme in diatonic thirds; then the melodica takes it while the horns harmonise.
+  - FX nearly dry. `reggae_fx.py` switches the shared tracks' Echo/Reverb between dub (part 7) and classic (part 8), and `play_part.py` calls it.
+- `play_part.py 1–8` switches parts and tempo.
 - **Max follows Live** in tempo, bar and key: see chapter H.
 
 ## G. Presets, launch tiles and one-click start
